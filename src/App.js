@@ -16,7 +16,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          dutchpay!
+          dutchpay!!
         </a>
       </header>
     </div>
