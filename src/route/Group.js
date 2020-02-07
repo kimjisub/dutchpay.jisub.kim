@@ -5,6 +5,7 @@ import ExpenditureCard from "../components/ExpenditureCard";
 import SettlementCard from "../components/SettlementCard";
 import ReceiptCard from "../components/ReceiptCard";
 import "./Group.css";
+import { calcExpenditure } from "../algorithm"
 
 let fs;
 
@@ -23,31 +24,42 @@ class App extends Component {
   }
 
   render() {
-    let receiptList = [];
-    return this.state.data ? (
-      <div className="Group">
-        <header>
-          <p className="titleText">{this.state.data.name}</p>
-        </header>
-        <div className="Content">
-          <div className="leftFix">
-            <ExpenditureCard data={this.state.data} />
-            <SettlementCard data={this.state.data} />
-          </div>
+    if(!this.state.data)
+      return (<div>로딩중</div>)
+    
+    
 
-          <div className="ReceiptList">
-            <MagicGrid items={this.state.data.receipts.length}>
-              {this.state.data.receipts.map(item => (
-                <ReceiptCard data={item} />
-              ))}
-            </MagicGrid>
-          </div>
+
+    return (
+      <div className="group">
+        <header>
+          <p><a href="https://dutchpay.kimjisub.me">Dutchpay.kimjisub.me</a></p>
+          <h1>{this.state.data.name}</h1>
+          <p>Setting</p>
+        </header>
+        <div id="content">
+          <div class="empty"></div>
+          <section>
+            <aside id="dashboard">
+              <ExpenditureCard expenditure={calcExpenditure(this.state.data)} members={this.state.data.members}/>
+              <SettlementCard data={this.state.data} />
+            </aside>
+            <main id="receipts">
+              <MagicGrid items={this.state.data.receipts.length}>
+                {this.state.data.receipts.map(receipt => (
+                  <ReceiptCard receipt={receipt} members={this.state.data.members}/>
+                ))}
+              </MagicGrid>
+            </main>
+          </section>
+          <div class="empty"></div>
         </div>
+        <footer>푸터</footer>
       </div>
-    ) : (
-      <div>로딩중</div>
-    );
+    )
   }
+//calcExpenditure(this.state.data)
+  
 }
 
 export default App;

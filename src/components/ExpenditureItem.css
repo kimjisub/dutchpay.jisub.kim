@@ -1,17 +1,17 @@
-#root{
+.expenditure-item{
     display: flex;
     flex-direction: row;
 }
-#name{
-    font-size: 20px;
+.expenditure-item p{
+    margin: 0;
 }
-#price{
-  display: flex;
-  flex-direction: column;
+.expenditure-item .name{
+    font-size: 1.4rem;
 }
-#price1{
-    font-size:10px;
+.expenditure-item .price{
+    display: flex;
+    flex-direction: column;
 }
-#price2{
-    font-size:10px;
+.expenditure-item .price *{
+    font-size:0.5rem;
 }

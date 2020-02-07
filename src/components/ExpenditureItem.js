@@ -4,11 +4,11 @@ import "./ExpenditureItem.css";
 class App extends Component {
   render() {
     return (
-      <div id="root">
-        <p id="name">{this.props.name}</p>
-        <div id="price">
-            <p id="price1">{this.props.price}</p>
-            <p id="price2">{this.props.payed}</p>
+      <div class="expenditure-item">
+        <p class="name">{this.props.name}</p>
+        <div class="price">
+            <p class="spend">{this.props.spend}</p>
+            <p class="paied">{this.props.paied}</p>
         </div>
       </div>
     );
