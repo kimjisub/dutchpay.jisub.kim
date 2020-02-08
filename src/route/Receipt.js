@@ -20,8 +20,6 @@ import {
   Checkbox
 } from "react-mdl";
 
-let fs;
-
 class App extends Component {
   constructor({ match }) {
     super();
@@ -31,9 +29,9 @@ class App extends Component {
     };
     this.state = { tab: 0 };
 
-    fs = firestore();
+    this.fs = firestore();
 
-    fs.collection("DutchPay")
+    this.fs.collection("DutchPay")
       .doc(this.info.groupId)
       .collection("Receipts")
       .doc(this.info.receiptId)
@@ -49,7 +47,7 @@ class App extends Component {
   }
 
   updateToFB(receipt) {
-    fs.collection("DutchPay")
+    this.fs.collection("DutchPay")
       .doc(this.info.groupId)
       .collection("Receipts")
       .doc(this.info.receiptId)

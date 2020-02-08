@@ -7,39 +7,20 @@ import ReceiptCard from "../components/ReceiptCard";
 import "./Group.css";
 import { calcExpenditure } from "../algorithm";
 
-
-
-let fs;
-
 class App extends Component {
   constructor({ match }) {
     super();
-    this.info = {groupId: match.params.groupId}
+    this.info = { groupId: match.params.groupId };
     this.state = {
       group: null,
-      receipts: {},
-
-      dialog: {
-        editReceipt: {
-          isOpen: false,
-          key: null,
-          isNew: false
-        },
-        editMember: {
-          isOpen: false,
-          key: null
-        },
-        memberDetail: {
-          isOpen: false,
-          key: null
-        }
-      }
+      receipts: {}
     };
 
     // Firebase
-    window.$fs = fs = firestore();
+    this.fs = firestore();
 
-    fs.collection("DutchPay")
+    this.fs
+      .collection("DutchPay")
       .doc(this.info.groupId)
       .onSnapshot(doc => {
         let data = (window.$data = doc.data());
@@ -47,7 +28,8 @@ class App extends Component {
         this.setState({ group: data });
       });
 
-    fs.collection("DutchPay")
+    this.fs
+      .collection("DutchPay")
       .doc(this.info.groupId)
       .collection("Receipts")
       .onSnapshot(querySnapshot => {
@@ -85,16 +67,16 @@ class App extends Component {
         key: null,
         isNew: true,
         data: {
-          items:[
+          items: [
             //{buyers:[],name:"", price:0}
           ],
           name: "",
-          payers:[
+          payers: [
             //{"1asdf":0}
           ],
-          timestamp:{
-            nanoseconds:0,
-            seconds:parseInt(new Date().getTime()/1000)
+          timestamp: {
+            nanoseconds: 0,
+            seconds: parseInt(new Date().getTime() / 1000)
           }
         }
       };
@@ -127,7 +109,6 @@ class App extends Component {
 
     return (
       <div className="group">
-
         <header>
           <p>
             <a href="https://dutchpay.kimjisub.me">Dutchpay.kimjisub.me</a>

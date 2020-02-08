@@ -1,38 +1,57 @@
 import React, { Component } from "react";
-import logo from "../logo.svg";
+import { Redirect } from "react-router-dom";
+import { Button, Snackbar } from "react-mdl";
+
 import "./MainPage.css";
 import { firestore } from "../firebase";
-
-let fs;
 
 class MainPage extends Component {
   constructor() {
     super();
-    window.$fs = fs = firestore();
+    this.fs = firestore();
+    this.state = {
+      newGroupId: null,
+      err: null
+    };
   }
 
   render() {
-    fs.collection("DutchPay")
-      .doc("fjpxkYGp6cNPUpgjkr7I")
-      .onSnapshot(function(doc) {
-        console.log("Current data: ", doc.data());
-      });
+    if (this.state.newGroupId)
+      return <Redirect to={`/${this.state.newGroupId}`} />;
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            MainPage
-          </a>
-        </header>
+      <div>
+        <Button
+          raised
+          ripple
+          onClick={() => {
+            this.fs
+              .collection("DutchPay")
+              .add({
+                name: "",
+                members: [],
+                passwd: "",
+                timestamp: {
+                  nanoseconds: 0,
+                  seconds: parseInt(new Date().getTime() / 1000)
+                }
+              })
+              .then(docRef => {
+                this.setState({ newGroupId: docRef.id });
+              }).catch(err => {
+                this.setState({err:err})
+              })
+          }}
+        >
+          새로 만들기
+        </Button>
+        <Snackbar
+          active={this.state.err!=null}
+          onClick={this.handleClickActionSnackbar}
+          onTimeout={()=>{
+            this.setState({err:null})
+          }}
+        action="Undo">{this.state.err}</Snackbar>
       </div>
     );
   }
