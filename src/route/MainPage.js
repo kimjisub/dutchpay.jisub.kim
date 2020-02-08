@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import logo from "./logo.svg";
-import "./App.css";
-import { firestore } from "./firebase";
+import logo from "../logo.svg";
+import "./MainPage.css";
+import { firestore } from "../firebase";
 
 let fs;
 
-class App extends Component {
+class MainPage extends Component {
   constructor() {
     super();
     window.$fs = fs = firestore();
@@ -38,4 +38,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default MainPage;

@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
 
 import "./index.css";
-import App from "./App";
+import MainPage from "./route/MainPage";
 import Group from "./route/Group";
 import Receipt from "./route/Receipt";
 
@@ -12,7 +12,7 @@ ReactDOM.render(
   <Router>
     <Route path="/:groupId/:receiptId" component={Receipt} />
     <Route path="/:groupId" component={Group} />
-    <Route exact path="/" component={App} />
+    <Route exact path="/" component={MainPage} />
   </Router>,
   document.getElementById("root")
 );
