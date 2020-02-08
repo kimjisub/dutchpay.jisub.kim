@@ -23,15 +23,8 @@ header h1{
 .card {
   width: 300px;
   margin: 10px;
-  border-radius: 20px;
-  box-shadow: none;
 }
 
-.card h2{
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin: 10px;
-}
 
 .card .mdl-card__menu{
   margin: 4px;

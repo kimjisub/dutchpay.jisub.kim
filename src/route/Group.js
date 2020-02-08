@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { Textfield, IconToggle, Button } from "react-mdl";
 import { firestore } from "../firebase";
 import MagicGrid from "react-magic-grid";
 import ExpenditureCard from "../components/ExpenditureCard";
@@ -13,7 +15,8 @@ class App extends Component {
     this.info = { groupId: match.params.groupId };
     this.state = {
       group: null,
-      receipts: {}
+      receipts: {},
+      editMode: false
     };
 
     // Firebase
@@ -58,38 +61,6 @@ class App extends Component {
       });
   }
 
-  editReceipt(key) {
-    let isNew = key ? false : true;
-    const s = Object.assign({}, this.state);
-    if (isNew)
-      s.dialog.editReceipt = {
-        isOpen: true,
-        key: null,
-        isNew: true,
-        data: {
-          items: [
-            //{buyers:[],name:"", price:0}
-          ],
-          name: "",
-          payers: [
-            //{"1asdf":0}
-          ],
-          timestamp: {
-            nanoseconds: 0,
-            seconds: parseInt(new Date().getTime() / 1000)
-          }
-        }
-      };
-    else
-      s.dialog.editReceipt = {
-        isOpen: true,
-        key: key,
-        isNew: false,
-        data: Object.assign({}, s.receipts[key])
-      };
-    this.setState(s);
-  }
-
   render() {
     if (!this.state.group) return <div>로딩중</div>;
 
@@ -113,8 +84,28 @@ class App extends Component {
           <p>
             <a href="https://dutchpay.kimjisub.me">Dutchpay.kimjisub.me</a>
           </p>
-          <h1>{this.state.group.name}</h1>
-          <p>Setting</p>
+          <h1>
+            {this.state.editMode ? (
+              <Textfield
+                onChange={() => {}}
+                label="모임 이름"
+                defaultValue={this.state.group.name}
+                floatingLabel
+                style={{ width: "200px", fontSize: "1.4rem" }}
+              />
+            ) : (
+              this.state.group.name
+            )}
+          </h1>
+          <p>
+            <IconToggle
+              id="italic"
+              name={this.state.editMode ? "check" : "edit"}
+              onChange={e => {
+                this.setState({ editMode: e.target.checked });
+              }}
+            />
+          </p>
         </header>
         <div id="content">
           <div className="empty"></div>
@@ -131,7 +122,14 @@ class App extends Component {
             </aside>
             <main id="receipts">
               {receipts.length > 0 ? (
-                <MagicGrid items={receipts.length}>{receipts}</MagicGrid>
+                <MagicGrid items={receipts.length} id='magicGrid'>
+                  <Link to={`/${this.info.groupId}/new`}>
+                    <Button raised ripple>
+                      추가하기
+                    </Button>
+                  </Link>
+                  {receipts}
+                </MagicGrid>
               ) : null}
             </main>
           </section>

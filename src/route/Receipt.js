@@ -17,7 +17,8 @@ import {
   Menu,
   MenuItem,
   Badge,
-  Checkbox
+  Checkbox,
+  Snackbar
 } from "react-mdl";
 
 class App extends Component {
@@ -27,32 +28,76 @@ class App extends Component {
       groupId: match.params.groupId,
       receiptId: match.params.receiptId
     };
-    this.state = { tab: 0 };
+    this.state = { 
+        tab: 0
+    };
 
     this.fs = firestore();
 
-    this.fs.collection("DutchPay")
-      .doc(this.info.groupId)
-      .collection("Receipts")
-      .doc(this.info.receiptId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          let data = (window.$data = doc.data());
-          //console.log("Receipt Data: ", data);
-          this.receipt = Object.assign({}, data);
-          this.setState({ originalReceipt: data });
+    if (this.info.receiptId !== "new")
+      this.fs
+        .collection("DutchPay")
+        .doc(this.info.groupId)
+        .collection("Receipts")
+        .doc(this.info.receiptId)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            let data = (window.$data = doc.data());
+            //console.log("Receipt Data: ", data);
+            this.receipt = Object.assign({}, data);
+            this.setState({ originalReceipt: data });
+          }
+        });
+    else {
+      let data = (window.$data = {
+        name: "",
+        items: [],
+        payers: {},
+        timestamp: {
+          nanoseconds: 0,
+          seconds: parseInt(new Date().getTime() / 1000)
         }
       });
+      this.receipt = Object.assign({}, data);
+      this.state.originalReceipt = data;
+    }
   }
 
   updateToFB(receipt) {
-    this.fs.collection("DutchPay")
-      .doc(this.info.groupId)
-      .collection("Receipts")
-      .doc(this.info.receiptId)
-      .set(receipt);
+    if (this.info.receiptId !== "new")
+      this.fs
+        .collection("DutchPay")
+        .doc(this.info.groupId)
+        .collection("Receipts")
+        .doc(this.info.receiptId)
+        .set(receipt);
+    else
+      this.fs
+        .collection("DutchPay")
+        .doc(this.info.groupId)
+        .collection("Receipts")
+        .add({
+          name: "",
+          items: [],
+          payers: {},
+          timestamp: {
+            nanoseconds: 0,
+            seconds: parseInt(new Date().getTime() / 1000)
+          }
+        })
   }
+
+  delete() {
+    if (this.info.receiptId !== "new")
+      this.fs
+        .collection("DutchPay")
+        .doc(this.info.groupId)
+        .collection("Receipts")
+        .doc(this.info.receiptId)
+        .delete()
+  }
+
   render() {
     if (!this.state.originalReceipt) return <div>로딩중</div>;
 
@@ -140,6 +185,19 @@ class App extends Component {
           <Link to={`/${this.info.groupId}`}>
             <Button type="button">취소</Button>
           </Link>
+
+          {this.info.receiptId !== "new" ? (
+              <Link to={`/${this.info.groupId}`}>
+            <Button
+              type="button"
+              onClick={() => {
+                this.delete();
+              }}
+            >
+              삭제
+            </Button>
+            </Link>
+          ) : null}
         </DialogActions>
       </Dialog>
     );

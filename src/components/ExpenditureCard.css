@@ -1,0 +1,8 @@
+.item{
+    display: flex;
+    flex-direction: row;
+}
+.item p{
+    flex-grow: 1;
+    margin: 0;
+}

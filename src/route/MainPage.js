@@ -10,14 +10,14 @@ class MainPage extends Component {
     super();
     this.fs = firestore();
     this.state = {
-      newGroupId: null,
+      redirect: null,
       err: null
     };
   }
 
   render() {
-    if (this.state.newGroupId)
-      return <Redirect to={`/${this.state.newGroupId}`} />;
+    if (this.state.redirect)
+      return <Redirect to={this.state.redirect} />;
 
     return (
       <div>
@@ -37,7 +37,7 @@ class MainPage extends Component {
                 }
               })
               .then(docRef => {
-                this.setState({ newGroupId: docRef.id });
+                this.setState({ redirect: `/${docRef.id}` });
               }).catch(err => {
                 this.setState({err:err})
               })

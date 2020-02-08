@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardTitle, CardText, CardMenu, IconButton } from "react-mdl";
+import { Table, Card } from "react-bootstrap";
+import { IconButton } from "react-mdl";
+import "./ReceiptCard.css";
 
 class App extends Component {
   render() {
@@ -34,15 +36,27 @@ class App extends Component {
     let diff = totalPrice - paiedPrice;
     let statusMsg;
 
-    if (diff === 0) statusMsg = <p>결제 완료</p>;
-    else if (diff > 0) statusMsg = <p>{diff}원 미결제</p>;
-    else if (diff < 0) statusMsg = <p>{-diff}원 초과결제</p>;
+    if (diff === 0) statusMsg = "결제 완료";
+    else if (diff > 0) statusMsg = `${diff}원 미결제`;
+    else if (diff < 0) statusMsg = `${-diff}원 초과결제`;
 
     return (
-      <Card shadow={0} className="card">
-        <CardTitle>{this.props.receipt.name}</CardTitle>
-        <CardText>
-          <table>
+      <Card>
+        <p className="icon">
+              <Link to={this.props.to}>
+                <IconButton
+                  name="edit"
+                  className="icon-button"
+                  onClick={this.props.onClick}
+                />
+              </Link>
+            </p>
+        <Card.Body>
+          <Card.Title>
+          {this.props.receipt.name}
+            
+          </Card.Title>
+          <Table size="sm" responsive borderless>
             <thead>
               <tr>
                 <th>이름</th>
@@ -59,8 +73,8 @@ class App extends Component {
                 <th></th>
               </tr>
             </tfoot>
-          </table>
-          <table>
+          </Table>
+          <Table size="sm" responsive borderless>
             <thead>
               <tr>
                 <th>결제자</th>
@@ -78,15 +92,9 @@ class App extends Component {
                 <th></th>
               </tr>
             </tfoot>
-          </table>
-
-          {statusMsg}
-        </CardText>
-        <CardMenu>
-          <Link to={this.props.to}>
-            <IconButton name="edit" onClick={this.props.onClick} />
-          </Link>
-        </CardMenu>
+          </Table>
+        </Card.Body>
+        <Card.Footer className="text-muted">{statusMsg}</Card.Footer>
       </Card>
     );
   }
