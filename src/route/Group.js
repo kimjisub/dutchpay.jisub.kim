@@ -45,20 +45,25 @@ class App extends Component {
           switch (change.type) {
             case "added":
               s.receipts[id] = data;
-              this.setState(s);
               break;
             case "modified":
               s.receipts[id] = data;
-              this.setState(s);
               break;
             case "removed":
               delete s.receipts[id];
-              this.setState(s);
               break;
             default:
           }
+          this.setState(s);
         });
       });
+  }
+
+  saveGroupSetting(){
+    this.fs
+        .collection("DutchPay")
+        .doc(this.info.groupId)
+        .set(this.state.group);
   }
 
   render() {
@@ -87,7 +92,11 @@ class App extends Component {
           <h1>
             {this.state.editMode ? (
               <Textfield
-                onChange={() => {}}
+                onChange={(e) => {
+                  let s = Object.assign({}, this.state);
+                  s.group.name = e.target.value
+                  this.setState(s);
+                }}
                 label="모임 이름"
                 defaultValue={this.state.group.name}
                 floatingLabel
@@ -102,6 +111,8 @@ class App extends Component {
               id="italic"
               name={this.state.editMode ? "check" : "edit"}
               onChange={e => {
+                if(this.state.editMode)
+                  this.saveGroupSetting()
                 this.setState({ editMode: e.target.checked });
               }}
             />

@@ -17,8 +17,7 @@ import {
   Menu,
   MenuItem,
   Badge,
-  Checkbox,
-  Snackbar
+  Checkbox
 } from "react-mdl";
 
 class App extends Component {
