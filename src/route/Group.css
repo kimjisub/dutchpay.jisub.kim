@@ -1,7 +1,7 @@
 .group{
   display:flex;
   flex-direction: column;
-  background-color: hsl(206, 23%, 94%);
+  background-color: #f6f7f9;
   min-height: 120vh;
   width: 100%;
   font-size: 12px;
@@ -11,28 +11,30 @@
 header{
   vertical-align: center;
   text-align: center;
-  height: 70px;
+  height: 160px;
   display: flex;
   border-bottom: 1px solid gray;
 }
 
 header h1{
-  display: inline-block;
   flex-grow: 2;
 }
 
 .card {
   width: 300px;
-
-  background: #E3E6EC;
-  border: 1px solid #aaaaaa;
-  border-radius: 3px;
-
-  margin: 8px;
+  margin: 10px;
+  border-radius: 20px;
+  box-shadow: none;
 }
 
-.card .title{
+.card h2{
   font-size: 1.4rem;
+  font-weight: bold;
+  margin: 10px;
+}
+
+.card .mdl-card__menu{
+  margin: 4px;
 }
 
 #content{
@@ -60,6 +62,5 @@ header h1{
   display: block;
     width: 680px;
     margin-left: 20px;
-    background-color: blue;
     min-height: 100vh;
 }

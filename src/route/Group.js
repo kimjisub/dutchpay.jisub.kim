@@ -5,61 +5,161 @@ import ExpenditureCard from "../components/ExpenditureCard";
 import SettlementCard from "../components/SettlementCard";
 import ReceiptCard from "../components/ReceiptCard";
 import "./Group.css";
-import { calcExpenditure } from "../algorithm"
+import { calcExpenditure } from "../algorithm";
+
+
 
 let fs;
 
 class App extends Component {
   constructor({ match }) {
     super();
-    this.state = {};
+    this.info = {groupId: match.params.groupId}
+    this.state = {
+      group: null,
+      receipts: {},
+
+      dialog: {
+        editReceipt: {
+          isOpen: false,
+          key: null,
+          isNew: false
+        },
+        editMember: {
+          isOpen: false,
+          key: null
+        },
+        memberDetail: {
+          isOpen: false,
+          key: null
+        }
+      }
+    };
+
+    // Firebase
     window.$fs = fs = firestore();
+
     fs.collection("DutchPay")
-      .doc(match.params.id)
+      .doc(this.info.groupId)
       .onSnapshot(doc => {
         let data = (window.$data = doc.data());
-        console.log("Current data: ", data);
-        this.setState({ data: data });
+        //console.log("Group Data Changed: ", data);
+        this.setState({ group: data });
+      });
+
+    fs.collection("DutchPay")
+      .doc(this.info.groupId)
+      .collection("Receipts")
+      .onSnapshot(querySnapshot => {
+        querySnapshot.docChanges().forEach(change => {
+          let id = change.doc.id;
+          let data = change.doc.data();
+          //console.log("Receipts", change.type, id);
+
+          let s = Object.assign({}, this.state);
+          switch (change.type) {
+            case "added":
+              s.receipts[id] = data;
+              this.setState(s);
+              break;
+            case "modified":
+              s.receipts[id] = data;
+              this.setState(s);
+              break;
+            case "removed":
+              delete s.receipts[id];
+              this.setState(s);
+              break;
+            default:
+          }
+        });
       });
   }
 
-  render() {
-    if(!this.state.data)
-      return (<div>로딩중</div>)
-    
-    
+  editReceipt(key) {
+    let isNew = key ? false : true;
+    const s = Object.assign({}, this.state);
+    if (isNew)
+      s.dialog.editReceipt = {
+        isOpen: true,
+        key: null,
+        isNew: true,
+        data: {
+          items:[
+            //{buyers:[],name:"", price:0}
+          ],
+          name: "",
+          payers:[
+            //{"1asdf":0}
+          ],
+          timestamp:{
+            nanoseconds:0,
+            seconds:parseInt(new Date().getTime()/1000)
+          }
+        }
+      };
+    else
+      s.dialog.editReceipt = {
+        isOpen: true,
+        key: key,
+        isNew: false,
+        data: Object.assign({}, s.receipts[key])
+      };
+    this.setState(s);
+  }
 
+  render() {
+    if (!this.state.group) return <div>로딩중</div>;
+
+    let receipts = [];
+
+    for (let key in this.state.receipts) {
+      let receipt = this.state.receipts[key];
+      receipts.push(
+        <ReceiptCard
+          key={key}
+          receipt={receipt}
+          members={this.state.group.members}
+          to={`/${this.info.groupId}/${key}`}
+        />
+      );
+    }
 
     return (
       <div className="group">
+
         <header>
-          <p><a href="https://dutchpay.kimjisub.me">Dutchpay.kimjisub.me</a></p>
-          <h1>{this.state.data.name}</h1>
+          <p>
+            <a href="https://dutchpay.kimjisub.me">Dutchpay.kimjisub.me</a>
+          </p>
+          <h1>{this.state.group.name}</h1>
           <p>Setting</p>
         </header>
         <div id="content">
-          <div class="empty"></div>
+          <div className="empty"></div>
           <section>
             <aside id="dashboard">
-              <ExpenditureCard expenditure={calcExpenditure(this.state.data)} members={this.state.data.members}/>
-              <SettlementCard data={this.state.data} />
+              <ExpenditureCard
+                expenditure={calcExpenditure(
+                  this.state.group.members,
+                  this.state.receipts
+                )}
+                members={this.state.group.members}
+              />
+              <SettlementCard data={this.state.group} />
             </aside>
             <main id="receipts">
-              <MagicGrid items={this.state.data.receipts.length}>
-                {this.state.data.receipts.map(receipt => (
-                  <ReceiptCard receipt={receipt} members={this.state.data.members}/>
-                ))}
-              </MagicGrid>
+              {receipts.length > 0 ? (
+                <MagicGrid items={receipts.length}>{receipts}</MagicGrid>
+              ) : null}
             </main>
           </section>
-          <div class="empty"></div>
+          <div className="empty"></div>
         </div>
         <footer>푸터</footer>
       </div>
-    )
+    );
   }
-//calcExpenditure(this.state.data)
-  
 }
 
 export default App;

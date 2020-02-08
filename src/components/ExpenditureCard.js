@@ -1,5 +1,15 @@
 import React, { Component } from "react";
-import ExpenditureItem from "./ExpenditureItem"
+import ExpenditureItem from "./ExpenditureItem";
+
+import {
+  Badge,
+  Icon,
+  Card,
+  CardTitle,
+  CardText,
+  CardMenu,
+  IconButton
+} from "react-mdl";
 
 class App extends Component {
   render() {
@@ -9,21 +19,28 @@ class App extends Component {
     //   return e.name
     // })
 
-    let list = []
+    let list = [];
 
-    for(let id in this.props.members){
-      let name = this.props.members[id]
-      let spend = this.props.expenditure[id].spend
-      let paied = this.props.expenditure[id].paied
+    for (let id in this.props.members) {
+      let name = this.props.members[id];
+      let spend = this.props.expenditure[id].spend;
+      let paied = this.props.expenditure[id].paied;
 
-      list.push(<ExpenditureItem name={name} spend={spend} paied={paied}/>)
+      list.push(<ExpenditureItem name={name} spend={spend} paied={paied} key={id}/>);
     }
 
     return (
-      <div className="card">
-        <p className="title">지출 내역 {memberCount}명</p>
-        {list}
-      </div>
+      <Card shadow={0} className="card">
+        <CardTitle>지출 내역</CardTitle>
+
+        <CardText>{list}</CardText>
+        <CardMenu>
+          <Badge text={memberCount} overlap>
+            <Icon name="account_box" />
+          </Badge>
+          <IconButton name="share" />
+        </CardMenu>
+      </Card>
     );
   }
 }
