@@ -41,7 +41,7 @@ class App extends Component {
     else if (diff < 0) statusMsg = `${-diff}원 초과결제`;
 
     return (
-      <Card>
+      <Card className="receipt-card">
         <p className="icon">
               <Link to={this.props.to}>
                 <IconButton

@@ -132,8 +132,7 @@ class App extends Component {
               <SettlementCard data={this.state.group} />
             </aside>
             <main id="receipts">
-              {receipts.length > 0 ? (
-                <MagicGrid items={receipts.length} id='magicGrid'>
+                <MagicGrid items={receipts.length+1} id='magicGrid'>
                   <Link to={`/${this.info.groupId}/new`}>
                     <Button raised ripple>
                       추가하기
@@ -141,7 +140,6 @@ class App extends Component {
                   </Link>
                   {receipts}
                 </MagicGrid>
-              ) : null}
             </main>
           </section>
           <div className="empty"></div>

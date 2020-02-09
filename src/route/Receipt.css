@@ -10,3 +10,31 @@
 .popup{
     display: inline-block;
 }
+.content{
+    padding: 16px;
+}
+
+.textfield{
+    min-width: 200px;
+    
+}
+
+.mdl-list li{
+    text-align: center;
+    display: flex;
+}
+
+.mdl-textfield-small{
+    flex-grow: 1;
+    margin-left: 4px;
+    margin-right: 4px;
+    padding: 0;
+}
+
+.mdl-textfield-small .mdl-textfield__label{
+top:4px;
+}
+
+.mdl-textfield-small .mdl-textfield__label:after{
+    bottom:0px;
+    }

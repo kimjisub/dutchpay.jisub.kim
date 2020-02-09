@@ -7,13 +7,9 @@ import {
   Button,
   Tabs,
   Tab,
-  List,
-  ListItem,
-  Icon,
   IconButton,
   Menu,
   MenuItem,
-  Badge,
   Checkbox
 } from "react-mdl";
 import "./Receipt.css";
@@ -51,9 +47,7 @@ class App extends Component {
         .then(doc => {
           if (doc.exists) {
             let data = (window.$data = doc.data());
-            //console.log("Receipt Data: ", data);
-            this.receipt = Object.assign({}, data);
-            this.setState({ originalReceipt: data });
+            this.setState({ receipt: data });
           }
         });
     else {
@@ -66,8 +60,7 @@ class App extends Component {
           seconds: parseInt(new Date().getTime() / 1000)
         }
       });
-      this.receipt = Object.assign({}, data);
-      this.state.originalReceipt = data;
+      this.state.receipt = data;
     }
   }
 
@@ -98,23 +91,23 @@ class App extends Component {
   }
 
   render() {
-    if (!this.state.originalReceipt) return <div>로딩중</div>;
+    if (!this.state.receipt) return <div>로딩중</div>;
 
     let memberList = [];
     for (let id in this.members) {
-      let buyers = this.receipt.items[this.state.itemIndex]?.buyers || []
+      let buyers = this.state.receipt.items[this.state.itemIndex]?.buyers || [];
       let checked = buyers.includes(id);
       memberList.push(
         <ListGroup.Item key={id}>
           <Checkbox
             checked={checked}
+            label={this.members[id]}
             onChange={e => {
               if (e.target.checked) buyers.push(id);
               else buyers.splice(buyers.indexOf(id), 1);
               this.setState({ update: this.state.update + 1 });
             }}
           />
-          {this.members[id]}
         </ListGroup.Item>
       );
     }
@@ -122,12 +115,16 @@ class App extends Component {
     const memberPopup = (
       <Popover id="popover-basic">
         <Popover.Content>
-          <ListGroup variant="flush">
-            {memberList}
-          </ListGroup>
+          <ListGroup variant="flush">{memberList}</ListGroup>
         </Popover.Content>
       </Popover>
     );
+
+    let totalPrice=0
+    for(let i in this.state.receipt.items){
+      let item = this.state.receipt.items[i]
+      totalPrice+=parseInt(item.price)||0
+    }
 
     return (
       <div className="popup-background">
@@ -139,11 +136,13 @@ class App extends Component {
           <div className="title">
             <Textfield
               onChange={e => {
-                this.receipt.name = e.target.value;
+                let s = Object.assign({}, this.state);
+                s.receipt.name = e.target.value;
+                this.setState(s);
               }}
               label="영수증 이름"
               floatingLabel
-              defaultValue={this.receipt.name}
+              defaultValue={this.state.receipt.name}
               style={{ width: "200px" }}
             />
           </div>
@@ -158,77 +157,111 @@ class App extends Component {
             </Tabs>
             <section>
               {this.state.tab === 0 ? (
-                <List style={{ width: "300px" }}>
-                  {this.receipt.items.map((item, i) => {
-                    return (
-                      <ListItem style={{ padding: 0 }} key={i}>
-                        <Textfield
-                          onChange={e => {
-                            this.receipt.items[i].name = e.target.value;
-                          }}
-                          label="상품명"
-                          defaultValue={item.name}
-                          style={{ width: "200px" }}
-                          id={`${i}-name`}
-                        />
-                        <Textfield
-                          onChange={e => {
-                            this.receipt.items[i].price = parseInt(
-                              e.target.value
-                            );
-                          }}
-                          pattern="-?[0-9]*(\.[0-9]+)?"
-                          error="숫자가 아닙니다."
-                          label="가격"
-                          defaultValue={item.price}
-                          style={{ width: "200px" }}
-                          id={`${i}-price`}
-                        />
+                <table>
+                  <thead>
+                    <tr>
+                      <th>상품명</th>
+                      <th>가격</th>
+                      <th>인원</th>
+                      <th>삭제</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.receipt.items.map((item, i) => {
+                      return (
+                        <tr>
+                          <td>
+                            <Textfield
+                              className="mdl-textfield-small"
+                              onChange={e => {
+                                let s = Object.assign({}, this.state);
+                                s.receipt.items[i].name = e.target.value;
+                                this.setState(s);
+                              }}
+                              label="상품명"
+                              defaultValue={item.name}
+                              style={{ width: "200px" }}
+                              id={`${i}-name`}
+                            />
+                          </td>
+                          <td>
+                            <Textfield
+                              className="mdl-textfield-small"
+                              onChange={e => {
+                                let s = Object.assign({}, this.state);
+                                s.receipt.items[i].price = parseInt(
+                                  e.target.value
+                                );
+                                this.setState(s);
+                              }}
+                              pattern="-?[0-9]*(\.[0-9]+)?"
+                              error="숫자가 아닙니다."
+                              label="가격"
+                              defaultValue={item.price}
+                              style={{ width: "200px" }}
+                              id={`${i}-price`}
+                            />
+                          </td>
+                          <td>
+                            <OverlayTrigger
+                              rootClose
+                              trigger="click"
+                              placement="right"
+                              overlay={memberPopup}
+                            >
+                              <label style={{ margin: 0 }}>
+                                <IconButton
+                                  name="person"
+                                  ripple
+                                  onClick={() => {
+                                    this.setState({ itemIndex: i });
+                                  }}
+                                />
+                                {this.state.receipt.items[i].buyers.length}
+                              </label>
+                            </OverlayTrigger>
+                          </td>
 
-                        <OverlayTrigger
-                        rootClose
-                          trigger="click"
-                          placement="right"
-                          overlay={memberPopup}
-                        >
-                          <Button ripple 
-                          onClick={()=>{
-                            this.setState({itemIndex:i})
-                          }}>
-                            <Badge text={this.receipt.items[i].buyers.length} overlap>
-                              <Icon name="mood" />
-                            </Badge>
-                            김지섭,이은지
-                          </Button>
-                        </OverlayTrigger>
-
-                        <IconButton name="delete" id={"delete-" + i} />
-                        <Menu target={"delete-" + i}>
-                          <MenuItem
-                            onClick={() => {
-                              this.receipt.items.splice(i);
-                              this.setState({ update: this.state.update + 1 });
-                            }}
-                          >
-                            삭제
-                          </MenuItem>
-                        </Menu>
-                      </ListItem>
-                    );
-                  })}
-                  <Button
-                    onClick={() => {
-                      this.receipt.items.push({
-                        name: "",
-                        buyers: [],
-                        price: 0
-                      });
-                      this.setState({ update: this.state.update + 1 });
-                    }}
-                  >
-                    추가
-                  </Button>
-                </List>
+                          <td>
+                            <IconButton name="delete" id={"delete-" + i} />
+                            <Menu target={"delete-" + i}>
+                              <MenuItem
+                                onClick={() => {
+                                  let s = Object.assign({}, this.state);
+                                  s.receipt.items.splice(i);
+                                  this.setState(s);
+                                }}
+                              >
+                                삭제
+                              </MenuItem>
+                            </Menu>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th>총</th>
+                      <td>{totalPrice}</td>
+                    </tr>
+                    <tr style={{ padding: 0 }}>
+                      <Button
+                        onClick={() => {
+                          let s = Object.assign({}, this.state);
+                          s.receipt.items.push({
+                            name: "",
+                            buyers: [],
+                            price: 0
+                          });
+                          this.setState(s);
+                        }}
+                      >
+                        추가
+                      </Button>
+                    </tr>
+                  </tfoot>
+                </table>
               ) : null}
             </section>
           </div>
@@ -237,7 +270,7 @@ class App extends Component {
               <Button
                 type="button"
                 onClick={() => {
-                  this.updateToFB(this.receipt);
+                  this.updateToFB(this.state.receipt);
                 }}
               >
                 저장
@@ -248,25 +281,21 @@ class App extends Component {
             </Link>
 
             {this.info.receiptId !== "new" ? (
-              
               <div>
-                <Button
-                  type="button"
-                  id="delete"
-                >
+                <Button type="button" id="delete">
                   삭제
                 </Button>
                 <Menu target="delete">
                   <Link to={`/${this.info.groupId}`}>
-                          <MenuItem
-                            onClick={() => {
-                              this.delete();
-                            }}
-                          >
-                            삭제
-                          </MenuItem>
-                          </Link>
-                        </Menu>
+                    <MenuItem
+                      onClick={() => {
+                        this.delete();
+                      }}
+                    >
+                      삭제
+                    </MenuItem>
+                  </Link>
+                </Menu>
               </div>
             ) : null}
           </div>

@@ -1,29 +1,29 @@
-table{
+.receipt-card table{
     /* border: 1px solid gray; */
     width:100%
 }
 
-table thead{
+.receipt-card table thead{
 font-size: 1.1rem;
 font-weight: bold;
 border-bottom: 1px solid gray;
 }
 
-table .line{
+.receipt-card table .line{
 border-bottom: 1px solid gray;
 }
 
-table th:nth-child(1){
+.receipt-card table th:nth-child(1){
     width: 40%;
     text-align: left;
 }
 
-table th:nth-child(2){
+.receipt-card table th:nth-child(2){
     width: 30%;
     text-align: left;
 }
 
-table th:nth-child(3){
+.receipt-card table th:nth-child(3){
     width: 30%;
     text-align: left;
 }
