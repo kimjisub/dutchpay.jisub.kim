@@ -93,29 +93,32 @@ class App extends Component {
 	render() {
 		if (!this.state.receipt) return <div>로딩중</div>
 
-		let memberList = []
-		for (let id in this.members) {
-			let buyers = this.state.receipt.items[this.state.itemIndex]?.buyers || []
-			let checked = buyers.includes(id)
-			memberList.push(
-				<ListGroup.Item key={id}>
-					<Checkbox
-						checked={checked}
-						label={this.members[id]}
-						onChange={e => {
-							if (e.target.checked) buyers.push(id)
-							else buyers.splice(buyers.indexOf(id), 1)
-							this.setState({ update: this.state.update + 1 })
-						}}
-					/>
-				</ListGroup.Item>
-			)
-		}
-
 		const memberPopup = (
 			<Popover id="popover-basic">
 				<Popover.Content>
-					<ListGroup variant="flush">{memberList}</ListGroup>
+					<ListGroup variant="flush">
+						{Object.entries(this.members).map(data => {
+							let id = data[0]
+							let name = data[1]
+
+							let buyers =
+								this.state.receipt.items[this.state.itemIndex]?.buyers || []
+							let checked = buyers.includes(id)
+							return (
+								<ListGroup.Item key={id}>
+									<Checkbox
+										checked={checked}
+										label={name}
+										onChange={e => {
+											if (e.target.checked) buyers.push(id)
+											else buyers.splice(buyers.indexOf(id), 1)
+											this.setState({ update: this.state.update + 1 })
+										}}
+									/>
+								</ListGroup.Item>
+							)
+						})}
+					</ListGroup>
 				</Popover.Content>
 			</Popover>
 		)
@@ -125,6 +128,211 @@ class App extends Component {
 			let item = this.state.receipt.items[i]
 			totalPrice += parseInt(item.price) || 0
 		}
+
+		const tab1 = (
+			<table>
+				<thead>
+					<tr>
+						<th>상품명</th>
+						<th>가격</th>
+						<th>인원</th>
+						<th>삭제</th>
+					</tr>
+				</thead>
+				<tbody>
+					{this.state.receipt.items.map((item, i) => {
+						return (
+							<tr key={'item-' + i}>
+								<td>
+									<Textfield
+										className="mdl-textfield-small"
+										onChange={e => {
+											let s = Object.assign({}, this.state)
+											s.receipt.items[i].name = e.target.value
+											this.setState(s)
+										}}
+										label="상품명"
+										defaultValue={item.name}
+										style={{ width: '200px' }}
+										id={`${i}-name`}
+									/>
+								</td>
+								<td>
+									<Textfield
+										className="mdl-textfield-small"
+										onChange={e => {
+											let s = Object.assign({}, this.state)
+											s.receipt.items[i].price = parseInt(e.target.value)
+											this.setState(s)
+										}}
+										pattern="-?[0-9]*(\.[0-9]+)?"
+										error="숫자가 아닙니다."
+										label="가격"
+										defaultValue={item.price}
+										style={{ width: '200px' }}
+										id={`item-price-${i}`}
+									/>
+								</td>
+								<td>
+									<OverlayTrigger
+										rootClose
+										trigger="click"
+										placement="right"
+										overlay={memberPopup}>
+										<label style={{ margin: 0 }}>
+											<IconButton
+												name="person"
+												ripple
+												onClick={() => {
+													this.setState({ itemIndex: i })
+												}}
+											/>
+											{this.state.receipt.items[i].buyers.length}
+										</label>
+									</OverlayTrigger>
+								</td>
+
+								<td>
+									<IconButton name="item-delete" id={'item-delete-' + i} />
+									<Menu target={'item-delete-' + i}>
+										<MenuItem
+											onClick={() => {
+												let s = Object.assign({}, this.state)
+												s.receipt.items.splice(i)
+												this.setState(s)
+											}}>
+											삭제
+										</MenuItem>
+									</Menu>
+								</td>
+							</tr>
+						)
+					})}
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>총</th>
+						<td>{totalPrice}</td>
+					</tr>
+					<tr style={{ padding: 0 }}>
+						<td>
+							<Button
+								onClick={() => {
+									let s = Object.assign({}, this.state)
+									s.receipt.items.push({
+										name: '',
+										buyers: [],
+										price: 0
+									})
+									this.setState(s)
+								}}>
+								추가
+							</Button>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		)
+
+		let totalPaied = 0
+		for (let i in this.state.receipt.payers) {
+			let item = this.state.receipt.payers[i]
+			totalPaied += parseInt(item) || 0
+		}
+
+		const tab2 = (
+			<table>
+				<thead>
+					<tr>
+						<th>결제자</th>
+						<th>가격</th>
+						<th>삭제</th>
+					</tr>
+				</thead>
+				<tbody>
+					{Object.entries(this.state.receipt.payers).map((data, i) => {
+						let id = data[0]
+						let price = data[1]
+
+						return (
+							<tr key={'payer-' + i}>
+								<td>
+									{this.members[id]}
+									{/* <OverlayTrigger
+										rootClose
+										trigger="click"
+										placement="right"
+										overlay={memberPopup}>
+										<label style={{ margin: 0 }}>
+											<IconButton
+												name="person"
+												ripple
+												onClick={() => {
+													//this.setState({ itemIndex: i })
+												}}
+											/>
+											{this.members[id]}
+										</label>
+									</OverlayTrigger> */}
+								</td>
+								<td>
+									<Textfield
+										className="mdl-textfield-small"
+										onChange={e => {
+											let s = Object.assign({}, this.state)
+											s.receipt.payers[id] = parseInt(e.target.value)
+											this.setState(s)
+										}}
+										pattern="-?[0-9]*(\.[0-9]+)?"
+										error="숫자가 아닙니다."
+										label="가격"
+										defaultValue={price}
+										style={{ width: '200px' }}
+										id={`pay-price-${i}`}
+									/>
+								</td>
+
+								<td>
+									<IconButton name="delete" id={'delete-' + i} />
+									<Menu target={'delete-' + i}>
+										<MenuItem
+											onClick={() => {
+												let s = Object.assign({}, this.state)
+												delete s.receipt.payers[id]
+												this.setState(s)
+											}}>
+											삭제
+										</MenuItem>
+									</Menu>
+								</td>
+							</tr>
+						)
+					})}
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>총</th>
+						<td>{totalPaied}</td>
+					</tr>
+					<tr style={{ padding: 0 }}>
+						<td>
+							<Button
+								onClick={() => {
+									let s = Object.assign({}, this.state)
+									s.receipt.items.push({
+										name: '',
+										buyers: [],
+										price: 0
+									})
+									this.setState(s)
+								}}>
+								추가
+							</Button>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		)
 
 		return (
 			<div className="popup-background">
@@ -153,112 +361,7 @@ class App extends Component {
 							<Tab>영수증</Tab>
 							<Tab>결제</Tab>
 						</Tabs>
-						<section>
-							{this.state.tab === 0 ? (
-								<table>
-									<thead>
-										<tr>
-											<th>상품명</th>
-											<th>가격</th>
-											<th>인원</th>
-											<th>삭제</th>
-										</tr>
-									</thead>
-									<tbody>
-										{this.state.receipt.items.map((item, i) => {
-											return (
-												<tr>
-													<td>
-														<Textfield
-															className="mdl-textfield-small"
-															onChange={e => {
-																let s = Object.assign({}, this.state)
-																s.receipt.items[i].name = e.target.value
-																this.setState(s)
-															}}
-															label="상품명"
-															defaultValue={item.name}
-															style={{ width: '200px' }}
-															id={`${i}-name`}
-														/>
-													</td>
-													<td>
-														<Textfield
-															className="mdl-textfield-small"
-															onChange={e => {
-																let s = Object.assign({}, this.state)
-																s.receipt.items[i].price = parseInt(
-																	e.target.value
-																)
-																this.setState(s)
-															}}
-															pattern="-?[0-9]*(\.[0-9]+)?"
-															error="숫자가 아닙니다."
-															label="가격"
-															defaultValue={item.price}
-															style={{ width: '200px' }}
-															id={`${i}-price`}
-														/>
-													</td>
-													<td>
-														<OverlayTrigger
-															rootClose
-															trigger="click"
-															placement="right"
-															overlay={memberPopup}>
-															<label style={{ margin: 0 }}>
-																<IconButton
-																	name="person"
-																	ripple
-																	onClick={() => {
-																		this.setState({ itemIndex: i })
-																	}}
-																/>
-																{this.state.receipt.items[i].buyers.length}
-															</label>
-														</OverlayTrigger>
-													</td>
-
-													<td>
-														<IconButton name="delete" id={'delete-' + i} />
-														<Menu target={'delete-' + i}>
-															<MenuItem
-																onClick={() => {
-																	let s = Object.assign({}, this.state)
-																	s.receipt.items.splice(i)
-																	this.setState(s)
-																}}>
-																삭제
-															</MenuItem>
-														</Menu>
-													</td>
-												</tr>
-											)
-										})}
-									</tbody>
-									<tfoot>
-										<tr>
-											<th>총</th>
-											<td>{totalPrice}</td>
-										</tr>
-										<tr style={{ padding: 0 }}>
-											<Button
-												onClick={() => {
-													let s = Object.assign({}, this.state)
-													s.receipt.items.push({
-														name: '',
-														buyers: [],
-														price: 0
-													})
-													this.setState(s)
-												}}>
-												추가
-											</Button>
-										</tr>
-									</tfoot>
-								</table>
-							) : null}
-						</section>
+						<section>{this.state.tab === 0 ? tab1 : tab2}</section>
 					</div>
 					<div className="action">
 						<Link to={`/${this.info.groupId}`}>

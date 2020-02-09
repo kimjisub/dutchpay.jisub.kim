@@ -3,5 +3,6 @@
     "prettier.singleQuote": true,
     "prettier.semi": false,
     "prettier.useTabs": true,
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
 }
