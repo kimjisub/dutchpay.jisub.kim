@@ -11,7 +11,7 @@ class App extends Component {
       let spend = this.props.expenditure[id].spend;
       let paied = this.props.expenditure[id].paied;
       list.push(
-        <ListGroup.Item className="list">
+        <ListGroup.Item className="list" key={id}>
           <div className="item">
             <p>{name}</p>
             <p>{spend}</p>
