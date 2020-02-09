@@ -70,13 +70,13 @@ class App extends Component {
 		this.setState({ editMode: mode })
 	}
 
-	saveGroupSetting() {
+	saveGroupSetting(finishEdit = false) {
 		this.fs
 			.collection('DutchPay')
 			.doc(this.info.groupId)
 			.set(this.state.group)
 			.then(() => {
-				this.setEditMode(false)
+				if (finishEdit) this.setEditMode(false)
 			})
 	}
 
@@ -132,7 +132,7 @@ class App extends Component {
 							ripple
 							name={this.state.editMode ? 'check' : 'edit'}
 							onClick={() => {
-								if (this.state.editMode) this.saveGroupSetting()
+								if (this.state.editMode) this.saveGroupSetting(true)
 								else this.setEditMode(true)
 								//this.setState({ editMode: !this.setState.editMode })
 							}}

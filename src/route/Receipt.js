@@ -65,12 +65,18 @@ class App extends Component {
 				.collection('Receipts')
 				.doc(this.info.receiptId)
 				.set(receipt)
+				.then(() => {
+					this.props.history.push({ pathname: `/${this.info.groupId}`, search: this.state.editMode ? '?edit=true' : '' })
+				})
 		else
 			this.fs
 				.collection('DutchPay')
 				.doc(this.info.groupId)
 				.collection('Receipts')
 				.add(receipt)
+				.then(() => {
+					this.close()
+				})
 	}
 
 	delete() {
@@ -81,6 +87,13 @@ class App extends Component {
 				.collection('Receipts')
 				.doc(this.info.receiptId)
 				.delete()
+				.then(() => {
+					this.close()
+				})
+	}
+
+	close() {
+		this.props.history.push({ pathname: `/${this.info.groupId}`, search: this.state.editMode ? '?edit=true' : '' })
 	}
 
 	render() {
@@ -361,35 +374,39 @@ class App extends Component {
 											삭제
 										</Button>,
 										<Menu target="delete" key="menu">
-											<Link to={`/${this.info.groupId}`}>
-												<MenuItem
-													onClick={() => {
-														this.delete()
-													}}>
-													삭제
-												</MenuItem>
-											</Link>
+											<MenuItem
+												onClick={() => {
+													this.delete()
+												}}>
+												삭제
+											</MenuItem>
 										</Menu>
 								  ]
 								: null}
-							<Link to={`/${this.info.groupId}`}>
-								<Button
-									type="button"
-									onClick={() => {
-										this.updateToFB(this.state.receipt)
-									}}>
-									저장
-								</Button>
-							</Link>
-							<Link to={`/${this.info.groupId}`}>
-								<Button type="button">취소</Button>
-							</Link>
+							<Button
+								type="button"
+								onClick={() => {
+									this.updateToFB(this.state.receipt)
+								}}>
+								저장
+							</Button>
+							<Button
+								type="button"
+								onClick={() => {
+									this.close()
+								}}>
+								취소
+							</Button>
 						</div>
 					) : (
 						<div className="action">
-							<Link to={`/${this.info.groupId}`}>
-								<Button type="button">확인</Button>
-							</Link>
+							<Button
+								type="button"
+								onClick={() => {
+									this.close()
+								}}>
+								확인
+							</Button>
 						</div>
 					)}
 				</Card>

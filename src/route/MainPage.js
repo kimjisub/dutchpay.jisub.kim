@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Redirect } from 'react-router-dom'
 import { Button, Snackbar } from 'react-mdl'
 
 import './MainPage.css'
@@ -10,14 +9,11 @@ class MainPage extends Component {
 		super()
 		this.fs = firestore()
 		this.state = {
-			redirect: null,
 			err: null
 		}
 	}
 
 	render() {
-		if (this.state.redirect) return <Redirect to={this.state.redirect} />
-
 		return (
 			<div>
 				<Button
@@ -33,7 +29,7 @@ class MainPage extends Component {
 								timestamp: new Date()
 							})
 							.then(docRef => {
-								this.setState({ redirect: `/${docRef.id}` })
+								this.props.history.push({ pathname: `/${docRef.id}`, search: '?edit=true' })
 							})
 							.catch(err => {
 								this.setState({ err: err })
