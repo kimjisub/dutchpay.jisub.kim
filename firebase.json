@@ -1,6 +1,5 @@
 {
   "hosting": {
-    "target": "dutchpay-kimjisub-me",
     "public": "build",
     "ignore": [
       "firebase.json",

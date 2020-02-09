@@ -109,32 +109,24 @@ class App extends Component {
 						<a href="https://dutchpay.kimjisub.me">Dutchpay.kimjisub.me</a>
 					</p>
 					<h1>
-						{this.state.editMode ? (
-							<Textfield
-								onChange={e => {
-									let s = Object.assign({}, this.state)
-									s.group.name = e.target.value
-									this.setState(s)
-								}}
-								label="모임 이름"
-								defaultValue={this.state.group.name}
-								floatingLabel
-								style={{ width: '200px', fontSize: '1.4rem' }}
-							/>
-						) : (
-							this.state.group.name
-						)}
+						<EditableTextView
+							label="모임 이름"
+							text={this.state.group.name}
+							editMode={this.state.editMode}
+							onChange={e => {
+								let s = Object.assign({}, this.state)
+								s.group.name = e.target.value
+								this.setState(s)
+							}}
+						/>
 					</h1>
 					<p>
-						{/* <Link to={{ search: this.state.editMode ? '' : '?edit=true' }}>
-						</Link> */}
 						<IconButton
 							ripple
 							name={this.state.editMode ? 'check' : 'edit'}
 							onClick={() => {
 								if (this.state.editMode) this.saveGroupSetting(true)
 								else this.setEditMode(true)
-								//this.setState({ editMode: !this.setState.editMode })
 							}}
 						/>
 					</p>
