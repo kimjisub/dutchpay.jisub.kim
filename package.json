@@ -10,6 +10,7 @@
     "firebase": "^7.8.0",
     "firebase-tools": "^7.11.0",
     "magic-grid": "^3.2.4",
+    "query-string": "^6.10.1",
     "react": "^16.12.0",
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.12.0",
