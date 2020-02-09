@@ -1,0 +1,21 @@
+.editable-textview {
+	font-size: inherit;
+	margin: 0px;
+}
+
+.editable-textview input {
+	outline: none;
+	border: none;
+	border-bottom: 1px solid #0004;
+	background-color: #0000;
+	padding: 0;
+	transition: 0.3s;
+	font-size: inherit;
+}
+.editable-textview input:focus {
+	border-bottom: 1px solid #000a;
+}
+
+.editable-textview p {
+	font-size: inherit;
+}

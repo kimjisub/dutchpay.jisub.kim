@@ -1,23 +1,28 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { Textfield, IconToggle, Button } from 'react-mdl'
+import { Textfield, IconToggle, Button, IconButton } from 'react-mdl'
+import { Table, Card } from 'react-bootstrap'
+import queryString from 'query-string'
 import { firestore } from '../firebase'
-import MagicGrid from 'react-magic-grid'
 import ExpenditureCard from '../components/ExpenditureCard'
 import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
+import EditableTextView from '../components/EditableTextView'
 import './Group.css'
 import { calcExpenditure, calcSettlement } from '../algorithm'
 
 class App extends Component {
-	constructor({ match }) {
+	constructor({ match, location }) {
 		super()
 		this.info = { groupId: match.params.groupId }
+		this.location = location
+		this.query = queryString.parse(location.search)
 		this.state = {
 			group: null,
 			receipts: {},
-			editMode: false
+			editMode: this.query.edit
 		}
+		console.log(this.query.edit)
 
 		// Firebase
 		this.fs = firestore()
@@ -35,6 +40,7 @@ class App extends Component {
 			.collection('DutchPay')
 			.doc(this.info.groupId)
 			.collection('Receipts')
+			.orderBy('timestamp', 'asc')
 			.onSnapshot(querySnapshot => {
 				querySnapshot.docChanges().forEach(change => {
 					let id = change.doc.id
@@ -59,11 +65,19 @@ class App extends Component {
 			})
 	}
 
-	saveGroupSetting() {
+	setEditMode(mode) {
+		this.props.history.push({ pathname: '/' + this.info.groupId, search: mode ? '?edit=true' : '' })
+		this.setState({ editMode: mode })
+	}
+
+	saveGroupSetting(finishEdit = false) {
 		this.fs
 			.collection('DutchPay')
 			.doc(this.info.groupId)
 			.set(this.state.group)
+			.then(() => {
+				if (finishEdit) this.setEditMode(false)
+			})
 	}
 
 	render() {
@@ -73,7 +87,15 @@ class App extends Component {
 
 		for (let key in this.state.receipts) {
 			let receipt = this.state.receipts[key]
-			receipts.push(<ReceiptCard key={key} receipt={receipt} members={this.state.group.members} to={`/${this.info.groupId}/receipt/${key}`} />)
+			receipts.push(
+				<ReceiptCard
+					key={key}
+					receipt={receipt}
+					members={this.state.group.members}
+					to={`/${this.info.groupId}/receipt/${key}${this.state.editMode ? '?edit=true' : ''}`}
+					editMode={this.state.editMode}
+				/>
+			)
 		}
 
 		let expenditure = calcExpenditure(this.state.group.members, this.state.receipts)
@@ -104,12 +126,15 @@ class App extends Component {
 						)}
 					</h1>
 					<p>
-						<IconToggle
-							id="italic"
+						{/* <Link to={{ search: this.state.editMode ? '' : '?edit=true' }}>
+						</Link> */}
+						<IconButton
+							ripple
 							name={this.state.editMode ? 'check' : 'edit'}
-							onChange={e => {
-								if (this.state.editMode) this.saveGroupSetting()
-								this.setState({ editMode: e.target.checked })
+							onClick={() => {
+								if (this.state.editMode) this.saveGroupSetting(true)
+								else this.setEditMode(true)
+								//this.setState({ editMode: !this.setState.editMode })
 							}}
 						/>
 					</p>
@@ -132,14 +157,16 @@ class App extends Component {
 							<SettlementCard members={this.state.group.members} settlement={settlement} />
 						</aside>
 						<main id="receipts">
-							<MagicGrid items={receipts.length + 1} id="magicGrid">
-								<Link to={`/${this.info.groupId}/receipt/new`}>
-									<Button raised ripple>
-										추가하기
-									</Button>
-								</Link>
+							<div>
 								{receipts}
-							</MagicGrid>
+								{this.state.editMode ? (
+									<Link to={`/${this.info.groupId}/receipt/new?edit=true`}>
+										<Card className="receipt-card">
+											<Card.Body>추가하기</Card.Body>
+										</Card>
+									</Link>
+								) : null}
+							</div>
 						</main>
 					</section>
 					<div className="empty"></div>

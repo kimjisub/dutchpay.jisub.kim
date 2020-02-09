@@ -52,7 +52,11 @@ header h1 {
 
 #receipts {
 	display: block;
-	width: 680px;
 	margin-left: 20px;
 	min-height: 100vh;
+}
+
+#receipts > div {
+	display: flex;
+	flex-direction: column-reverse;
 }
