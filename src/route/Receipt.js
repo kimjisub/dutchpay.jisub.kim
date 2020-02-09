@@ -34,7 +34,7 @@ class App extends Component {
 			.doc(this.info.groupId)
 			.get()
 			.then(doc => {
-				if (doc.exists) this.members = doc.data().members
+				if (doc.exists) this.setState({ members: doc.data().members })
 			})
 
 		if (this.info.receiptId !== 'new')
@@ -55,10 +55,7 @@ class App extends Component {
 				name: '',
 				items: [],
 				payers: {},
-				timestamp: {
-					nanoseconds: 0,
-					seconds: parseInt(new Date().getTime() / 1000)
-				}
+				timestamp: new Date()
 			})
 			this.state.receipt = data
 		}
@@ -91,13 +88,13 @@ class App extends Component {
 	}
 
 	render() {
-		if (!this.state.receipt) return <div>로딩중</div>
+		if (!this.state.receipt || !this.state.members) return <div>로딩중</div>
 
 		const memberPopup = (
 			<Popover id="popover-basic">
 				<Popover.Content>
 					<ListGroup variant="flush">
-						{Object.entries(this.members).map(data => {
+						{Object.entries(this.state.members).map(data => {
 							let id = data[0]
 							let name = data[1]
 
@@ -193,7 +190,7 @@ class App extends Component {
 								</td>
 
 								<td>
-									<IconButton name="item-delete" id={'item-delete-' + i} />
+									<IconButton name="delete" id={'item-delete-' + i} />
 									<Menu target={'item-delete-' + i}>
 										<MenuItem
 											onClick={() => {
@@ -234,6 +231,32 @@ class App extends Component {
 			</table>
 		)
 
+		const payerPopup = (
+			<Popover id="popover-basic">
+				<Popover.Content>
+					<ListGroup variant="flush">
+						{Object.entries(this.state.members).map(data => {
+							let id = data[0]
+							let name = data[1]
+
+							return (
+								<ListGroup.Item
+									key={id}
+									action
+									onClick={() => {
+										let s = Object.assign({}, this.state)
+										s.receipt.payers[id] = 0
+										this.setState(s)
+									}}>
+									{name}
+								</ListGroup.Item>
+							)
+						})}
+					</ListGroup>
+				</Popover.Content>
+			</Popover>
+		)
+
 		let totalPaied = 0
 		for (let i in this.state.receipt.payers) {
 			let item = this.state.receipt.payers[i]
@@ -256,25 +279,7 @@ class App extends Component {
 
 						return (
 							<tr key={'payer-' + i}>
-								<td>
-									{this.members[id]}
-									{/* <OverlayTrigger
-										rootClose
-										trigger="click"
-										placement="right"
-										overlay={memberPopup}>
-										<label style={{ margin: 0 }}>
-											<IconButton
-												name="person"
-												ripple
-												onClick={() => {
-													//this.setState({ itemIndex: i })
-												}}
-											/>
-											{this.members[id]}
-										</label>
-									</OverlayTrigger> */}
-								</td>
+								<td>{this.state.members[id]}</td>
 								<td>
 									<Textfield
 										className="mdl-textfield-small"
@@ -316,18 +321,15 @@ class App extends Component {
 					</tr>
 					<tr style={{ padding: 0 }}>
 						<td>
-							<Button
-								onClick={() => {
-									let s = Object.assign({}, this.state)
-									s.receipt.items.push({
-										name: '',
-										buyers: [],
-										price: 0
-									})
-									this.setState(s)
-								}}>
-								추가
-							</Button>
+							<OverlayTrigger
+								rootClose
+								trigger="click"
+								placement="right"
+								overlay={payerPopup}>
+								<label style={{ margin: 0 }}>
+									<Button ripple>추가</Button>
+								</label>
+							</OverlayTrigger>
 						</td>
 					</tr>
 				</tfoot>
