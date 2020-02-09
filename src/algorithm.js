@@ -28,6 +28,45 @@ export function calcExpenditure(members, receipts) {
 	return ret
 }
 
+export function calcSettlement(expenditure) {
+	let data = {}
+	for (let id in expenditure) {
+		let spend = expenditure[id].spend
+		let paied = expenditure[id].paied
+		data[id] = spend - paied
+	}
+
+	let ret = []
+	for (let from in data) {
+		if (data[from] > 0) {
+			for (let to in data) {
+				if (data[to] < 0) {
+					if (data[from] <= -data[to]) {
+						let value = Math.min(data[from], -data[to])
+						ret.push({ from, to, value })
+						data[to] += data[from]
+						data[from] -= data[from]
+						break
+					}
+				}
+			}
+		}
+	}
+	for (let from in data) {
+		if (data[from] > 0) {
+			for (let to in data) {
+				if (data[to] < 0) {
+					let value = Math.min(data[from], -data[to])
+					ret.push({ from, to, value })
+					data[to] += value
+					data[from] -= value
+				}
+			}
+		}
+	}
+	return ret
+}
+
 export function bigNumberToCode(num) {
 	if (num === 0) return '0'
 	let digit = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'

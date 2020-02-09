@@ -7,7 +7,7 @@ import ExpenditureCard from '../components/ExpenditureCard'
 import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
 import './Group.css'
-import { calcExpenditure } from '../algorithm'
+import { calcExpenditure, calcSettlement } from '../algorithm'
 
 class App extends Component {
 	constructor({ match }) {
@@ -73,15 +73,12 @@ class App extends Component {
 
 		for (let key in this.state.receipts) {
 			let receipt = this.state.receipts[key]
-			receipts.push(
-				<ReceiptCard
-					key={key}
-					receipt={receipt}
-					members={this.state.group.members}
-					to={`/${this.info.groupId}/receipt/${key}`}
-				/>
-			)
+			receipts.push(<ReceiptCard key={key} receipt={receipt} members={this.state.group.members} to={`/${this.info.groupId}/receipt/${key}`} />)
 		}
+
+		let expenditure = calcExpenditure(this.state.group.members, this.state.receipts)
+
+		let settlement = calcSettlement(expenditure)
 
 		return (
 			<div className="group">
@@ -122,10 +119,7 @@ class App extends Component {
 					<section>
 						<aside id="dashboard">
 							<ExpenditureCard
-								expenditure={calcExpenditure(
-									this.state.group.members,
-									this.state.receipts
-								)}
+								expenditure={expenditure}
 								members={this.state.group.members}
 								onMembersChange={members => {
 									let s = Object.assign({}, this.state)
@@ -135,7 +129,7 @@ class App extends Component {
 								}}
 								editMode={this.state.editMode}
 							/>
-							<SettlementCard data={this.state.group} />
+							<SettlementCard members={this.state.group.members} settlement={settlement} />
 						</aside>
 						<main id="receipts">
 							<MagicGrid items={receipts.length + 1} id="magicGrid">
