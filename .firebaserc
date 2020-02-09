@@ -1,14 +1,5 @@
 {
   "projects": {
-    "default": "kimjisub-5d9ac"
-  },
-  "targets": {
-    "kimjisub-5d9ac": {
-      "hosting": {
-        "dutchpay-kimjisub-me": [
-          "dutchpay-kimjisub-me"
-        ]
-      }
-    }
+    "default": "dutchpay-f08a8"
   }
 }
