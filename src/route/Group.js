@@ -78,7 +78,7 @@ class App extends Component {
 					key={key}
 					receipt={receipt}
 					members={this.state.group.members}
-					to={`/${this.info.groupId}/${key}`}
+					to={`/${this.info.groupId}/receipt/${key}`}
 				/>
 			)
 		}
@@ -127,12 +127,19 @@ class App extends Component {
 									this.state.receipts
 								)}
 								members={this.state.group.members}
+								onMembersChange={members => {
+									let s = Object.assign({}, this.state)
+									s.group.members = members
+									this.setState(s)
+									this.saveGroupSetting()
+								}}
+								editMode={this.state.editMode}
 							/>
 							<SettlementCard data={this.state.group} />
 						</aside>
 						<main id="receipts">
 							<MagicGrid items={receipts.length + 1} id="magicGrid">
-								<Link to={`/${this.info.groupId}/new`}>
+								<Link to={`/${this.info.groupId}/receipt/new`}>
 									<Button raised ripple>
 										추가하기
 									</Button>

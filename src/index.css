@@ -15,3 +15,18 @@ code {
 .mdl-textfield__label {
 	margin: 0;
 }
+
+.mdl-textfield-small {
+	flex-grow: 1;
+	margin-left: 4px;
+	margin-right: 4px;
+	padding: 0;
+}
+
+.mdl-textfield-small .mdl-textfield__label {
+	top: 4px;
+}
+
+.mdl-textfield-small .mdl-textfield__label:after {
+	bottom: 0px;
+}

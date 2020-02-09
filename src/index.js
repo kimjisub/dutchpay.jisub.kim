@@ -13,7 +13,7 @@ window.$fs = firestore()
 
 ReactDOM.render(
 	<Router>
-		<Route path="/:groupId/:receiptId" component={Receipt} />
+		<Route path="/:groupId/receipt/:receiptId" component={Receipt} />
 		<Route path="/:groupId" component={Group} />
 		<Route exact path="/" component={MainPage} />
 	</Router>,

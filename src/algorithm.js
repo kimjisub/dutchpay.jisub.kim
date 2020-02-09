@@ -27,3 +27,15 @@ export function calcExpenditure(members, receipts) {
 
 	return ret
 }
+
+export function bigNumberToCode(num) {
+	if (num === 0) return '0'
+	let digit = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+	let ret = ''
+	for (; parseInt(num / digit.length) > 0; ) {
+		ret = digit[parseInt(num % digit.length)] + ret
+		num = parseInt(num / digit.length)
+	}
+	if (num !== 0) ret = digit[num] + ret
+	return ret
+}
