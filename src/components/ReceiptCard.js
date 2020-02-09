@@ -41,58 +41,51 @@ class App extends Component {
 		else if (diff < 0) statusMsg = `${-diff}원 초과결제`
 
 		return (
-			<Card className="receipt-card">
-				<p className="icon">
-					<Link to={this.props.to}>
-						<IconButton
-							name="edit"
-							className="icon-button"
-							onClick={this.props.onClick}
-						/>
-					</Link>
-				</p>
-				<Card.Body>
-					<Card.Title>{this.props.receipt.name}</Card.Title>
-					<Table size="sm" responsive borderless>
-						<thead>
-							<tr>
-								<th>이름</th>
-								<th>가격</th>
-								<th>구매 인원</th>
-							</tr>
-						</thead>
+			<Link to={this.props.to}>
+				<Card className="receipt-card">
+					<Card.Body>
+						<Card.Title>{this.props.receipt.name}</Card.Title>
+						<Table size="sm" responsive borderless>
+							<thead>
+								<tr>
+									<th>이름</th>
+									<th>가격</th>
+									<th>구매 인원</th>
+								</tr>
+							</thead>
 
-						<tbody>{itemList}</tbody>
-						<tfoot>
-							<tr>
-								<th>총</th>
-								<th>{totalPrice}</th>
-								<th></th>
-							</tr>
-						</tfoot>
-					</Table>
-					<Table size="sm" responsive borderless>
-						<thead>
-							<tr>
-								<th>결제자</th>
-								<th>결제 금액</th>
-								<th></th>
-							</tr>
-						</thead>
+							<tbody>{itemList}</tbody>
+							<tfoot>
+								<tr>
+									<th>총</th>
+									<th>{totalPrice}</th>
+									<th></th>
+								</tr>
+							</tfoot>
+						</Table>
+						<Table size="sm" responsive borderless>
+							<thead>
+								<tr>
+									<th>결제자</th>
+									<th>결제 금액</th>
+									<th></th>
+								</tr>
+							</thead>
 
-						<tbody>{payerList}</tbody>
+							<tbody>{payerList}</tbody>
 
-						<tfoot>
-							<tr>
-								<th>총</th>
-								<th>{paiedPrice}</th>
-								<th></th>
-							</tr>
-						</tfoot>
-					</Table>
-				</Card.Body>
-				<Card.Footer className="text-muted">{statusMsg}</Card.Footer>
-			</Card>
+							<tfoot>
+								<tr>
+									<th>총</th>
+									<th>{paiedPrice}</th>
+									<th></th>
+								</tr>
+							</tfoot>
+						</Table>
+					</Card.Body>
+					<Card.Footer className="text-muted">{statusMsg}</Card.Footer>
+				</Card>
+			</Link>
 		)
 	}
 }

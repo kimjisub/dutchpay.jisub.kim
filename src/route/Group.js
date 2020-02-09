@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Textfield, IconToggle, Button } from 'react-mdl'
+import { Table, Card } from 'react-bootstrap'
 import { firestore } from '../firebase'
-import MagicGrid from 'react-magic-grid'
 import ExpenditureCard from '../components/ExpenditureCard'
 import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
@@ -35,6 +35,7 @@ class App extends Component {
 			.collection('DutchPay')
 			.doc(this.info.groupId)
 			.collection('Receipts')
+			.orderBy('timestamp', 'asc')
 			.onSnapshot(querySnapshot => {
 				querySnapshot.docChanges().forEach(change => {
 					let id = change.doc.id
@@ -73,7 +74,15 @@ class App extends Component {
 
 		for (let key in this.state.receipts) {
 			let receipt = this.state.receipts[key]
-			receipts.push(<ReceiptCard key={key} receipt={receipt} members={this.state.group.members} to={`/${this.info.groupId}/receipt/${key}`} />)
+			receipts.push(
+				<ReceiptCard
+					key={key}
+					receipt={receipt}
+					members={this.state.group.members}
+					to={`/${this.info.groupId}/receipt/${key}`}
+					editMode={this.state.editMode}
+				/>
+			)
 		}
 
 		let expenditure = calcExpenditure(this.state.group.members, this.state.receipts)
@@ -105,7 +114,6 @@ class App extends Component {
 					</h1>
 					<p>
 						<IconToggle
-							id="italic"
 							name={this.state.editMode ? 'check' : 'edit'}
 							onChange={e => {
 								if (this.state.editMode) this.saveGroupSetting()
@@ -132,14 +140,16 @@ class App extends Component {
 							<SettlementCard members={this.state.group.members} settlement={settlement} />
 						</aside>
 						<main id="receipts">
-							<MagicGrid items={receipts.length + 1} id="magicGrid">
-								<Link to={`/${this.info.groupId}/receipt/new`}>
-									<Button raised ripple>
-										추가하기
-									</Button>
-								</Link>
+							<div>
 								{receipts}
-							</MagicGrid>
+								{this.state.editMode ? (
+									<Link to={`/${this.info.groupId}/receipt/new`}>
+										<Card className="receipt-card">
+											<Card.Body>추가하기</Card.Body>
+										</Card>
+									</Link>
+								) : null}
+							</div>
 						</main>
 					</section>
 					<div className="empty"></div>

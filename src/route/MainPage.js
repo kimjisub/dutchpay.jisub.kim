@@ -29,11 +29,8 @@ class MainPage extends Component {
 							.add({
 								name: '',
 								members: [],
-								passwd: '',
-								timestamp: {
-									nanoseconds: 0,
-									seconds: parseInt(new Date().getTime() / 1000)
-								}
+								adminUid: '',
+								timestamp: new Date()
 							})
 							.then(docRef => {
 								this.setState({ redirect: `/${docRef.id}` })
