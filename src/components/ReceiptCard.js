@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Table, Card } from 'react-bootstrap'
-import { IconButton } from 'react-mdl'
 import './ReceiptCard.css'
 
 class App extends Component {

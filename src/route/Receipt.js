@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import queryString from 'query-string'
 import { OverlayTrigger, Popover, Card, ListGroup } from 'react-bootstrap'
 import { firestore } from '../firebase'
-import { Textfield, Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox } from 'react-mdl'
+import { Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox } from 'react-mdl'
 import './Receipt.css'
 import EditableTextView from '../components/EditableTextView'
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Card, ListGroup, OverlayTrigger, Tooltip } from 'react-bootstrap'
-import { Textfield, Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox } from 'react-mdl'
+import { Card, ListGroup } from 'react-bootstrap'
+import { Textfield, Button, IconButton, Menu, MenuItem } from 'react-mdl'
 import { bigNumberToCode } from '../algorithm'
 import './ExpenditureCard.css'
 

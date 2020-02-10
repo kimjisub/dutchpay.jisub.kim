@@ -1,8 +1,5 @@
 import React, { Component } from 'react'
-import { Card, ListGroup } from 'react-bootstrap'
-import { Textfield, IconToggle, Button, IconButton } from 'react-mdl'
 import './EditableTextView.css'
-import { bigNumberToCode } from '../algorithm'
 
 class App extends Component {
 	render() {
