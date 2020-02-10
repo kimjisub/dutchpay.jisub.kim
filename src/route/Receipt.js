@@ -244,7 +244,7 @@ class App extends Component {
 							let id = data[0]
 							let name = data[1]
 
-							return (
+							return this.state.receipt.payers[id] === undefined ? (
 								<ListGroup.Item
 									key={id}
 									action
@@ -255,7 +255,7 @@ class App extends Component {
 									}}>
 									{name}
 								</ListGroup.Item>
-							)
+							) : null
 						})}
 					</ListGroup>
 				</Popover.Content>
