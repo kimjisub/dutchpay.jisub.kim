@@ -218,10 +218,11 @@ class App extends Component {
 							<td>
 								<Button
 									onClick={() => {
+										let buyers = Object.keys(this.state.members)
 										let s = Object.assign({}, this.state)
 										s.receipt.items.push({
 											name: '',
-											buyers: [],
+											buyers,
 											price: 0
 										})
 										this.setState(s)
