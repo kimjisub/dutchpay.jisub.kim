@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import queryString from 'query-string'
-import { OverlayTrigger, Popover, Card, ListGroup } from 'react-bootstrap'
+import { OverlayTrigger, Popover, Card, ListGroup, Spinner } from 'react-bootstrap'
 import { firestore } from '../firebase'
 import { Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox } from 'react-mdl'
 import './Receipt.css'
@@ -96,7 +96,14 @@ class App extends Component {
 	}
 
 	render() {
-		if (!this.state.receipt || !this.state.members) return <div>로딩중</div>
+		if (!this.state.receipt || !this.state.members)
+			return (
+				<div className="popup">
+					<div>
+						<Spinner animation="border" />
+					</div>
+				</div>
+			)
 
 		const memberPopup = (
 			<Popover id="popover-basic">
@@ -136,12 +143,12 @@ class App extends Component {
 		}
 
 		const tab1 = (
-			<table>
+			<table className="receipt-table">
 				<thead>
 					<tr>
 						<th>상품명</th>
-						<th>가격</th>
 						<th>인원</th>
+						<th>가격</th>
 						{this.state.editMode ? <th>삭제</th> : null}
 					</tr>
 				</thead>
@@ -159,20 +166,6 @@ class App extends Component {
 										label="상품명"
 										text={item.name}
 										editMode={this.state.editMode}
-										style={{ width: '200px' }}
-									/>
-								</td>
-								<td>
-									<EditableTextView
-										onChange={e => {
-											let s = Object.assign({}, this.state)
-											s.receipt.items[i].price = parseInt(e.target.value)
-											this.setState(s)
-										}}
-										label="가격"
-										text={item.price}
-										editMode={this.state.editMode}
-										style={{ width: '200px' }}
 									/>
 								</td>
 								<td>
@@ -189,6 +182,19 @@ class App extends Component {
 										</label>
 									</OverlayTrigger>
 								</td>
+								<td>
+									<EditableTextView
+										onChange={e => {
+											let s = Object.assign({}, this.state)
+											s.receipt.items[i].price = parseInt(e.target.value)
+											this.setState(s)
+										}}
+										label="가격"
+										text={item.price}
+										editMode={this.state.editMode}
+									/>
+								</td>
+
 								{this.state.editMode ? (
 									<td>
 										<IconButton name="delete" id={'item-delete-' + i} />
@@ -211,6 +217,7 @@ class App extends Component {
 				<tfoot>
 					<tr>
 						<th>총</th>
+						<td></td>
 						<td>{totalPrice}</td>
 					</tr>
 					{this.state.editMode ? (
@@ -269,7 +276,7 @@ class App extends Component {
 		}
 
 		const tab2 = (
-			<table>
+			<table className="payer-table">
 				<thead>
 					<tr>
 						<th>결제자</th>
@@ -343,73 +350,75 @@ class App extends Component {
 		)
 
 		return (
-			<div className="popup-background">
-				<Card className="popup" open={true} style={{ minWidth: '60%', width: '400px' }}>
-					<div className="title">
-						<EditableTextView
-							onChange={e => {
-								let s = Object.assign({}, this.state)
-								s.receipt.name = e.target.value
-								this.setState(s)
-							}}
-							label="영수증 이름"
-							editMode={this.state.editMode}
-							text={this.state.receipt.name}
-							style={{ width: '200px' }}
-						/>
-					</div>
-					<div className="content">
-						<Tabs activeTab={this.state.tab} onChange={tab => this.setState({ tab })} ripple>
-							<Tab>영수증</Tab>
-							<Tab>결제</Tab>
-						</Tabs>
-						<section>{this.state.tab === 0 ? tab1 : tab2}</section>
-					</div>
+			<div className="popup">
+				<div>
+					<Card className="card">
+						<div className="title">
+							<EditableTextView
+								onChange={e => {
+									let s = Object.assign({}, this.state)
+									s.receipt.name = e.target.value
+									this.setState(s)
+								}}
+								label="영수증 이름"
+								editMode={this.state.editMode}
+								text={this.state.receipt.name}
+								style={{ width: '200px' }}
+							/>
+						</div>
+						<div className="content">
+							<Tabs activeTab={this.state.tab} onChange={tab => this.setState({ tab })} ripple>
+								<Tab>영수증</Tab>
+								<Tab>결제</Tab>
+							</Tabs>
+							<section>{this.state.tab === 0 ? tab1 : tab2}</section>
+						</div>
 
-					{this.state.editMode ? (
-						<div className="action">
-							{this.info.receiptId !== 'new'
-								? [
-										<Button type="button" id="delete" key="button">
-											삭제
-										</Button>,
-										<Menu target="delete" key="menu">
-											<MenuItem
-												onClick={() => {
-													this.delete()
-												}}>
+						{this.state.editMode ? (
+							<div className="action">
+								{this.info.receiptId !== 'new'
+									? [
+											<Button type="button" id="delete" key="button">
 												삭제
-											</MenuItem>
-										</Menu>
-								  ]
-								: null}
-							<Button
-								type="button"
-								onClick={() => {
-									this.updateToFB(this.state.receipt)
-								}}>
-								저장
-							</Button>
-							<Button
-								type="button"
-								onClick={() => {
-									this.close()
-								}}>
-								취소
-							</Button>
-						</div>
-					) : (
-						<div className="action">
-							<Button
-								type="button"
-								onClick={() => {
-									this.close()
-								}}>
-								확인
-							</Button>
-						</div>
-					)}
-				</Card>
+											</Button>,
+											<Menu target="delete" key="menu">
+												<MenuItem
+													onClick={() => {
+														this.delete()
+													}}>
+													삭제
+												</MenuItem>
+											</Menu>
+									  ]
+									: null}
+								<Button
+									type="button"
+									onClick={() => {
+										this.updateToFB(this.state.receipt)
+									}}>
+									저장
+								</Button>
+								<Button
+									type="button"
+									onClick={() => {
+										this.close()
+									}}>
+									취소
+								</Button>
+							</div>
+						) : (
+							<div className="action">
+								<Button
+									type="button"
+									onClick={() => {
+										this.close()
+									}}>
+									확인
+								</Button>
+							</div>
+						)}
+					</Card>
+				</div>
 			</div>
 		)
 	}
