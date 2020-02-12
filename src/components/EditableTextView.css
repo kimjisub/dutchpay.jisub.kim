@@ -1,6 +1,7 @@
 .editable-textview {
 	font-size: inherit;
 	margin: 0px;
+	width: inherit;
 }
 
 .editable-textview input {
@@ -11,6 +12,7 @@
 	padding: 0;
 	transition: 0.3s;
 	font-size: inherit;
+	width: 100%;
 }
 .editable-textview input:focus {
 	border-bottom: 1px solid #000a;

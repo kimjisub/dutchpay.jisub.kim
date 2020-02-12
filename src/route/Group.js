@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { Textfield, IconToggle, Button, IconButton } from 'react-mdl'
-import { Table, Card } from 'react-bootstrap'
+import { IconButton } from 'react-mdl'
+import { Card, Spinner } from 'react-bootstrap'
+import Masonry from 'react-masonry-css'
+
 import queryString from 'query-string'
 import { firestore } from '../firebase'
 import ExpenditureCard from '../components/ExpenditureCard'
@@ -40,7 +42,7 @@ class App extends Component {
 			.collection('DutchPay')
 			.doc(this.info.groupId)
 			.collection('Receipts')
-			.orderBy('timestamp', 'asc')
+			.orderBy('timestamp', 'desc')
 			.onSnapshot(querySnapshot => {
 				querySnapshot.docChanges().forEach(change => {
 					let id = change.doc.id
@@ -81,7 +83,14 @@ class App extends Component {
 	}
 
 	render() {
-		if (!this.state.group) return <div>로딩중</div>
+		if (!this.state.group)
+			return (
+				<div className="popup">
+					<div>
+						<Spinner animation="border" />
+					</div>
+				</div>
+			)
 
 		let receipts = []
 
@@ -133,7 +142,7 @@ class App extends Component {
 				</header>
 				<div id="content">
 					<div className="empty"></div>
-					<section>
+					<section id="section">
 						<aside id="dashboard">
 							<ExpenditureCard
 								expenditure={expenditure}
@@ -149,16 +158,16 @@ class App extends Component {
 							<SettlementCard members={this.state.group.members} settlement={settlement} />
 						</aside>
 						<main id="receipts">
-							<div>
+							{this.state.editMode ? (
+								<Link to={`/${this.info.groupId}/receipt/new?edit=true`}>
+									<Card className="add-card">
+										<Card.Body>추가하기</Card.Body>
+									</Card>
+								</Link>
+							) : null}
+							<Masonry breakpointCols={{ default: 2, 1100: 1 }} className="my-masonry-grid" columnClassName="my-masonry-grid_column">
 								{receipts}
-								{this.state.editMode ? (
-									<Link to={`/${this.info.groupId}/receipt/new?edit=true`}>
-										<Card className="receipt-card">
-											<Card.Body>추가하기</Card.Body>
-										</Card>
-									</Link>
-								) : null}
-							</div>
+							</Masonry>
 						</main>
 					</section>
 					<div className="empty"></div>

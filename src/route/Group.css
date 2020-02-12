@@ -43,6 +43,7 @@ header h1 {
 #content > section {
 	flex-grow: 0;
 	display: flex;
+	margin: 10px;
 }
 
 #dashboard {
@@ -52,11 +53,22 @@ header h1 {
 
 #receipts {
 	display: block;
-	margin-left: 20px;
 	min-height: 100vh;
 }
 
-#receipts > div {
-	display: flex;
-	flex-direction: column-reverse;
+.add-card {
+	width: 100%;
+}
+
+@media (max-width: 700px) {
+	#content {
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+	}
+
+	#section {
+		display: flex;
+		flex-direction: column;
+	}
 }

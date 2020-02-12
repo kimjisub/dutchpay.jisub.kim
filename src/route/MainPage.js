@@ -25,7 +25,6 @@ class MainPage extends Component {
 							.add({
 								name: '',
 								members: [],
-								adminUid: '',
 								timestamp: new Date()
 							})
 							.then(docRef => {
