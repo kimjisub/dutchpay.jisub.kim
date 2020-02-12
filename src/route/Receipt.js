@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import queryString from 'query-string'
 import { OverlayTrigger, Popover, Card, ListGroup, Spinner } from 'react-bootstrap'
 import { firestore } from '../firebase'
-import { Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox } from 'react-mdl'
+import { Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox, Icon } from 'react-mdl'
 import './Receipt.css'
 import EditableTextView from '../components/EditableTextView'
 
@@ -147,9 +147,9 @@ class App extends Component {
 				<thead>
 					<tr>
 						<th>상품명</th>
-						<th>인원</th>
 						<th>가격</th>
-						{this.state.editMode ? <th>삭제</th> : null}
+						<th>인원</th>
+						{this.state.editMode ? <th></th> : null}
 					</tr>
 				</thead>
 				<tbody>
@@ -158,6 +158,7 @@ class App extends Component {
 							<tr key={'item-' + i}>
 								<td>
 									<EditableTextView
+										className="item-name"
 										onChange={e => {
 											let s = Object.assign({}, this.state)
 											s.receipt.items[i].name = e.target.value
@@ -169,21 +170,8 @@ class App extends Component {
 									/>
 								</td>
 								<td>
-									<OverlayTrigger rootClose trigger="click" placement="right" overlay={memberPopup}>
-										<label style={{ margin: 0 }}>
-											<IconButton
-												name="person"
-												ripple
-												onClick={() => {
-													this.setState({ itemIndex: i })
-												}}
-											/>
-											{this.state.receipt.items[i].buyers.length}
-										</label>
-									</OverlayTrigger>
-								</td>
-								<td>
 									<EditableTextView
+										className="item-price"
 										onChange={e => {
 											let s = Object.assign({}, this.state)
 											s.receipt.items[i].price = parseInt(e.target.value)
@@ -193,6 +181,18 @@ class App extends Component {
 										text={item.price}
 										editMode={this.state.editMode}
 									/>
+								</td>
+								<td>
+									<OverlayTrigger rootClose trigger="click" placement="right" overlay={memberPopup}>
+										<label
+											style={{ margin: 0 }}
+											onClick={() => {
+												this.setState({ itemIndex: i })
+											}}>
+											<Icon name="person" />
+											{this.state.receipt.items[i].buyers.length}
+										</label>
+									</OverlayTrigger>
 								</td>
 
 								{this.state.editMode ? (
@@ -213,16 +213,9 @@ class App extends Component {
 							</tr>
 						)
 					})}
-				</tbody>
-				<tfoot>
-					<tr>
-						<th>총</th>
-						<td></td>
-						<td>{totalPrice}</td>
-					</tr>
 					{this.state.editMode ? (
-						<tr style={{ padding: 0 }}>
-							<td>
+						<tr>
+							<td colSpan="4">
 								<Button
 									onClick={() => {
 										let buyers = Object.keys(this.state.members)
@@ -234,11 +227,21 @@ class App extends Component {
 										})
 										this.setState(s)
 									}}>
+									<Icon name="add_circle_outline" style={{ fontSize: '1.3rem' }}>
+										추가
+									</Icon>
 									추가
 								</Button>
 							</td>
 						</tr>
 					) : null}
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>총</th>
+						<td></td>
+						<td>{totalPrice}</td>
+					</tr>
 				</tfoot>
 			</table>
 		)
@@ -281,7 +284,7 @@ class App extends Component {
 					<tr>
 						<th>결제자</th>
 						<th>가격</th>
-						{this.state.editMode ? <th>삭제</th> : null}
+						{this.state.editMode ? <th></th> : null}
 					</tr>
 				</thead>
 				<tbody>
@@ -328,23 +331,25 @@ class App extends Component {
 							</tr>
 						)
 					})}
+					{this.state.editMode ? (
+						<tr>
+							<td colSpan="3">
+								<OverlayTrigger rootClose trigger="click" placement="right" overlay={payerPopup}>
+									<label style={{ margin: 0 }}>
+										<Button ripple>
+											<Icon name="add">추가</Icon>
+										</Button>
+									</label>
+								</OverlayTrigger>
+							</td>
+						</tr>
+					) : null}
 				</tbody>
 				<tfoot>
 					<tr>
 						<th>총</th>
 						<td>{totalPaied}</td>
 					</tr>
-					{this.state.editMode ? (
-						<tr style={{ padding: 0 }}>
-							<td>
-								<OverlayTrigger rootClose trigger="click" placement="right" overlay={payerPopup}>
-									<label style={{ margin: 0 }}>
-										<Button ripple>추가</Button>
-									</label>
-								</OverlayTrigger>
-							</td>
-						</tr>
-					) : null}
 				</tfoot>
 			</table>
 		)
@@ -353,70 +358,67 @@ class App extends Component {
 			<div className="popup">
 				<div>
 					<Card className="card">
-						<div className="title">
-							<EditableTextView
-								onChange={e => {
-									let s = Object.assign({}, this.state)
-									s.receipt.name = e.target.value
-									this.setState(s)
-								}}
-								label="영수증 이름"
-								editMode={this.state.editMode}
-								text={this.state.receipt.name}
-								style={{ width: '200px' }}
-							/>
-						</div>
-						<div className="content">
-							<Tabs activeTab={this.state.tab} onChange={tab => this.setState({ tab })} ripple>
-								<Tab>영수증</Tab>
-								<Tab>결제</Tab>
-							</Tabs>
-							<section>{this.state.tab === 0 ? tab1 : tab2}</section>
-						</div>
+						<Card.Body>
+							<Card.Title>
+								<div className="title">
+									<EditableTextView
+										onChange={e => {
+											let s = Object.assign({}, this.state)
+											s.receipt.name = e.target.value
+											this.setState(s)
+										}}
+										label="영수증 이름"
+										editMode={this.state.editMode}
+										text={this.state.receipt.name}
+										style={{ width: '200px' }}
+									/>
+								</div>
+							</Card.Title>
+							<div>
+								<Tabs activeTab={this.state.tab} onChange={tab => this.setState({ tab })} ripple>
+									<Tab>영수증</Tab>
+									<Tab>결제</Tab>
+								</Tabs>
+								<section className="tab-page">{this.state.tab === 0 ? tab1 : tab2}</section>
+							</div>
 
-						{this.state.editMode ? (
 							<div className="action">
-								{this.info.receiptId !== 'new'
-									? [
-											<Button type="button" id="delete" key="button">
-												삭제
-											</Button>,
-											<Menu target="delete" key="menu">
-												<MenuItem
-													onClick={() => {
-														this.delete()
-													}}>
+								<div>
+									{this.state.editMode && this.info.receiptId !== 'new'
+										? [
+												<IconButton id="delete" key="button" name="delete">
 													삭제
-												</MenuItem>
-											</Menu>
-									  ]
-									: null}
-								<Button
-									type="button"
-									onClick={() => {
-										this.updateToFB(this.state.receipt)
-									}}>
-									저장
-								</Button>
-								<Button
-									type="button"
-									onClick={() => {
-										this.close()
-									}}>
-									취소
-								</Button>
+												</IconButton>,
+												<Menu target="delete" key="menu">
+													<MenuItem
+														onClick={() => {
+															this.delete()
+														}}>
+														삭제
+													</MenuItem>
+												</Menu>
+										  ]
+										: null}
+								</div>
+								<div></div>
+								<div>
+									<Button
+										onClick={() => {
+											this.close()
+										}}>
+										{this.state.editMode ? '취소' : '확인'}
+									</Button>
+									{this.state.editMode ? (
+										<Button
+											onClick={() => {
+												this.updateToFB(this.state.receipt)
+											}}>
+											저장
+										</Button>
+									) : null}
+								</div>
 							</div>
-						) : (
-							<div className="action">
-								<Button
-									type="button"
-									onClick={() => {
-										this.close()
-									}}>
-									확인
-								</Button>
-							</div>
-						)}
+						</Card.Body>
 					</Card>
 				</div>
 			</div>

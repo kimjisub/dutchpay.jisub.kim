@@ -160,7 +160,7 @@ class App extends Component {
 						<main id="receipts">
 							{this.state.editMode ? (
 								<Link to={`/${this.info.groupId}/receipt/new?edit=true`}>
-									<Card className="receipt-card">
+									<Card className="add-card">
 										<Card.Body>추가하기</Card.Body>
 									</Card>
 								</Link>

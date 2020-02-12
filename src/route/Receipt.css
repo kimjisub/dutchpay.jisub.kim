@@ -1,14 +1,11 @@
 .popup .card {
 	display: inline-block;
-	/* min-width: 60%; */
-	width: 300px;
-}
-.content {
-	padding: 16px;
-}
+	width: 60%;
+	min-width: 300px;
+	max-width: 500px;
 
-input {
-	width: 80px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .mdl-list li {
@@ -16,26 +13,24 @@ input {
 	display: flex;
 }
 
+.action {
+	display: inline-flex;
+	width: 100%;
+}
+
+.action :nth-child(2) {
+	flex-grow: 1;
+}
+
+.item-name {
+	width: 100%;
+	min-width: 30px;
+}
+
 table {
 	width: 100%;
 }
 
-.receipt-table tr > *:nth-child(1) {
-	text-align: left;
-}
-
-.receipt-table tr > *:nth-child(2) {
-	text-align: right;
-}
-
-.receipt-table tr > *:nth-child(3) {
-	text-align: right;
-}
-
-.payer-table tr > *:nth-child(1) {
-	text-align: left;
-}
-
-.payer-table tr > *:nth-child(2) {
-	text-align: right;
+table .material-icons {
+	font-size: 1rem;
 }
