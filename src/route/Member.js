@@ -102,7 +102,7 @@ class App extends Component {
 	render() {
 		if (!this.state.group)
 			return (
-				<div className="Member">
+				<div className="Member popup">
 					<div>
 						<Spinner animation="border" />
 					</div>

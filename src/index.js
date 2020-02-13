@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 import * as serviceWorker from './serviceWorker'
 import { firestore } from './firebase'
 
-import './index.css'
+import './index.scss'
 import MainPage from './route/MainPage'
 import Group from './route/Group'
 import Receipt from './route/Receipt'

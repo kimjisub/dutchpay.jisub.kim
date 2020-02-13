@@ -61,20 +61,20 @@ code {
 	vertical-align: middle;
 	animation-duration: 0.3s;
 	animation-name: popup-background;
-}
 
-@keyframes popup-background {
-	from {
-		background-color: #0000;
+	@keyframes popup-background {
+		from {
+			background-color: #0000;
+		}
+		to {
+			background-color: #0003;
+		}
 	}
-	to {
-		background-color: #0003;
-	}
-}
 
-.popup > * {
-	display: table-cell;
-	vertical-align: middle;
+	> * {
+		display: table-cell;
+		vertical-align: middle;
+	}
 }
 
 .tab-page {

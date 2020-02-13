@@ -354,7 +354,7 @@ class App extends Component {
 		)
 
 		return (
-			<div className="Receipt">
+			<div className="Receipt popup">
 				<div>
 					<Card className="card">
 						<Card.Body>
