@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { IconButton } from 'react-mdl'
-import { Card, Spinner } from 'react-bootstrap'
+import { Card, Spinner, Navbar } from 'react-bootstrap'
 import Masonry from 'react-masonry-css'
 
 import queryString from 'query-string'
@@ -114,10 +114,13 @@ class App extends Component {
 		return (
 			<div className="group">
 				<header>
+					<Navbar>
+						<Navbar.Brand></Navbar.Brand>
+					</Navbar>
 					<p>
-						<a href="https://dutchpay.kimjisub.me">Dutchpay.kimjisub.me</a>
+						<a href="https://dutchpay.kimjisub.me">Dutchpay</a>
 					</p>
-					<h1>
+					<h3>
 						<EditableTextView
 							label="모임 이름"
 							text={this.state.group.name}
@@ -128,7 +131,7 @@ class App extends Component {
 								this.setState(s)
 							}}
 						/>
-					</h1>
+					</h3>
 					<p>
 						<IconButton
 							ripple
@@ -152,6 +155,9 @@ class App extends Component {
 									s.group.members = members
 									this.setState(s)
 									this.saveGroupSetting()
+								}}
+								onMemberClick={id => {
+									this.props.history.push({ pathname: '/' + this.info.groupId + '/member/' + id, search: this.state.editMode ? '?edit=true' : '' })
 								}}
 								editMode={this.state.editMode}
 							/>

@@ -8,12 +8,14 @@ import './index.css'
 import MainPage from './route/MainPage'
 import Group from './route/Group'
 import Receipt from './route/Receipt'
+import Member from './route/Member'
 
 window.$fs = firestore()
 
 ReactDOM.render(
 	<Router>
 		<Route path="/:groupId/receipt/:receiptId" component={Receipt} />
+		<Route path="/:groupId/member/:memberId" component={Member} />
 		<Route path="/:groupId" component={Group} />
 		<Route exact path="/" component={MainPage} />
 	</Router>,

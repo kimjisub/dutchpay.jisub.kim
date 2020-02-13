@@ -32,7 +32,13 @@ class App extends Component {
 							let spend = this.props.expenditure[id].spend
 							let paied = this.props.expenditure[id].paied
 							return (
-								<ListGroup.Item className="list" key={id} action={!this.props.editMode}>
+								<ListGroup.Item
+									className="list"
+									key={id}
+									action={!this.props.editMode}
+									onClick={() => {
+										if (!this.props.editMode) this.props.onMemberClick(id)
+									}}>
 									<div className="item">
 										<p>{name}</p>
 										<p>{spend}</p>
