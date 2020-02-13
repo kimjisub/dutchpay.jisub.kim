@@ -42,7 +42,7 @@ class App extends Component {
 			.collection('DutchPay')
 			.doc(this.info.groupId)
 			.collection('Receipts')
-			.orderBy('timestamp', 'desc')
+			.orderBy('timestamp', 'asc')
 			.onSnapshot(querySnapshot => {
 				querySnapshot.docChanges().forEach(change => {
 					let id = change.doc.id
@@ -106,6 +106,7 @@ class App extends Component {
 				/>
 			)
 		}
+		receipts.reverse()
 
 		let expenditure = calcExpenditure(this.state.group.members, this.state.receipts)
 
