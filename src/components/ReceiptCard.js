@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Table, Card } from 'react-bootstrap'
-import './ReceiptCard.css'
+import './ReceiptCard.scss'
 
 class App extends Component {
 	render() {
@@ -40,7 +40,7 @@ class App extends Component {
 		else if (diff < 0) statusMsg = `${-diff}원 초과결제`
 
 		return (
-			<Link to={this.props.to}>
+			<Link to={this.props.to} className="ReceiptCard">
 				<Card className="receipt-card">
 					<Card.Body>
 						<Card.Title>{this.props.receipt.name}</Card.Title>

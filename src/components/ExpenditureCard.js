@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Card, ListGroup } from 'react-bootstrap'
 import { Textfield, Button, IconButton, Menu, MenuItem } from 'react-mdl'
 import { bigNumberToCode } from '../algorithm'
-import './ExpenditureCard.css'
+import './ExpenditureCard.scss'
 
 class App extends Component {
 	constructor() {
@@ -14,7 +14,7 @@ class App extends Component {
 
 	render() {
 		return (
-			<Card shadow={20} className="card">
+			<Card shadow={20} className="ExpenditureCard card">
 				<Card.Body>
 					<Card.Title>지출 내역</Card.Title>
 					<ListGroup className="list-group-flush" variant="flush">

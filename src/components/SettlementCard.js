@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { Card, ListGroup } from 'react-bootstrap'
+import './SettlementCard.scss'
 
 class App extends Component {
 	render() {
 		return (
-			<Card shadow={0} className="card">
+			<Card shadow={0} className="SettlementCard card">
 				<Card.Body>
 					<Card.Title>정산</Card.Title>
 
