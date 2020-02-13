@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Button, Snackbar } from 'react-mdl'
 
-import './MainPage.css'
+import './MainPage.scss'
 import { firestore } from '../firebase'
 
 class MainPage extends Component {
@@ -15,7 +15,7 @@ class MainPage extends Component {
 
 	render() {
 		return (
-			<div>
+			<div className="MainPage">
 				<Button
 					raised
 					ripple

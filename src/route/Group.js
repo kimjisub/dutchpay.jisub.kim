@@ -10,7 +10,7 @@ import ExpenditureCard from '../components/ExpenditureCard'
 import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
 import EditableTextView from '../components/EditableTextView'
-import './Group.css'
+import './Group.scss'
 import { calcExpenditure, calcSettlement } from '../algorithm'
 
 class App extends Component {
@@ -112,7 +112,7 @@ class App extends Component {
 		let settlement = calcSettlement(expenditure)
 
 		return (
-			<div className="group">
+			<div className="Group">
 				<header>
 					<Navbar>
 						<Navbar.Brand></Navbar.Brand>

@@ -3,7 +3,7 @@ import queryString from 'query-string'
 import { OverlayTrigger, Popover, Card, ListGroup, Spinner } from 'react-bootstrap'
 import { firestore } from '../firebase'
 import { Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox, Icon } from 'react-mdl'
-import './Receipt.css'
+import './Receipt.scss'
 import EditableTextView from '../components/EditableTextView'
 
 class App extends Component {
@@ -354,7 +354,7 @@ class App extends Component {
 		)
 
 		return (
-			<div className="popup">
+			<div className="Receipt">
 				<div>
 					<Card className="card">
 						<Card.Body>
