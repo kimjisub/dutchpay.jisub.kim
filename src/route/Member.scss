@@ -7,32 +7,31 @@
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
-	}
 
-	.mdl-list li {
-		text-align: center;
-		display: flex;
-	}
+		ol {
+			text-align: left;
+			> li {
+				&:hover {
+					background: #f8f9fa;
+				}
+				> ol {
+					> li {
+						&:hover {
+							background: #e9ecef;
+						}
+					}
+				}
+			}
 
-	.action {
-		display: inline-flex;
-		width: 100%;
-	}
-
-	.action :nth-child(2) {
-		flex-grow: 1;
-	}
-
-	.item-name {
-		width: 100%;
-		min-width: 30px;
-	}
-
-	table {
-		width: 100%;
-	}
-
-	table .material-icons {
-		font-size: 1rem;
+			div {
+				display: flex;
+				p {
+					margin: 0;
+					&:first-child {
+						flex-grow: 1;
+					}
+				}
+			}
+		}
 	}
 }

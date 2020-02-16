@@ -16,12 +16,15 @@ class App extends Component {
 							let value = data.value
 
 							return (
-								<ListGroup.Item className="list" key={i}>
-									<div className="item">
-										<p>{this.props.members[from]}</p>(이)가
-										<p>{this.props.members[to]}</p>에게
-										<p>{value}</p>원
-									</div>
+								<ListGroup.Item className="item" key={i}>
+									<p>
+										{this.props.members[from]}
+										<p>(이)가</p>
+										{this.props.members[to]}
+										<p>에게</p>
+										{value}
+										<p>원</p>
+									</p>
 								</ListGroup.Item>
 							)
 						})}

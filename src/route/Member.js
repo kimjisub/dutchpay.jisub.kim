@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import queryString from 'query-string'
-import { OverlayTrigger, Popover, Card, ListGroup, Spinner } from 'react-bootstrap'
+import { Card, Spinner } from 'react-bootstrap'
 import { firestore } from '../firebase'
-import { Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox, Icon } from 'react-mdl'
+import { Button, IconButton, Menu, MenuItem } from 'react-mdl'
 import './Member.scss'
-import EditableTextView from '../components/EditableTextView'
+import { calcSingleExpenditure } from '../algorithm'
 
 class App extends Component {
 	constructor({ match, location }) {
@@ -35,7 +35,7 @@ class App extends Component {
 			.collection('DutchPay')
 			.doc(this.info.groupId)
 			.collection('Receipts')
-			.orderBy('timestamp', 'desc')
+			.orderBy('timestamp', 'asc')
 			.onSnapshot(querySnapshot => {
 				querySnapshot.docChanges().forEach(change => {
 					let id = change.doc.id
@@ -60,41 +60,6 @@ class App extends Component {
 			})
 	}
 
-	updateToFB(receipt) {
-		if (this.info.receiptId !== 'new')
-			this.fs
-				.collection('DutchPay')
-				.doc(this.info.groupId)
-				.collection('Receipts')
-				.doc(this.info.receiptId)
-				.set(receipt)
-				.then(() => {
-					this.props.history.push({ pathname: `/${this.info.groupId}`, search: this.state.editMode ? '?edit=true' : '' })
-				})
-		else
-			this.fs
-				.collection('DutchPay')
-				.doc(this.info.groupId)
-				.collection('Receipts')
-				.add(receipt)
-				.then(() => {
-					this.close()
-				})
-	}
-
-	delete() {
-		if (this.info.receiptId !== 'new')
-			this.fs
-				.collection('DutchPay')
-				.doc(this.info.groupId)
-				.collection('Receipts')
-				.doc(this.info.receiptId)
-				.delete()
-				.then(() => {
-					this.close()
-				})
-	}
-
 	close() {
 		this.props.history.push({ pathname: `/${this.info.groupId}`, search: this.state.editMode ? '?edit=true' : '' })
 	}
@@ -109,7 +74,88 @@ class App extends Component {
 				</div>
 			)
 
-		return <div></div>
+		let singleExpenditure = calcSingleExpenditure(this.info.memberId, this.state.receipts)
+		return (
+			<div className="Member popup">
+				<div>
+					<Card className="card">
+						<Card.Body>
+							<Card.Title>{this.state.group.members[this.info.memberId]}님의 지출 내역</Card.Title>
+
+							<ol>
+								{singleExpenditure.map((receipt, i) => {
+									return (
+										<li key={i}>
+											<div>
+												<p>{receipt.name}</p>
+												<p>{receipt.totalPrice}</p>
+											</div>
+
+											<ol>
+												{receipt.items.map((item, i) => {
+													return (
+														<li key={i}>
+															<div>
+																<p>{item.name}</p>
+																<p>{item.price}</p>
+															</div>
+														</li>
+													)
+												})}
+											</ol>
+										</li>
+									)
+								})}
+							</ol>
+							<div>
+								{/* <Tabs activeTab={this.state.tab} onChange={tab => this.setState({ tab })} ripple>
+									<Tab>영수증</Tab>
+									<Tab>결제</Tab>
+								</Tabs>
+								<section className="tab-page">{this.state.tab === 0 ? tab1 : tab2}</section> */}
+							</div>
+
+							<div className="action">
+								<div>
+									{this.state.editMode && this.info.receiptId !== 'new'
+										? [
+												<IconButton id="delete" key="button" name="delete">
+													삭제
+												</IconButton>,
+												<Menu target="delete" key="menu">
+													<MenuItem
+														onClick={() => {
+															this.delete()
+														}}>
+														삭제
+													</MenuItem>
+												</Menu>
+										  ]
+										: null}
+								</div>
+								<div></div>
+								<div>
+									<Button
+										onClick={() => {
+											this.close()
+										}}>
+										{this.state.editMode ? '취소' : '확인'}
+									</Button>
+									{this.state.editMode ? (
+										<Button
+											onClick={() => {
+												this.updateToFB(this.state.receipt)
+											}}>
+											저장
+										</Button>
+									) : null}
+								</div>
+							</div>
+						</Card.Body>
+					</Card>
+				</div>
+			</div>
+		)
 	}
 }
 

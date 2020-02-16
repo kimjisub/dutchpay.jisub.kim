@@ -1,10 +1,15 @@
 .SettlementCard {
 	.item {
-		display: flex;
-		flex-direction: row;
-	}
-	.item p {
-		flex-grow: 1;
-		margin: 0;
+		text-align: center;
+		p {
+			font-size: 1.1rem;
+			margin: 0;
+			p {
+				display: inline;
+				color: #495057;
+				margin: 0px 5px 0px 0px;
+				font-size: 0.8rem;
+			}
+		}
 	}
 }

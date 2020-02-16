@@ -7,15 +7,26 @@
 		text-decoration: none;
 	}
 
+	.h5 {
+		margin: 0;
+	}
+
 	table {
 		/* border: 1px solid gray; */
 		width: 100%;
-	}
+		max-width: 100%;
 
-	table thead {
-		font-size: 1.1rem;
-		font-weight: bold;
-		border-bottom: 1px solid gray;
+		thead {
+			font-size: 1.1rem;
+			font-weight: bold;
+			border-bottom: 1px solid gray;
+		}
+
+		td {
+			white-space: nowrap;
+			overflow: hidden;
+			font-size: 1rem;
+		}
 	}
 
 	table .line {

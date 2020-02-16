@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Card, ListGroup } from 'react-bootstrap'
+import { Card } from 'react-bootstrap'
 import { Textfield, Button, IconButton, Menu, MenuItem } from 'react-mdl'
 import { bigNumberToCode } from '../algorithm'
 import './ExpenditureCard.scss'
@@ -17,35 +17,35 @@ class App extends Component {
 			<Card shadow={20} className="ExpenditureCard card">
 				<Card.Body>
 					<Card.Title>지출 내역</Card.Title>
-					<ListGroup className="list-group-flush" variant="flush">
-						<ListGroup.Item className="list">
-							<div className="item">
-								<p>이름</p>
-								<p>지출</p>
-								<p>결제</p>
-							</div>
-						</ListGroup.Item>
-						{Object.entries(this.props.members).map(data => {
-							let id = data[0]
-							let name = data[1]
+					<table>
+						<thead>
+							<tr>
+								<th>이름</th>
+								<th>지출</th>
+								<th>결제</th>
+								{this.props.editMode ? <th>삭제</th> : null}
+							</tr>
+						</thead>
+						<tbody>
+							{Object.entries(this.props.members).map(data => {
+								let id = data[0]
+								let name = data[1]
 
-							let spend = this.props.expenditure[id].spend
-							let paied = this.props.expenditure[id].paied
-							return (
-								<ListGroup.Item
-									className="list"
-									key={id}
-									action={!this.props.editMode}
-									onClick={() => {
-										if (!this.props.editMode) this.props.onMemberClick(id)
-									}}>
-									<div className="item">
-										<p>{name}</p>
-										<p>{spend}</p>
-										<p>{paied}</p>
+								let spend = this.props.expenditure[id].spend
+								let paied = this.props.expenditure[id].paied
+								return (
+									<tr
+										key={id}
+										action={!this.props.editMode}
+										onClick={() => {
+											if (!this.props.editMode) this.props.onMemberClick(id)
+										}}>
+										<td>{name}</td>
+										<td>{spend}</td>
+										<td>{paied}</td>
 										{this.props.editMode ? (
-											<p>
-												<IconButton name="delete" id={'member-delete-' + id} disabled={!(spend === 0 && paied === 0)} />
+											<td>
+												<IconButton name="close" id={'member-delete-' + id} disabled={!(spend === 0 && paied === 0)} />
 												<Menu target={'member-delete-' + id}>
 													<MenuItem
 														onClick={() => {
@@ -58,37 +58,42 @@ class App extends Component {
 														삭제
 													</MenuItem>
 												</Menu>
-											</p>
+											</td>
 										) : null}
-									</div>
-								</ListGroup.Item>
-							)
-						})}
-						{this.props.editMode ? (
-							<ListGroup.Item className="list">
-								<Textfield
-									className="mdl-textfield-small"
-									id="textfield-add-name"
-									label="이름"
-									value={this.state.addName}
-									onChange={e => {
-										this.setState({ addName: e.target.value })
-									}}
-									style={{ width: '100px' }}
-								/>
-								<Button
-									ripple
-									onClick={() => {
-										let members = Object.assign({}, this.props.members)
-										members[bigNumberToCode(new Date())] = this.state.addName
-										this.props.onMembersChange(members)
-										this.setState({ addName: '' })
-									}}>
-									추가
-								</Button>
-							</ListGroup.Item>
-						) : null}
-					</ListGroup>
+									</tr>
+								)
+							})}
+						</tbody>
+						<tfoot>
+							{this.props.editMode ? (
+								<tr>
+									<th colSpan="3">
+										<Textfield
+											className="mdl-textfield-small textfield-add-name"
+											label="이름"
+											value={this.state.addName}
+											onChange={e => {
+												this.setState({ addName: e.target.value })
+											}}
+										/>
+									</th>
+									<th>
+										<IconButton
+											ripple
+											name="add"
+											onClick={() => {
+												let members = Object.assign({}, this.props.members)
+												members[bigNumberToCode(new Date())] = this.state.addName
+												this.props.onMembersChange(members)
+												this.setState({ addName: '' })
+											}}>
+											추가
+										</IconButton>
+									</th>
+								</tr>
+							) : null}
+						</tfoot>
+					</table>
 				</Card.Body>
 			</Card>
 		)
