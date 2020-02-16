@@ -1,0 +1,23 @@
+.EditableTextView {
+	font-size: inherit;
+	margin: 0px;
+	width: inherit;
+
+	input {
+		outline: none;
+		border: none;
+		border-bottom: 1px solid #0004;
+		background-color: #0000;
+		padding: 0;
+		transition: 0.3s;
+		font-size: inherit;
+		width: 100%;
+	}
+	input:focus {
+		border-bottom: 1px solid #000a;
+	}
+
+	p {
+		font-size: inherit;
+	}
+}

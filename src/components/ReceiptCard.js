@@ -1,9 +1,16 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { Table, Card } from 'react-bootstrap'
-import './ReceiptCard.css'
+import { Card } from 'react-bootstrap'
+import './ReceiptCard.scss'
 
 class App extends Component {
+	constructor() {
+		super()
+		this.state = {
+			expend: true
+		}
+	}
+
 	render() {
 		let totalPrice = 0
 		let paiedPrice = 0
@@ -12,9 +19,9 @@ class App extends Component {
 			totalPrice += item.price
 			return (
 				<tr key={i}>
-					<th>{item.name}</th>
-					<th>{item.price}</th>
-					<th>{item.buyers.length}명</th>
+					<td>{item.name}</td>
+					<td>{item.price}</td>
+					<td>{item.buyers.length}명</td>
 				</tr>
 			)
 		})
@@ -25,9 +32,9 @@ class App extends Component {
 			paiedPrice += price
 			payerList.push(
 				<tr key={id}>
-					<th>{this.props.members[id]}</th>
-					<th>{price}</th>
-					<th></th>
+					<td>{this.props.members[id]}</td>
+					<td>{price}</td>
+					<td></td>
 				</tr>
 			)
 		}
@@ -40,49 +47,53 @@ class App extends Component {
 		else if (diff < 0) statusMsg = `${-diff}원 초과결제`
 
 		return (
-			<Link to={this.props.to}>
+			<Link to={this.props.to} className="ReceiptCard">
 				<Card className="receipt-card">
 					<Card.Body>
 						<Card.Title>{this.props.receipt.name}</Card.Title>
-						<Table size="sm" responsive borderless>
-							<thead>
-								<tr>
-									<th>이름</th>
-									<th>가격</th>
-									<th>구매 인원</th>
-								</tr>
-							</thead>
+						{this.state.expend
+							? [
+									<table responsive borderless key="table1">
+										<thead>
+											<tr>
+												<th>이름</th>
+												<th>가격</th>
+												<th>인원</th>
+											</tr>
+										</thead>
 
-							<tbody>{itemList}</tbody>
-							<tfoot>
-								<tr>
-									<th>총</th>
-									<th>{totalPrice}</th>
-									<th></th>
-								</tr>
-							</tfoot>
-						</Table>
-						<Table size="sm" responsive borderless>
-							<thead>
-								<tr>
-									<th>결제자</th>
-									<th>결제 금액</th>
-									<th></th>
-								</tr>
-							</thead>
+										<tbody>{itemList}</tbody>
+										<tfoot>
+											<tr>
+												<th>총</th>
+												<th>{totalPrice}</th>
+												<th></th>
+											</tr>
+										</tfoot>
+									</table>,
+									<table responsive borderless key="table1">
+										<thead>
+											<tr>
+												<th>결제자</th>
+												<th>결제 금액</th>
+												<th></th>
+											</tr>
+										</thead>
 
-							<tbody>{payerList}</tbody>
+										<tbody>{payerList}</tbody>
 
-							<tfoot>
-								<tr>
-									<th>총</th>
-									<th>{paiedPrice}</th>
-									<th></th>
-								</tr>
-							</tfoot>
-						</Table>
+										<tfoot>
+											<tr>
+												<th>총</th>
+												<th>{paiedPrice}</th>
+												<th></th>
+											</tr>
+										</tfoot>
+									</table>
+							  ]
+							: null}
 					</Card.Body>
-					<Card.Footer className="text-muted">{statusMsg}</Card.Footer>
+					{this.state.expend ? <Card.Footer className="text-muted">{statusMsg}</Card.Footer> : null}
 				</Card>
 			</Link>
 		)

@@ -1,0 +1,52 @@
+.ExpenditureCard {
+	table {
+		width: 100%;
+		text-align: center;
+		color: #495057;
+		tr {
+			border: 10px solid #0000;
+			th {
+				font-size: 1.2rem;
+			}
+			td {
+				font-size: 1rem;
+			}
+		}
+		tbody {
+			tr {
+				background: #fff;
+				transition-duration: 0.1s;
+				cursor: pointer;
+				&:hover {
+					background: #f8f9fa;
+				}
+				&:active {
+					background: #e9ecef;
+				}
+			}
+		}
+	}
+	ul {
+		display: flex;
+		flex-direction: row;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		li {
+			flex-grow: 1;
+			flex-basis: 0;
+			margin: 0;
+			padding: 0;
+			border: 0;
+			text-align: right;
+			color: #495057;
+			&:nth-child(1) {
+				text-align: center;
+			}
+		}
+	}
+
+	.textfield-add-name {
+		width: 100%;
+	}
+}

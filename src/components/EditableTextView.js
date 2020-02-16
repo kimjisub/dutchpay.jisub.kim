@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import './EditableTextView.css'
+import './EditableTextView.scss'
 
 class App extends Component {
 	render() {
 		return (
-			<p className="editable-textview" style={this.props.style}>
+			<p className="EditableTextView" style={this.props.style}>
 				{this.props.editMode ? (
 					<input
 						placeholder={this.props.label}

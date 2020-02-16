@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { IconButton } from 'react-mdl'
-import { Card, Spinner } from 'react-bootstrap'
+import { Card, Spinner, Navbar } from 'react-bootstrap'
 import Masonry from 'react-masonry-css'
 
 import queryString from 'query-string'
@@ -10,7 +10,7 @@ import ExpenditureCard from '../components/ExpenditureCard'
 import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
 import EditableTextView from '../components/EditableTextView'
-import './Group.css'
+import './Group.scss'
 import { calcExpenditure, calcSettlement } from '../algorithm'
 
 class App extends Component {
@@ -42,7 +42,7 @@ class App extends Component {
 			.collection('DutchPay')
 			.doc(this.info.groupId)
 			.collection('Receipts')
-			.orderBy('timestamp', 'desc')
+			.orderBy('timestamp', 'asc')
 			.onSnapshot(querySnapshot => {
 				querySnapshot.docChanges().forEach(change => {
 					let id = change.doc.id
@@ -106,18 +106,22 @@ class App extends Component {
 				/>
 			)
 		}
+		receipts.reverse()
 
 		let expenditure = calcExpenditure(this.state.group.members, this.state.receipts)
 
 		let settlement = calcSettlement(expenditure)
 
 		return (
-			<div className="group">
+			<div className="Group">
 				<header>
+					<Navbar>
+						<Navbar.Brand></Navbar.Brand>
+					</Navbar>
 					<p>
-						<a href="https://dutchpay.kimjisub.me">Dutchpay.kimjisub.me</a>
+						<a href="https://dutchpay.kimjisub.me">Dutchpay</a>
 					</p>
-					<h1>
+					<h3>
 						<EditableTextView
 							label="모임 이름"
 							text={this.state.group.name}
@@ -128,7 +132,7 @@ class App extends Component {
 								this.setState(s)
 							}}
 						/>
-					</h1>
+					</h3>
 					<p>
 						<IconButton
 							ripple
@@ -152,6 +156,9 @@ class App extends Component {
 									s.group.members = members
 									this.setState(s)
 									this.saveGroupSetting()
+								}}
+								onMemberClick={id => {
+									this.props.history.push({ pathname: '/' + this.info.groupId + '/member/' + id, search: this.state.editMode ? '?edit=true' : '' })
 								}}
 								editMode={this.state.editMode}
 							/>

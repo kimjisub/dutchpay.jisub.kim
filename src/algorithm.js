@@ -9,8 +9,7 @@ export function calcExpenditure(members, receipts) {
 		//let totalPrice = 0
 		for (let j in receipt.items) {
 			let item = receipt.items[j]
-			let price = item.price
-			let eachPrice = price / item.buyers.length
+			let eachPrice = item.price / item.buyers.length
 			//totalPrice += price
 
 			for (let k in item.buyers) {
@@ -25,6 +24,34 @@ export function calcExpenditure(members, receipts) {
 		}
 	}
 
+	return ret
+}
+
+export function calcSingleExpenditure(memberId, receipts) {
+	let ret = []
+
+	for (let id in receipts) {
+		let receipt = receipts[id]
+
+		let totalPrice = 0
+
+		let items = []
+		for (let i in receipt.items) {
+			let item = receipt.items[i]
+			let eachPrice = item.price / item.buyers.length
+			if (item.buyers.includes(memberId)) {
+				totalPrice += eachPrice
+				items.push({ name: item.name, price: eachPrice })
+			}
+		}
+
+		if (items.length)
+			ret.push({
+				name: receipt.name,
+				totalPrice,
+				items
+			})
+	}
 	return ret
 }
 

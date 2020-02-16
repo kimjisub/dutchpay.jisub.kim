@@ -3,7 +3,7 @@ import queryString from 'query-string'
 import { OverlayTrigger, Popover, Card, ListGroup, Spinner } from 'react-bootstrap'
 import { firestore } from '../firebase'
 import { Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox, Icon } from 'react-mdl'
-import './Receipt.css'
+import './Receipt.scss'
 import EditableTextView from '../components/EditableTextView'
 
 class App extends Component {
@@ -227,9 +227,7 @@ class App extends Component {
 										})
 										this.setState(s)
 									}}>
-									<Icon name="add_circle_outline" style={{ fontSize: '1.3rem' }}>
-										추가
-									</Icon>
+									<Icon name="add_circle_outline" style={{ fontSize: '1.3rem' }} />
 									추가
 								</Button>
 							</td>
@@ -337,7 +335,8 @@ class App extends Component {
 								<OverlayTrigger rootClose trigger="click" placement="right" overlay={payerPopup}>
 									<label style={{ margin: 0 }}>
 										<Button ripple>
-											<Icon name="add">추가</Icon>
+											<Icon name="add_circle_outline" style={{ fontSize: '1.3rem' }} />
+											추가
 										</Button>
 									</label>
 								</OverlayTrigger>
@@ -355,7 +354,7 @@ class App extends Component {
 		)
 
 		return (
-			<div className="popup">
+			<div className="Receipt popup">
 				<div>
 					<Card className="card">
 						<Card.Body>

@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { Card, ListGroup } from 'react-bootstrap'
+import './SettlementCard.scss'
 
 class App extends Component {
 	render() {
 		return (
-			<Card shadow={0} className="card">
+			<Card shadow={0} className="SettlementCard card">
 				<Card.Body>
 					<Card.Title>정산</Card.Title>
 
@@ -15,12 +16,15 @@ class App extends Component {
 							let value = data.value
 
 							return (
-								<ListGroup.Item className="list" key={i}>
-									<div className="item">
-										<p>{this.props.members[from]}</p>(이)가
-										<p>{this.props.members[to]}</p>에게
-										<p>{value}</p>원
-									</div>
+								<ListGroup.Item className="item" key={i}>
+									<p>
+										{this.props.members[from]}
+										<p>(이)가</p>
+										{this.props.members[to]}
+										<p>에게</p>
+										{value}
+										<p>원</p>
+									</p>
 								</ListGroup.Item>
 							)
 						})}
