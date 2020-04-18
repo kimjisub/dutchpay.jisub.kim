@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { IconButton } from 'react-mdl'
-import { Card, Spinner, Navbar } from 'react-bootstrap'
+import { Card, Spinner } from 'react-bootstrap'
 import Masonry from 'react-masonry-css'
 
 import queryString from 'query-string'

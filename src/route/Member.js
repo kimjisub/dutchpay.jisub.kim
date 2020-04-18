@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import queryString from 'query-string'
 import { Card, Spinner } from 'react-bootstrap'
 import { firestore } from '../firebase'
-import { Button, IconButton, Menu, MenuItem } from 'react-mdl'
+import { Button } from 'react-mdl'
+import NumberFormat from 'react-number-format'
 import './Member.scss'
 import { calcSingleExpenditure } from '../algorithm'
 
@@ -11,13 +12,13 @@ class App extends Component {
 		super()
 		this.info = {
 			groupId: match.params.groupId,
-			memberId: match.params.memberId
+			memberId: match.params.memberId,
 		}
 		this.location = location
 		this.query = queryString.parse(location.search)
 		this.state = {
 			group: null,
-			receipts: {}
+			receipts: {},
 		}
 
 		this.fs = firestore()
@@ -25,7 +26,7 @@ class App extends Component {
 		this.fs
 			.collection('DutchPay')
 			.doc(this.info.groupId)
-			.onSnapshot(doc => {
+			.onSnapshot((doc) => {
 				let data = (window.$data = doc.data())
 				//console.log("Group Data Changed: ", data);
 				this.setState({ group: data })
@@ -36,8 +37,8 @@ class App extends Component {
 			.doc(this.info.groupId)
 			.collection('Receipts')
 			.orderBy('timestamp', 'asc')
-			.onSnapshot(querySnapshot => {
-				querySnapshot.docChanges().forEach(change => {
+			.onSnapshot((querySnapshot) => {
+				querySnapshot.docChanges().forEach((change) => {
 					let id = change.doc.id
 					let data = change.doc.data()
 					//console.log("Receipts", change.type, id);
@@ -88,7 +89,9 @@ class App extends Component {
 										<li key={i}>
 											<div>
 												<p>{receipt.name}</p>
-												<p>{receipt.totalPrice}</p>
+												<p>
+													<NumberFormat value={receipt.totalPrice} displayType={'text'} thousandSeparator={true} />
+												</p>
 											</div>
 
 											<ol>
@@ -97,7 +100,9 @@ class App extends Component {
 														<li key={i}>
 															<div>
 																<p>{item.name}</p>
-																<p>{item.price}</p>
+																<p>
+																	<NumberFormat value={item.price} displayType={'text'} thousandSeparator={true} />
+																</p>
 															</div>
 														</li>
 													)
@@ -117,38 +122,12 @@ class App extends Component {
 
 							<div className="action">
 								<div>
-									{this.state.editMode && this.info.receiptId !== 'new'
-										? [
-												<IconButton id="delete" key="button" name="delete">
-													삭제
-												</IconButton>,
-												<Menu target="delete" key="menu">
-													<MenuItem
-														onClick={() => {
-															this.delete()
-														}}>
-														삭제
-													</MenuItem>
-												</Menu>
-										  ]
-										: null}
-								</div>
-								<div></div>
-								<div>
 									<Button
 										onClick={() => {
 											this.close()
 										}}>
-										{this.state.editMode ? '취소' : '확인'}
+										확인
 									</Button>
-									{this.state.editMode ? (
-										<Button
-											onClick={() => {
-												this.updateToFB(this.state.receipt)
-											}}>
-											저장
-										</Button>
-									) : null}
 								</div>
 							</div>
 						</Card.Body>

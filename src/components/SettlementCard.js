@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Card, ListGroup } from 'react-bootstrap'
+import NumberFormat from 'react-number-format'
 import './SettlementCard.scss'
 
 class App extends Component {
@@ -22,7 +23,7 @@ class App extends Component {
 										<p>(이)가</p>
 										{this.props.members[to]}
 										<p>에게</p>
-										{value}
+										<NumberFormat value={value} displayType={'text'} thousandSeparator={true} />
 										<p>원</p>
 									</p>
 								</ListGroup.Item>

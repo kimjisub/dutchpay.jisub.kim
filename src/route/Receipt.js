@@ -3,6 +3,7 @@ import queryString from 'query-string'
 import { OverlayTrigger, Popover, Card, ListGroup, Spinner } from 'react-bootstrap'
 import { firestore } from '../firebase'
 import { Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox, Icon } from 'react-mdl'
+import NumberFormat from 'react-number-format'
 import './Receipt.scss'
 import EditableTextView from '../components/EditableTextView'
 
@@ -11,7 +12,7 @@ class App extends Component {
 		super()
 		this.info = {
 			groupId: match.params.groupId,
-			receiptId: match.params.receiptId
+			receiptId: match.params.receiptId,
 		}
 		this.location = location
 		this.query = queryString.parse(location.search)
@@ -19,7 +20,7 @@ class App extends Component {
 			tab: 0,
 			update: 0,
 			itemIndex: -1,
-			editMode: this.query.edit
+			editMode: this.query.edit,
 		}
 
 		this.fs = firestore()
@@ -28,7 +29,7 @@ class App extends Component {
 			.collection('DutchPay')
 			.doc(this.info.groupId)
 			.get()
-			.then(doc => {
+			.then((doc) => {
 				if (doc.exists) this.setState({ members: doc.data().members })
 			})
 
@@ -39,7 +40,7 @@ class App extends Component {
 				.collection('Receipts')
 				.doc(this.info.receiptId)
 				.get()
-				.then(doc => {
+				.then((doc) => {
 					if (doc.exists) {
 						let data = (window.$data = doc.data())
 						this.setState({ receipt: data })
@@ -50,7 +51,7 @@ class App extends Component {
 				name: '',
 				items: [],
 				payers: {},
-				timestamp: new Date()
+				timestamp: new Date(),
 			})
 			this.state.receipt = data
 		}
@@ -109,7 +110,7 @@ class App extends Component {
 			<Popover id="popover-basic">
 				<Popover.Content>
 					<ListGroup variant="flush">
-						{Object.entries(this.state.members).map(data => {
+						{Object.entries(this.state.members).map((data) => {
 							let id = data[0]
 							let name = data[1]
 
@@ -120,7 +121,7 @@ class App extends Component {
 									<Checkbox
 										checked={checked}
 										label={name}
-										onChange={e => {
+										onChange={(e) => {
 											if (this.state.editMode) {
 												if (e.target.checked) buyers.push(id)
 												else buyers.splice(buyers.indexOf(id), 1)
@@ -159,7 +160,7 @@ class App extends Component {
 								<td>
 									<EditableTextView
 										className="item-name"
-										onChange={e => {
+										onChange={(e) => {
 											let s = Object.assign({}, this.state)
 											s.receipt.items[i].name = e.target.value
 											this.setState(s)
@@ -172,14 +173,15 @@ class App extends Component {
 								<td>
 									<EditableTextView
 										className="item-price"
-										onChange={e => {
+										onChange={(e) => {
 											let s = Object.assign({}, this.state)
-											s.receipt.items[i].price = parseInt(e.target.value)
+											s.receipt.items[i].price = parseInt(e.target.value.replace(/[^\d]/g, ''))
 											this.setState(s)
 										}}
 										label="가격"
 										text={item.price}
 										editMode={this.state.editMode}
+										type="number"
 									/>
 								</td>
 								<td>
@@ -223,7 +225,7 @@ class App extends Component {
 										s.receipt.items.push({
 											name: '',
 											buyers,
-											price: 0
+											price: 0,
 										})
 										this.setState(s)
 									}}>
@@ -238,7 +240,9 @@ class App extends Component {
 					<tr>
 						<th>총</th>
 						<td></td>
-						<td>{totalPrice}</td>
+						<td>
+							<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
+						</td>
 					</tr>
 				</tfoot>
 			</table>
@@ -248,7 +252,7 @@ class App extends Component {
 			<Popover id="popover-basic">
 				<Popover.Content>
 					<ListGroup variant="flush">
-						{Object.entries(this.state.members).map(data => {
+						{Object.entries(this.state.members).map((data) => {
 							let id = data[0]
 							let name = data[1]
 
@@ -296,9 +300,9 @@ class App extends Component {
 								<td>
 									<EditableTextView
 										className="mdl-textfield-small"
-										onChange={e => {
+										onChange={(e) => {
 											let s = Object.assign({}, this.state)
-											s.receipt.payers[id] = parseInt(e.target.value)
+											s.receipt.payers[id] = parseInt(e.target.value.replace(/[^\d]/g, ''))
 											this.setState(s)
 										}}
 										pattern="-?[0-9]*(\.[0-9]+)?"
@@ -306,6 +310,7 @@ class App extends Component {
 										label="가격"
 										text={price}
 										editMode={this.state.editMode}
+										type="number"
 										style={{ width: '200px' }}
 										id={`pay-price-${i}`}
 									/>
@@ -347,7 +352,9 @@ class App extends Component {
 				<tfoot>
 					<tr>
 						<th>총</th>
-						<td>{totalPaied}</td>
+						<td>
+							<NumberFormat value={totalPaied} displayType={'text'} thousandSeparator={true} />
+						</td>
 					</tr>
 				</tfoot>
 			</table>
@@ -361,7 +368,7 @@ class App extends Component {
 							<Card.Title>
 								<div className="title">
 									<EditableTextView
-										onChange={e => {
+										onChange={(e) => {
 											let s = Object.assign({}, this.state)
 											s.receipt.name = e.target.value
 											this.setState(s)
@@ -374,7 +381,7 @@ class App extends Component {
 								</div>
 							</Card.Title>
 							<div>
-								<Tabs activeTab={this.state.tab} onChange={tab => this.setState({ tab })} ripple>
+								<Tabs activeTab={this.state.tab} onChange={(tab) => this.setState({ tab })} ripple>
 									<Tab>영수증</Tab>
 									<Tab>결제</Tab>
 								</Tabs>
@@ -395,7 +402,7 @@ class App extends Component {
 														}}>
 														삭제
 													</MenuItem>
-												</Menu>
+												</Menu>,
 										  ]
 										: null}
 								</div>

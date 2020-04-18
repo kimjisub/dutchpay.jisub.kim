@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Card } from 'react-bootstrap'
 import { Textfield, IconButton, Menu, MenuItem } from 'react-mdl'
+import NumberFormat from 'react-number-format'
 import { bigNumberToCode } from '../algorithm'
 import './ExpenditureCard.scss'
 
@@ -41,8 +42,12 @@ class App extends Component {
 											if (!this.props.editMode) this.props.onMemberClick(id)
 										}}>
 										<td>{name}</td>
-										<td>{spend}</td>
-										<td>{paied}</td>
+										<td>
+											<NumberFormat value={spend} displayType={'text'} thousandSeparator={true} />
+										</td>
+										<td>
+											<NumberFormat value={paied} displayType={'text'} thousandSeparator={true} />
+										</td>
 										{this.props.editMode ? (
 											<td>
 												<IconButton name="close" id={'member-delete-' + id} disabled={!(spend === 0 && paied === 0)} />
