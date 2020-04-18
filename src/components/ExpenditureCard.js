@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Card } from 'react-bootstrap'
-import { Textfield, Button, IconButton, Menu, MenuItem } from 'react-mdl'
+import { Textfield, IconButton, Menu, MenuItem } from 'react-mdl'
 import { bigNumberToCode } from '../algorithm'
 import './ExpenditureCard.scss'
 
@@ -8,7 +8,7 @@ class App extends Component {
 	constructor() {
 		super()
 		this.state = {
-			addName: ''
+			addName: '',
 		}
 	}
 
@@ -27,7 +27,7 @@ class App extends Component {
 							</tr>
 						</thead>
 						<tbody>
-							{Object.entries(this.props.members).map(data => {
+							{Object.entries(this.props.members).map((data) => {
 								let id = data[0]
 								let name = data[1]
 
@@ -72,7 +72,7 @@ class App extends Component {
 											className="mdl-textfield-small textfield-add-name"
 											label="이름"
 											value={this.state.addName}
-											onChange={e => {
+											onChange={(e) => {
 												this.setState({ addName: e.target.value })
 											}}
 										/>

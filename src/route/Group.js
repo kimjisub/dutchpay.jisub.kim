@@ -22,7 +22,7 @@ class App extends Component {
 		this.state = {
 			group: null,
 			receipts: {},
-			editMode: this.query.edit
+			editMode: this.query.edit,
 		}
 		console.log(this.query.edit)
 
@@ -32,7 +32,7 @@ class App extends Component {
 		this.fs
 			.collection('DutchPay')
 			.doc(this.info.groupId)
-			.onSnapshot(doc => {
+			.onSnapshot((doc) => {
 				let data = (window.$data = doc.data())
 				//console.log("Group Data Changed: ", data);
 				this.setState({ group: data })
@@ -43,8 +43,8 @@ class App extends Component {
 			.doc(this.info.groupId)
 			.collection('Receipts')
 			.orderBy('timestamp', 'asc')
-			.onSnapshot(querySnapshot => {
-				querySnapshot.docChanges().forEach(change => {
+			.onSnapshot((querySnapshot) => {
+				querySnapshot.docChanges().forEach((change) => {
 					let id = change.doc.id
 					let data = change.doc.data()
 					//console.log("Receipts", change.type, id);
@@ -115,70 +115,68 @@ class App extends Component {
 		return (
 			<div className="Group">
 				<header>
-					<Navbar>
-						<Navbar.Brand></Navbar.Brand>
-					</Navbar>
-					<p>
-						<a href="https://dutchpay.kimjisub.me">Dutchpay</a>
-					</p>
-					<h3>
-						<EditableTextView
-							label="모임 이름"
-							text={this.state.group.name}
-							editMode={this.state.editMode}
-							onChange={e => {
-								let s = Object.assign({}, this.state)
-								s.group.name = e.target.value
-								this.setState(s)
-							}}
-						/>
-					</h3>
-					<p>
-						<IconButton
-							ripple
-							name={this.state.editMode ? 'check' : 'edit'}
-							onClick={() => {
-								if (this.state.editMode) this.saveGroupSetting(true)
-								else this.setEditMode(true)
-							}}
-						/>
-					</p>
+					<a href="https://dutchpay.kimjisub.me" id="brand">
+						dutchpay
+					</a>
+					<IconButton
+						ripple
+						name={this.state.editMode ? 'check' : 'edit'}
+						onClick={() => {
+							if (this.state.editMode) this.saveGroupSetting(true)
+							else this.setEditMode(true)
+						}}
+					/>
 				</header>
-				<div id="content">
+				<section>
 					<div className="empty"></div>
-					<section id="section">
-						<aside id="dashboard">
-							<ExpenditureCard
-								expenditure={expenditure}
-								members={this.state.group.members}
-								onMembersChange={members => {
-									let s = Object.assign({}, this.state)
-									s.group.members = members
-									this.setState(s)
-									this.saveGroupSetting()
-								}}
-								onMemberClick={id => {
-									this.props.history.push({ pathname: '/' + this.info.groupId + '/member/' + id, search: this.state.editMode ? '?edit=true' : '' })
-								}}
+					<article>
+						<span>
+							<EditableTextView
+								label="모임 이름"
+								text={this.state.group.name}
 								editMode={this.state.editMode}
+								onChange={(e) => {
+									let s = Object.assign({}, this.state)
+									s.group.name = e.target.value
+									this.setState(s)
+								}}
 							/>
-							<SettlementCard members={this.state.group.members} settlement={settlement} />
-						</aside>
-						<main id="receipts">
-							{this.state.editMode ? (
-								<Link to={`/${this.info.groupId}/receipt/new?edit=true`}>
-									<Card className="add-card">
-										<Card.Body>추가하기</Card.Body>
-									</Card>
-								</Link>
-							) : null}
-							<Masonry breakpointCols={{ default: 2, 1100: 1 }} className="my-masonry-grid" columnClassName="my-masonry-grid_column">
-								{receipts}
-							</Masonry>
-						</main>
-					</section>
+							정산 내역서
+						</span>
+						<div>
+							<aside id="dashboard">
+								<ExpenditureCard
+									expenditure={expenditure}
+									members={this.state.group.members}
+									onMembersChange={(members) => {
+										let s = Object.assign({}, this.state)
+										s.group.members = members
+										this.setState(s)
+										this.saveGroupSetting()
+									}}
+									onMemberClick={(id) => {
+										this.props.history.push({ pathname: '/' + this.info.groupId + '/member/' + id, search: this.state.editMode ? '?edit=true' : '' })
+									}}
+									editMode={this.state.editMode}
+								/>
+								<SettlementCard members={this.state.group.members} settlement={settlement} />
+							</aside>
+							<main id="receipts">
+								{this.state.editMode ? (
+									<Link to={`/${this.info.groupId}/receipt/new?edit=true`}>
+										<Card className="add-card">
+											<Card.Body>추가하기</Card.Body>
+										</Card>
+									</Link>
+								) : null}
+								<Masonry breakpointCols={{ default: 2, 1100: 1 }} className="my-masonry-grid" columnClassName="my-masonry-grid_column">
+									{receipts}
+								</Masonry>
+							</main>
+						</div>
+					</article>
 					<div className="empty"></div>
-				</div>
+				</section>
 				<footer>푸터</footer>
 			</div>
 		)
