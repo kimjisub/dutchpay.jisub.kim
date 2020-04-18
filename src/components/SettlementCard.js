@@ -20,11 +20,11 @@ class App extends Component {
 								<ListGroup.Item className="item" key={i}>
 									<p>
 										{this.props.members[from]}
-										<p>(이)가</p>
+										<span className="small">(이)가</span>
 										{this.props.members[to]}
-										<p>에게</p>
+										<span className="small">에게</span>
 										<NumberFormat value={value} displayType={'text'} thousandSeparator={true} />
-										<p>원</p>
+										<span className="small">원</span>
 									</p>
 								</ListGroup.Item>
 							)

@@ -24,7 +24,6 @@ class App extends Component {
 			receipts: {},
 			editMode: this.query.edit,
 		}
-		console.log(this.query.edit)
 
 		// Firebase
 		this.fs = firestore()

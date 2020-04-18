@@ -32,12 +32,10 @@ class App extends Component {
 								let id = data[0]
 								let name = data[1]
 
-								let spend = this.props.expenditure[id].spend
-								let paied = this.props.expenditure[id].paied
+								const { spend, paied } = this.props.expenditure[id]
 								return (
 									<tr
 										key={id}
-										action={!this.props.editMode}
 										onClick={() => {
 											if (!this.props.editMode) this.props.onMemberClick(id)
 										}}>

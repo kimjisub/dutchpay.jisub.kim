@@ -299,19 +299,15 @@ class App extends Component {
 								<td>{this.state.members[id]}</td>
 								<td>
 									<EditableTextView
-										className="mdl-textfield-small"
 										onChange={(e) => {
 											let s = Object.assign({}, this.state)
 											s.receipt.payers[id] = parseInt(e.target.value.replace(/[^\d]/g, ''))
 											this.setState(s)
 										}}
-										pattern="-?[0-9]*(\.[0-9]+)?"
-										error="숫자가 아닙니다."
 										label="가격"
 										text={price}
 										editMode={this.state.editMode}
 										type="number"
-										style={{ width: '200px' }}
 										id={`pay-price-${i}`}
 									/>
 								</td>

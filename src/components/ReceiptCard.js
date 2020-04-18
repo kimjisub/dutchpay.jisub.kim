@@ -58,7 +58,7 @@ class App extends Component {
 						<Card.Title>{this.props.receipt.name}</Card.Title>
 						{this.state.expend
 							? [
-									<table responsive borderless key="table1">
+									<table key="table1">
 										<thead>
 											<tr>
 												<th>이름</th>
@@ -78,7 +78,7 @@ class App extends Component {
 											</tr>
 										</tfoot>
 									</table>,
-									<table responsive borderless key="table1">
+									<table key="table2">
 										<thead>
 											<tr>
 												<th>결제자</th>
