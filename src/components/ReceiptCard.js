@@ -53,57 +53,55 @@ class App extends Component {
 
 		return (
 			<Link to={this.props.to} className="ReceiptCard">
-				<Card className="receipt-card">
-					<Card.Body>
-						<Card.Title>{this.props.receipt.name}</Card.Title>
-						{this.state.expend
-							? [
-									<table key="table1">
-										<thead>
-											<tr>
-												<th>이름</th>
-												<th>가격</th>
-												<th>인원</th>
-											</tr>
-										</thead>
+				<main className="card">
+					<div className="title">{this.props.receipt.name}</div>
+					{this.state.expend
+						? [
+								<table key="table1">
+									<thead>
+										<tr>
+											<th>이름</th>
+											<th>가격</th>
+											<th>인원</th>
+										</tr>
+									</thead>
 
-										<tbody>{itemList}</tbody>
-										<tfoot>
-											<tr>
-												<th>총</th>
-												<th>
-													<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
-												</th>
-												<th></th>
-											</tr>
-										</tfoot>
-									</table>,
-									<table key="table2">
-										<thead>
-											<tr>
-												<th>결제자</th>
-												<th>결제 금액</th>
-												<th></th>
-											</tr>
-										</thead>
+									<tbody>{itemList}</tbody>
+									<tfoot>
+										<tr>
+											<th>총</th>
+											<th>
+												<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
+											</th>
+											<th></th>
+										</tr>
+									</tfoot>
+								</table>,
+								<table key="table2">
+									<thead>
+										<tr>
+											<th>결제자</th>
+											<th>결제 금액</th>
+											<th></th>
+										</tr>
+									</thead>
 
-										<tbody>{payerList}</tbody>
+									<tbody>{payerList}</tbody>
 
-										<tfoot>
-											<tr>
-												<th>총</th>
-												<th>
-													<NumberFormat value={paiedPrice} displayType={'text'} thousandSeparator={true} />
-												</th>
-												<th></th>
-											</tr>
-										</tfoot>
-									</table>,
-							  ]
-							: null}
-					</Card.Body>
-					{this.state.expend ? <Card.Footer className="text-muted">{statusMsg}</Card.Footer> : null}
-				</Card>
+									<tfoot>
+										<tr>
+											<th>총</th>
+											<th>
+												<NumberFormat value={paiedPrice} displayType={'text'} thousandSeparator={true} />
+											</th>
+											<th></th>
+										</tr>
+									</tfoot>
+								</table>,
+						  ]
+						: null}
+					{this.state.expend ? statusMsg : null}
+				</main>
 			</Link>
 		)
 	}
