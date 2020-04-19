@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import queryString from 'query-string'
-import { Card, Spinner } from 'react-bootstrap'
+import { Spinner } from 'react-bootstrap'
 import { firestore } from '../firebase'
 import { Button } from 'react-mdl'
 import NumberFormat from 'react-number-format'
@@ -78,61 +78,53 @@ class App extends Component {
 		let singleExpenditure = calcSingleExpenditure(this.info.memberId, this.state.receipts)
 		return (
 			<div className="Member popup">
-				<div>
-					<Card className="card">
-						<Card.Body>
-							<Card.Title>{this.state.group.members[this.info.memberId]}님의 지출 내역</Card.Title>
+				<main>
+					<p id="title">
+						<span id="name">{this.state.group.members[this.info.memberId]}</span> 님의 지출 내역
+					</p>
 
-							<ol>
-								{singleExpenditure.map((receipt, i) => {
-									return (
-										<li key={i}>
-											<div>
-												<p>{receipt.name}</p>
-												<p>
-													<NumberFormat value={receipt.totalPrice} displayType={'text'} thousandSeparator={true} />
-												</p>
-											</div>
+					<div id="list">
+						<ol>
+							{singleExpenditure.map((receipt, i) => {
+								return (
+									<li key={i}>
+										<div>
+											<p>{receipt.name}</p>
+											<p>
+												<NumberFormat value={receipt.totalPrice} displayType={'text'} thousandSeparator={true} />
+											</p>
+										</div>
 
-											<ol>
-												{receipt.items.map((item, i) => {
-													return (
-														<li key={i}>
-															<div>
-																<p>{item.name}</p>
-																<p>
-																	<NumberFormat value={item.price} displayType={'text'} thousandSeparator={true} />
-																</p>
-															</div>
-														</li>
-													)
-												})}
-											</ol>
-										</li>
-									)
-								})}
-							</ol>
-							<div>
-								{/* <Tabs activeTab={this.state.tab} onChange={tab => this.setState({ tab })} ripple>
-									<Tab>영수증</Tab>
-									<Tab>결제</Tab>
-								</Tabs>
-								<section className="tab-page">{this.state.tab === 0 ? tab1 : tab2}</section> */}
-							</div>
-
-							<div className="action">
-								<div>
-									<Button
-										onClick={() => {
-											this.close()
-										}}>
-										확인
-									</Button>
-								</div>
-							</div>
-						</Card.Body>
-					</Card>
-				</div>
+										<ol>
+											{receipt.items.map((item, i) => {
+												return (
+													<li key={i}>
+														<div>
+															<p>{item.name}</p>
+															<p>
+																<NumberFormat value={item.price} displayType={'text'} thousandSeparator={true} />
+															</p>
+														</div>
+													</li>
+												)
+											})}
+										</ol>
+									</li>
+								)
+							})}
+						</ol>
+					</div>
+					<div className="action">
+						<div>
+							<Button
+								onClick={() => {
+									this.close()
+								}}>
+								확인
+							</Button>
+						</div>
+					</div>
+				</main>
 			</div>
 		)
 	}
