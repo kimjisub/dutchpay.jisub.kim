@@ -22,22 +22,20 @@
 			display: block;
 			margin: 30px;
 			font-size: 1.3rem;
+			font-weight: bolder;
 		}
 	}
 
 	section {
-		margin: 80px 0 0 0;
-		position: absolute;
 		display: flex;
-		flex-direction: row;
 		width: 100%;
-
-		.empty {
-			flex-grow: 1;
-		}
+		margin-top: -90px;
+		margin-bottom: 30px;
+		padding: 10px;
+		z-index: 1;
 
 		article {
-			margin: 10px;
+			margin: 10px auto;
 			padding: 50px 30px 30px 30px;
 			background-color: #ffffff;
 			box-shadow: 0 0 30px -10px;
@@ -45,11 +43,28 @@
 
 			.EditableTextView {
 				font-size: 1.8rem;
+				font-weight: bolder;
 			}
 
 			& > div {
 				flex-grow: 0;
 				display: flex;
+
+				& > * {
+					width: 320px;
+					left: 0;
+					right: 0;
+					margin: 0 auto;
+				}
+
+				#dashboard {
+					display: inline-block;
+					position: sticky;
+				}
+
+				#receipts {
+					display: block;
+				}
 			}
 		}
 	}
@@ -63,15 +78,6 @@
 		margin: 4px;
 	}
 
-	#dashboard {
-		display: flex;
-		flex-direction: column;
-	}
-
-	#receipts {
-		display: block;
-	}
-
 	.add-card {
 		width: 100%;
 	}
@@ -83,16 +89,35 @@
 		widows: 100%;
 	}
 
-	@media (max-width: 700px) {
-		#content {
-			display: flex;
-			flex-direction: row;
-			width: 100%;
+	@media (max-width: 800px) {
+		section {
+			article {
+				& > div {
+					display: flex;
+					flex-direction: column;
+					width: 100%;
+				}
+			}
 		}
+	}
 
-		#section {
-			display: flex;
-			flex-direction: column;
+	@media (max-width: 450px) {
+		section {
+			background-color: #facd60;
+			article {
+				width: 100%;
+				margin: 0;
+				padding: 20px;
+				box-shadow: 0 0 0 0;
+				border-radius: 0;
+				background-color: #facd60;
+
+				& > div {
+					display: flex;
+					flex-direction: column;
+					width: 100%;
+				}
+			}
 		}
 	}
 }

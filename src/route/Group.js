@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { IconButton } from 'react-mdl'
 import { Card, Spinner } from 'react-bootstrap'
-import Masonry from 'react-masonry-css'
 
 import queryString from 'query-string'
 import { firestore } from '../firebase'
@@ -127,7 +126,6 @@ class App extends Component {
 					/>
 				</header>
 				<section>
-					<div className="empty"></div>
 					<article>
 						<span>
 							<EditableTextView
@@ -168,15 +166,12 @@ class App extends Component {
 										</Card>
 									</Link>
 								) : null}
-								<Masonry breakpointCols={{ default: 2, 1100: 1 }} className="my-masonry-grid" columnClassName="my-masonry-grid_column">
-									{receipts}
-								</Masonry>
+								{receipts}
 							</main>
 						</div>
 					</article>
-					<div className="empty"></div>
 				</section>
-				<footer>푸터</footer>
+				<footer>기획,개발: 김지섭 디자인: 손채린</footer>
 			</div>
 		)
 	}
