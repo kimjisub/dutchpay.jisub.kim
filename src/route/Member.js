@@ -80,7 +80,7 @@ class App extends Component {
 			<div className="Member popup">
 				<main>
 					<p id="title">
-						<span id="name">{this.state.group.members[this.info.memberId]}</span> 님의 지출 내역
+						<span id="name">{this.state.group.members[this.info.memberId]}</span>님의 지출 내역
 					</p>
 
 					<div id="list">

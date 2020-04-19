@@ -50,16 +50,13 @@
 				flex-grow: 0;
 				display: flex;
 
-				& > * {
-					width: 320px;
-					left: 0;
-					right: 0;
-					margin: 0 auto;
-				}
-
 				#dashboard {
-					display: inline-block;
-					position: sticky;
+					margin-bottom: -10px;
+					& > div {
+						margin: 10px 0;
+						position: sticky;
+						top: 10px;
+					}
 				}
 
 				#receipts {

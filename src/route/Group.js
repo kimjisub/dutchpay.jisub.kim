@@ -142,21 +142,23 @@ class App extends Component {
 						</span>
 						<div>
 							<aside id="dashboard">
-								<ExpenditureCard
-									expenditure={expenditure}
-									members={this.state.group.members}
-									onMembersChange={(members) => {
-										let s = Object.assign({}, this.state)
-										s.group.members = members
-										this.setState(s)
-										this.saveGroupSetting()
-									}}
-									onMemberClick={(id) => {
-										this.props.history.push({ pathname: '/' + this.info.groupId + '/member/' + id, search: this.state.editMode ? '?edit=true' : '' })
-									}}
-									editMode={this.state.editMode}
-								/>
-								<SettlementCard members={this.state.group.members} settlement={settlement} />
+								<div>
+									<ExpenditureCard
+										expenditure={expenditure}
+										members={this.state.group.members}
+										onMembersChange={(members) => {
+											let s = Object.assign({}, this.state)
+											s.group.members = members
+											this.setState(s)
+											this.saveGroupSetting()
+										}}
+										onMemberClick={(id) => {
+											this.props.history.push({ pathname: '/' + this.info.groupId + '/member/' + id, search: this.state.editMode ? '?edit=true' : '' })
+										}}
+										editMode={this.state.editMode}
+									/>
+									<SettlementCard members={this.state.group.members} settlement={settlement} />
+								</div>
 							</aside>
 							<main id="receipts">
 								{this.state.editMode ? (
