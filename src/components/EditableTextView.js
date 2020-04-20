@@ -1,48 +1,44 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import NumberFormat from 'react-number-format'
 import './EditableTextView.scss'
 
-class App extends Component {
-	render() {
-		let view
+export default function (props) {
+	let view
 
-		if (this.props.type === 'number') {
-			if (this.props.editMode) {
-				view = (
-					<NumberFormat
-						thousandSeparator={true}
-						placeholder={this.props.label}
-						defaultValue={this.props.text}
-						onChange={(e) => {
-							if (this.props.onChange) this.props.onChange(e)
-						}}
-					/>
-				)
-			} else {
-				view = <NumberFormat value={this.props.text} thousandSeparator={true} />
-			}
+	if (props.type === 'number') {
+		if (props.editMode) {
+			view = (
+				<NumberFormat
+					thousandSeparator={true}
+					placeholder={props.label}
+					defaultValue={props.text}
+					onChange={(e) => {
+						if (props.onChange) props.onChange(e)
+					}}
+				/>
+			)
 		} else {
-			if (this.props.editMode) {
-				view = (
-					<input
-						placeholder={this.props.label}
-						defaultValue={this.props.text}
-						onChange={(e) => {
-							if (this.props.onChange) this.props.onChange(e)
-						}}
-					/>
-				)
-			} else {
-				view = this.props.text
-			}
+			view = <NumberFormat value={props.text} thousandSeparator={true} />
 		}
-
-		return (
-			<p className="EditableTextView" style={this.props.style}>
-				{view}
-			</p>
-		)
+	} else {
+		if (props.editMode) {
+			view = (
+				<input
+					placeholder={props.label}
+					defaultValue={props.text}
+					onChange={(e) => {
+						if (props.onChange) props.onChange(e)
+					}}
+				/>
+			)
+		} else {
+			view = props.text
+		}
 	}
-}
 
-export default App
+	return (
+		<p className="EditableTextView" style={props.style}>
+			{view}
+		</p>
+	)
+}

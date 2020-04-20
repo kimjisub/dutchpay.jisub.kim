@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useParams, useLocation, useHistory } from 'react-router-dom'
 import { IconButton } from 'react-mdl'
 import { Card, Spinner } from 'react-bootstrap'
 import { Snackbar } from '@material-ui/core'
@@ -12,182 +12,175 @@ import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
 import EditableTextView from '../components/EditableTextView'
 import './Group.scss'
-import { calcExpenditure, calcSettlement } from '../algorithm'
+import { calcExpenditure, calcSettlement, sortObject } from '../algorithm'
 
-class App extends Component {
-	constructor({ match, location }) {
-		super()
-		this.info = { groupId: match.params.groupId }
-		this.location = location
-		this.query = queryString.parse(location.search)
-		this.state = {
-			group: null,
-			receipts: {},
-			editMode: this.query.edit,
-			errorMsg: null,
-		}
+const fs = firestore()
 
-		// Firebase
-		this.fs = firestore()
+export default function (props) {
+	const params = useParams()
+	const queries = queryString.parse(useLocation().search)
+	const history = useHistory()
 
-		this.fs
-			.collection('DutchPay')
-			.doc(this.info.groupId)
+	const [group, setGroup] = useState(null)
+	const [receipts, setReceipts] = useState({})
+	const [editMode, _setEditMode] = useState(queries.edit)
+	const [errMsg, setErrMsg] = useState(null)
+
+	useEffect(() => {
+		fs.collection('DutchPay')
+			.doc(params.groupId)
 			.onSnapshot((doc) => {
 				let data = (window.$data = doc.data())
-				//console.log("Group Data Changed: ", data);
-				this.setState({ group: data })
+				//console.log('Group Data Changed: ', data)
+				data.members = sortObject(data.members)
+				setGroup(data)
 			})
 
-		this.fs
-			.collection('DutchPay')
-			.doc(this.info.groupId)
+		fs.collection('DutchPay')
+			.doc(params.groupId)
 			.collection('Receipts')
 			.orderBy('timestamp', 'asc')
 			.onSnapshot((querySnapshot) => {
+				let _receipts = { ...receipts }
+				console.log(receipts, _receipts)
 				querySnapshot.docChanges().forEach((change) => {
 					let id = change.doc.id
 					let data = change.doc.data()
-					//console.log("Receipts", change.type, id);
+					//console.log('Receipts', change.type, id)
 
-					let s = Object.assign({}, this.state)
 					switch (change.type) {
 						case 'added':
-							s.receipts[id] = data
+							_receipts[id] = data
 							break
 						case 'modified':
-							s.receipts[id] = data
+							_receipts[id] = data
 							break
 						case 'removed':
-							delete s.receipts[id]
+							delete _receipts[id]
 							break
 						default:
 					}
-					this.setState(s)
 				})
+				setReceipts(_receipts)
 			})
+	}, [])
+
+	function setEditMode(mode) {
+		history.push({ pathname: '/' + params.groupId, search: mode ? '?edit=true' : '' })
+		_setEditMode(mode)
 	}
 
-	setEditMode(mode) {
-		this.props.history.push({ pathname: '/' + this.info.groupId, search: mode ? '?edit=true' : '' })
-		this.setState({ editMode: mode })
-	}
-
-	saveGroupSetting(finishEdit = false) {
-		this.fs
-			.collection('DutchPay')
-			.doc(this.info.groupId)
-			.set(this.state.group)
+	function saveGroupSetting(finishEdit = false) {
+		fs.collection('DutchPay')
+			.doc(params.groupId)
+			.set(group)
 			.then(() => {
-				if (finishEdit) this.setEditMode(false)
+				if (finishEdit) setEditMode(false)
 			})
 			.catch((e) => {
-				this.setState({ errorMsg: e.message })
+				setErrMsg('권한이 없습니다.')
 			})
 	}
 
-	render() {
-		if (!this.state.group)
-			return (
-				<div className="popup">
-					<div>
-						<Spinner animation="border" />
-					</div>
-				</div>
-			)
-
-		let receipts = []
-
-		for (let key in this.state.receipts) {
-			let receipt = this.state.receipts[key]
-			receipts.push(
-				<ReceiptCard
-					key={key}
-					receipt={receipt}
-					members={this.state.group.members}
-					to={`/${this.info.groupId}/receipt/${key}${this.state.editMode ? '?edit=true' : ''}`}
-					editMode={this.state.editMode}
-				/>
-			)
-		}
-		receipts.reverse()
-
-		let expenditure = calcExpenditure(this.state.group.members, this.state.receipts)
-
-		let settlement = calcSettlement(expenditure)
-
+	if (!group)
 		return (
-			<div className="Group">
-				<Snackbar
-					open={this.state.errorMsg != null}
-					autoHideDuration={5000}
-					onClose={() => {
-						this.setState({ errorMsg: null })
-					}}>
-					<Alert elevation={6} variant="filled" severity="error">
-						수정할 권한이 없습니다.
-					</Alert>
-				</Snackbar>
-				<section>
-					<article>
-						<span>
-							<EditableTextView
-								label="모임 이름"
-								text={this.state.group.name}
-								editMode={this.state.editMode}
-								onChange={(e) => {
-									let s = Object.assign({}, this.state)
-									s.group.name = e.target.value
-									this.setState(s)
-								}}
-							/>
-							정산 내역서
-							<IconButton
-								ripple
-								name={this.state.editMode ? 'check' : 'edit'}
-								onClick={() => {
-									if (this.state.editMode) this.saveGroupSetting(true)
-									else this.setEditMode(true)
-								}}
-							/>
-						</span>
-						<div>
-							<aside id="dashboard">
-								<div>
-									<ExpenditureCard
-										expenditure={expenditure}
-										members={this.state.group.members}
-										onMembersChange={(members) => {
-											let s = Object.assign({}, this.state)
-											s.group.members = members
-											this.setState(s)
-											this.saveGroupSetting()
-										}}
-										onMemberClick={(id) => {
-											this.props.history.push({ pathname: '/' + this.info.groupId + '/member/' + id, search: this.state.editMode ? '?edit=true' : '' })
-										}}
-										editMode={this.state.editMode}
-									/>
-									<SettlementCard members={this.state.group.members} settlement={settlement} />
-								</div>
-							</aside>
-							<main id="receipts">
-								{this.state.editMode ? (
-									<Link to={`/${this.info.groupId}/receipt/new?edit=true`}>
-										<Card className="add-card">
-											<Card.Body>추가하기</Card.Body>
-										</Card>
-									</Link>
-								) : null}
-								{receipts}
-							</main>
-						</div>
-					</article>
-				</section>
-				<footer>기획,개발: 김지섭 디자인: 손채린</footer>
+			<div className="popup">
+				<div>
+					<Spinner animation="border" />
+				</div>
 			</div>
 		)
-	}
-}
 
-export default App
+	let receiptCards = []
+
+	for (let key in receipts) {
+		let receipt = receipts[key]
+		receiptCards.push(
+			<ReceiptCard
+				key={key}
+				receipt={receipt}
+				members={group.members}
+				to={`/${params.groupId}/receipt/${key}${editMode ? '?edit=true' : ''}`}
+				editMode={editMode}
+			/>
+		)
+	}
+	receiptCards.reverse()
+
+	let expenditure = calcExpenditure(group.members, receipts)
+
+	let settlement = calcSettlement(expenditure)
+
+	return (
+		<div className="Group">
+			<Snackbar
+				open={errMsg != null && !errMsg.includes('CLOSE')}
+				autoHideDuration={5000}
+				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+				onClose={() => {
+					setErrMsg(errMsg + 'CLOSE')
+				}}>
+				<Alert elevation={6} variant="filled" severity="error">
+					{errMsg?.replace('CLOSE', '')}
+				</Alert>
+			</Snackbar>
+			<section>
+				<article>
+					<span>
+						<EditableTextView
+							label="모임 이름"
+							text={group.name}
+							editMode={editMode}
+							onChange={(e) => {
+								let _group = Object.assign({}, group)
+								_group.name = e.target.value
+								setGroup(_group)
+							}}
+						/>
+						정산 내역서
+						<IconButton
+							ripple
+							name={editMode ? 'check' : 'edit'}
+							onClick={() => {
+								if (editMode) saveGroupSetting(true)
+								else setEditMode(true)
+							}}
+						/>
+					</span>
+					<div>
+						<aside id="dashboard">
+							<div>
+								<ExpenditureCard
+									expenditure={expenditure}
+									members={group.members}
+									onMembersChange={(members) => {
+										let _group = Object.assign({}, group)
+										_group.members = members
+										setGroup(_group)
+										saveGroupSetting()
+									}}
+									onMemberClick={(id) => {
+										history.push({ pathname: '/' + params.groupId + '/member/' + id, search: editMode ? '?edit=true' : '' })
+									}}
+									editMode={editMode}
+								/>
+								<SettlementCard members={group.members} settlement={settlement} />
+							</div>
+						</aside>
+						<main id="receipts">
+							{editMode ? (
+								<Link to={`/${params.groupId}/receipt/new?edit=true`}>
+									<Card className="add-card">
+										<Card.Body>추가하기</Card.Body>
+									</Card>
+								</Link>
+							) : null}
+							{receiptCards}
+						</main>
+					</div>
+				</article>
+			</section>
+			<footer>기획,개발: 김지섭 디자인: 손채린</footer>
+		</div>
+	)
+}

@@ -9,7 +9,6 @@ let fbui
 export default function () {
 	const [user, setUser] = useState(null)
 	useEffect(() => {
-		console.log('inital')
 		auth = firebase.auth()
 		fbui = new firebaseui.auth.AuthUI(auth)
 		auth.onAuthStateChanged((user) => {
