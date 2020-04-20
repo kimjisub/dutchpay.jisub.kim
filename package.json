@@ -9,7 +9,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "bootstrap": "^4.4.1",
-    "firebase": "^7.8.0",
+    "firebase": "^7.14.1",
     "firebase-tools": "^7.11.0",
     "firebaseui": "^4.5.0",
     "magic-grid": "^3.2.4",
