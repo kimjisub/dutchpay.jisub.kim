@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { IconButton } from 'react-mdl'
 import { Card, Spinner } from 'react-bootstrap'
+import { Snackbar } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 
 import queryString from 'query-string'
 import { firestore } from '../firebase'
@@ -22,6 +24,7 @@ class App extends Component {
 			group: null,
 			receipts: {},
 			editMode: this.query.edit,
+			errorMsg: null,
 		}
 
 		// Firebase
@@ -78,6 +81,9 @@ class App extends Component {
 			.then(() => {
 				if (finishEdit) this.setEditMode(false)
 			})
+			.catch((e) => {
+				this.setState({ errorMsg: e.message })
+			})
 	}
 
 	render() {
@@ -112,19 +118,16 @@ class App extends Component {
 
 		return (
 			<div className="Group">
-				<header>
-					<a href="https://dutchpay.kimjisub.me" id="brand">
-						dutchpay
-					</a>
-					<IconButton
-						ripple
-						name={this.state.editMode ? 'check' : 'edit'}
-						onClick={() => {
-							if (this.state.editMode) this.saveGroupSetting(true)
-							else this.setEditMode(true)
-						}}
-					/>
-				</header>
+				<Snackbar
+					open={this.state.errorMsg != null}
+					autoHideDuration={5000}
+					onClose={() => {
+						this.setState({ errorMsg: null })
+					}}>
+					<Alert elevation={6} variant="filled" severity="error">
+						수정할 권한이 없습니다.
+					</Alert>
+				</Snackbar>
 				<section>
 					<article>
 						<span>
@@ -139,6 +142,14 @@ class App extends Component {
 								}}
 							/>
 							정산 내역서
+							<IconButton
+								ripple
+								name={this.state.editMode ? 'check' : 'edit'}
+								onClick={() => {
+									if (this.state.editMode) this.saveGroupSetting(true)
+									else this.setEditMode(true)
+								}}
+							/>
 						</span>
 						<div>
 							<aside id="dashboard">

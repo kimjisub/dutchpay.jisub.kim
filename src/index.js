@@ -5,6 +5,7 @@ import * as serviceWorker from './serviceWorker'
 import { firestore } from './firebase'
 
 import './index.scss'
+import Header from './route/Header'
 import MainPage from './route/MainPage'
 import Group from './route/Group'
 import Receipt from './route/Receipt'
@@ -13,12 +14,17 @@ import Member from './route/Member'
 window.$fs = firestore()
 
 ReactDOM.render(
-	<Router>
-		<Route path="/:groupId/receipt/:receiptId" component={Receipt} />
-		<Route path="/:groupId/member/:memberId" component={Member} />
-		<Route path="/:groupId" component={Group} />
-		<Route exact path="/" component={MainPage} />
-	</Router>,
+	<div>
+		<Router>
+			<Route path="/:groupId/receipt/:receiptId" component={Receipt} />
+			<Route path="/:groupId/member/:memberId" component={Member} />
+		</Router>
+		<Router>
+			<Header />
+			<Route path="/:groupId" component={Group} />
+			<Route exact path="/" component={MainPage} />
+		</Router>
+	</div>,
 	document.getElementById('root')
 )
 

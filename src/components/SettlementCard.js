@@ -15,7 +15,7 @@ class App extends Component {
 						let value = data.value
 
 						return (
-							<p>
+							<p key={i}>
 								{this.props.members[from]}
 								<span className="small">(이)가</span>
 								{this.props.members[to]}

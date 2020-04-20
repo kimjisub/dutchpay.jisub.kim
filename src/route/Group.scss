@@ -8,24 +8,6 @@
 	font-size: 12px;
 	color: black;
 
-	header {
-		position: relative;
-		vertical-align: center;
-		text-align: center;
-		height: 160px;
-		display: flex;
-		border-bottom: 1px solid gray;
-		background-color: #ffffff;
-
-		#brand {
-			color: #facd60;
-			display: block;
-			margin: 30px;
-			font-size: 1.3rem;
-			font-weight: bolder;
-		}
-	}
-
 	section {
 		display: flex;
 		width: 100%;
