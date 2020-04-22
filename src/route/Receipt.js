@@ -14,13 +14,13 @@ export default function (props) {
 	const params = useParams()
 	const queries = queryString.parse(useLocation().search)
 	const history = useHistory()
+	const editMode = queries.edit === 'true'
 
 	const [tab, setTab] = useState(0)
 	const [update, setUpdate] = useState(0)
 	const [itemIndex, setItemIndex] = useState(-1)
-	const [editMode, setEditMode] = useState(queries.edit)
-	const [members, setMembers] = useState(queries.edit)
-	const [receipt, setReceipt] = useState(queries.edit)
+	const [members, setMembers] = useState(null)
+	const [receipt, setReceipt] = useState(null)
 
 	useEffect(() => {
 		fs.collection('DutchPay')

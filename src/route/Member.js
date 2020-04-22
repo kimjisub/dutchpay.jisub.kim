@@ -14,6 +14,7 @@ export default function (props) {
 	const params = useParams()
 	const queries = queryString.parse(useLocation().search)
 	const history = useHistory()
+	const editMode = queries.edit === 'true'
 
 	const [group, setGroup] = useState(null)
 	const [receipts, setReceipts] = useState({})
@@ -58,7 +59,7 @@ export default function (props) {
 	}, [])
 
 	function close() {
-		history.push({ pathname: `/${params.groupId}`, search: queries.editMode ? '?edit=true' : '' })
+		history.push({ pathname: `/${params.groupId}`, search: editMode ? '?edit=true' : '' })
 	}
 
 	if (!group)
