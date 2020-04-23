@@ -145,7 +145,7 @@ export default function (props) {
 	let totalPrice = 0
 	for (let i in receipt.items) {
 		let item = receipt.items[i]
-		totalPrice += parseInt(item.price) || 0
+		totalPrice += item.price
 	}
 
 	const tab1 = (
@@ -180,7 +180,7 @@ export default function (props) {
 									className="item-price"
 									onChange={(e) => {
 										let _receipt = { ...receipt }
-										_receipt.items[i].price = parseInt(e.target.value.replace(/[^\d]/g, ''))
+										_receipt.items[i].price = parseFloat(e.target.value.replace(/[^\d\.]/g, '')) || 0
 										setReceipt(_receipt)
 									}}
 									label="가격"
@@ -306,7 +306,7 @@ export default function (props) {
 								<EditableTextView
 									onChange={(e) => {
 										let _receipt = { ...receipt }
-										_receipt.payers[id] = parseInt(e.target.value.replace(/[^\d]/g, ''))
+										_receipt.payers[id] = parseInt(e.target.value.replace(/[^\d\.]/g, ''))
 										setReceipt(_receipt)
 									}}
 									label="가격"
