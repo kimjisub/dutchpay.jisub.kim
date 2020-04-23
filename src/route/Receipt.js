@@ -1,428 +1,520 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useParams, useLocation, useHistory } from 'react-router-dom'
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { Snackbar, Popover, FormControlLabel, Checkbox, List, ListItem, Backdrop, CircularProgress, Tabs, Tab, Menu, MenuItem, Button, IconButton, Card, CardContent } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
+import { Person, Delete, Add } from '@material-ui/icons';
+
 import queryString from 'query-string'
-import { OverlayTrigger, Popover, Card, ListGroup, Spinner } from 'react-bootstrap'
+import NumberFormat from 'react-number-format'
+
 import { firestore } from '../firebase'
-import { Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox, Icon } from 'react-mdl'
 import './Receipt.scss'
 import EditableTextView from '../components/EditableTextView'
 
-class App extends Component {
-	constructor({ match, location }) {
-		super()
-		this.info = {
-			groupId: match.params.groupId,
-			receiptId: match.params.receiptId
-		}
-		this.location = location
-		this.query = queryString.parse(location.search)
-		this.state = {
-			tab: 0,
-			update: 0,
-			itemIndex: -1,
-			editMode: this.query.edit
-		}
+const fs = firestore()
 
-		this.fs = firestore()
+const AntTabs = withStyles({
+	root: {
+		borderBottom: '1px solid #e8e8e8',
+	},
+	indicator: {
+		backgroundColor: '#1890ff',
+	},
+})(Tabs);
 
-		this.fs
-			.collection('DutchPay')
-			.doc(this.info.groupId)
+const AntTab = withStyles((theme) => ({
+	root: {
+		textTransform: 'none',
+		minWidth: 72,
+		fontWeight: theme.typography.fontWeightRegular,
+		marginRight: theme.spacing(4),
+		fontFamily: [
+			'-apple-system',
+			'BlinkMacSystemFont',
+			'"Segoe UI"',
+			'Roboto',
+			'"Helvetica Neue"',
+			'Arial',
+			'sans-serif',
+			'"Apple Color Emoji"',
+			'"Segoe UI Emoji"',
+			'"Segoe UI Symbol"',
+		].join(','),
+		'&:hover': {
+			color: '#40a9ff',
+			opacity: 1,
+		},
+		'&$selected': {
+			color: '#1890ff',
+			fontWeight: theme.typography.fontWeightMedium,
+		},
+		'&:focus': {
+			color: '#40a9ff',
+		},
+	},
+	selected: {},
+}))((props) => <Tab disableRipple {...props} />);
+
+export default function (props) {
+	const params = useParams()
+	const queries = queryString.parse(useLocation().search)
+	const history = useHistory()
+	const editMode = queries.edit === 'true'
+
+	const [tab, setTab] = useState(0)
+	const [update, setUpdate] = useState(0)
+	const [members, setMembers] = useState(null)
+	const [receipt, setReceipt] = useState(null)
+	const [errMsg, setErrMsg] = useState(null)
+
+	const [memberPopoverAction, setMemberPopoverAction] = useState(null)
+	const [payerPopoverAction, setPayerPopoverAction] = useState(null)
+	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
+
+	useEffect(() => {
+		fs.collection('DutchPay')
+			.doc(params.groupId)
 			.get()
-			.then(doc => {
-				if (doc.exists) this.setState({ members: doc.data().members })
+			.then((doc) => {
+				if (doc.exists) setMembers(doc.data().members)
 			})
 
-		if (this.info.receiptId !== 'new')
-			this.fs
-				.collection('DutchPay')
-				.doc(this.info.groupId)
+		if (params.receiptId !== 'new')
+			fs.collection('DutchPay')
+				.doc(params.groupId)
 				.collection('Receipts')
-				.doc(this.info.receiptId)
+				.doc(params.receiptId)
 				.get()
-				.then(doc => {
+				.then((doc) => {
 					if (doc.exists) {
-						let data = (window.$data = doc.data())
-						this.setState({ receipt: data })
+						setReceipt(doc.data())
 					}
 				})
 		else {
-			let data = (window.$data = {
+			setReceipt({
 				name: '',
 				items: [],
 				payers: {},
-				timestamp: new Date()
+				timestamp: new Date(),
 			})
-			this.state.receipt = data
 		}
-	}
+	}, [params.groupId, params.receiptId])
 
-	updateToFB(receipt) {
-		if (this.info.receiptId !== 'new')
-			this.fs
-				.collection('DutchPay')
-				.doc(this.info.groupId)
+	function updateToFB(receipt) {
+		if (params.receiptId !== 'new')
+			fs.collection('DutchPay')
+				.doc(params.groupId)
 				.collection('Receipts')
-				.doc(this.info.receiptId)
+				.doc(params.receiptId)
 				.set(receipt)
 				.then(() => {
-					this.props.history.push({ pathname: `/${this.info.groupId}`, search: this.state.editMode ? '?edit=true' : '' })
+					close()
+				})
+				.catch((e) => {
+					setErrMsg('권한이 없습니다.')
+					history.push({ pathname: history.location.pathname })
 				})
 		else
-			this.fs
-				.collection('DutchPay')
-				.doc(this.info.groupId)
+			fs.collection('DutchPay')
+				.doc(params.groupId)
 				.collection('Receipts')
 				.add(receipt)
 				.then(() => {
-					this.close()
+					close()
+				})
+				.catch((e) => {
+					setErrMsg('권한이 없습니다.')
+					history.push({ pathname: history.location.pathname })
 				})
 	}
 
-	delete() {
-		if (this.info.receiptId !== 'new')
-			this.fs
-				.collection('DutchPay')
-				.doc(this.info.groupId)
+	function deleteFromFB() {
+		if (params.receiptId !== 'new')
+			fs.collection('DutchPay')
+				.doc(params.groupId)
 				.collection('Receipts')
-				.doc(this.info.receiptId)
+				.doc(params.receiptId)
 				.delete()
 				.then(() => {
-					this.close()
+					close()
+				})
+				.catch((e) => {
+					setErrMsg('권한이 없습니다.')
+					history.push({ pathname: history.location.pathname })
 				})
 	}
 
-	close() {
-		this.props.history.push({ pathname: `/${this.info.groupId}`, search: this.state.editMode ? '?edit=true' : '' })
+	function close() {
+		history.push({ pathname: `/${params.groupId}`, search: editMode ? '?edit=true' : '' })
 	}
 
-	render() {
-		if (!this.state.receipt || !this.state.members)
-			return (
-				<div className="popup">
-					<div>
-						<Spinner animation="border" />
-					</div>
-				</div>
-			)
-
-		const memberPopup = (
-			<Popover id="popover-basic">
-				<Popover.Content>
-					<ListGroup variant="flush">
-						{Object.entries(this.state.members).map(data => {
-							let id = data[0]
-							let name = data[1]
-
-							let buyers = this.state.receipt.items[this.state.itemIndex]?.buyers || []
-							let checked = buyers.includes(id)
-							return (
-								<ListGroup.Item key={id}>
-									<Checkbox
-										checked={checked}
-										label={name}
-										onChange={e => {
-											if (this.state.editMode) {
-												if (e.target.checked) buyers.push(id)
-												else buyers.splice(buyers.indexOf(id), 1)
-											}
-											this.setState({ update: this.state.update + 1 })
-										}}
-									/>
-								</ListGroup.Item>
-							)
-						})}
-					</ListGroup>
-				</Popover.Content>
-			</Popover>
-		)
-
-		let totalPrice = 0
-		for (let i in this.state.receipt.items) {
-			let item = this.state.receipt.items[i]
-			totalPrice += parseInt(item.price) || 0
-		}
-
-		const tab1 = (
-			<table className="receipt-table">
-				<thead>
-					<tr>
-						<th>상품명</th>
-						<th>가격</th>
-						<th>인원</th>
-						{this.state.editMode ? <th></th> : null}
-					</tr>
-				</thead>
-				<tbody>
-					{this.state.receipt.items.map((item, i) => {
-						return (
-							<tr key={'item-' + i}>
-								<td>
-									<EditableTextView
-										className="item-name"
-										onChange={e => {
-											let s = Object.assign({}, this.state)
-											s.receipt.items[i].name = e.target.value
-											this.setState(s)
-										}}
-										label="상품명"
-										text={item.name}
-										editMode={this.state.editMode}
-									/>
-								</td>
-								<td>
-									<EditableTextView
-										className="item-price"
-										onChange={e => {
-											let s = Object.assign({}, this.state)
-											s.receipt.items[i].price = parseInt(e.target.value)
-											this.setState(s)
-										}}
-										label="가격"
-										text={item.price}
-										editMode={this.state.editMode}
-									/>
-								</td>
-								<td>
-									<OverlayTrigger rootClose trigger="click" placement="right" overlay={memberPopup}>
-										<label
-											style={{ margin: 0 }}
-											onClick={() => {
-												this.setState({ itemIndex: i })
-											}}>
-											<Icon name="person" />
-											{this.state.receipt.items[i].buyers.length}
-										</label>
-									</OverlayTrigger>
-								</td>
-
-								{this.state.editMode ? (
-									<td>
-										<IconButton name="delete" id={'item-delete-' + i} />
-										<Menu target={'item-delete-' + i}>
-											<MenuItem
-												onClick={() => {
-													let s = Object.assign({}, this.state)
-													s.receipt.items.splice(i)
-													this.setState(s)
-												}}>
-												삭제
-											</MenuItem>
-										</Menu>
-									</td>
-								) : null}
-							</tr>
-						)
-					})}
-					{this.state.editMode ? (
-						<tr>
-							<td colSpan="4">
-								<Button
-									onClick={() => {
-										let buyers = Object.keys(this.state.members)
-										let s = Object.assign({}, this.state)
-										s.receipt.items.push({
-											name: '',
-											buyers,
-											price: 0
-										})
-										this.setState(s)
-									}}>
-									<Icon name="add_circle_outline" style={{ fontSize: '1.3rem' }} />
-									추가
-								</Button>
-							</td>
-						</tr>
-					) : null}
-				</tbody>
-				<tfoot>
-					<tr>
-						<th>총</th>
-						<td></td>
-						<td>{totalPrice}</td>
-					</tr>
-				</tfoot>
-			</table>
-		)
-
-		const payerPopup = (
-			<Popover id="popover-basic">
-				<Popover.Content>
-					<ListGroup variant="flush">
-						{Object.entries(this.state.members).map(data => {
-							let id = data[0]
-							let name = data[1]
-
-							return this.state.receipt.payers[id] === undefined ? (
-								<ListGroup.Item
-									key={id}
-									action
-									onClick={() => {
-										let s = Object.assign({}, this.state)
-										s.receipt.payers[id] = 0
-										this.setState(s)
-									}}>
-									{name}
-								</ListGroup.Item>
-							) : null
-						})}
-					</ListGroup>
-				</Popover.Content>
-			</Popover>
-		)
-
-		let totalPaied = 0
-		for (let i in this.state.receipt.payers) {
-			let item = this.state.receipt.payers[i]
-			totalPaied += parseInt(item) || 0
-		}
-
-		const tab2 = (
-			<table className="payer-table">
-				<thead>
-					<tr>
-						<th>결제자</th>
-						<th>가격</th>
-						{this.state.editMode ? <th></th> : null}
-					</tr>
-				</thead>
-				<tbody>
-					{Object.entries(this.state.receipt.payers).map((data, i) => {
-						let id = data[0]
-						let price = data[1]
-
-						return (
-							<tr key={'payer-' + i}>
-								<td>{this.state.members[id]}</td>
-								<td>
-									<EditableTextView
-										className="mdl-textfield-small"
-										onChange={e => {
-											let s = Object.assign({}, this.state)
-											s.receipt.payers[id] = parseInt(e.target.value)
-											this.setState(s)
-										}}
-										pattern="-?[0-9]*(\.[0-9]+)?"
-										error="숫자가 아닙니다."
-										label="가격"
-										text={price}
-										editMode={this.state.editMode}
-										style={{ width: '200px' }}
-										id={`pay-price-${i}`}
-									/>
-								</td>
-
-								{this.state.editMode ? (
-									<td>
-										<IconButton name="delete" id={'delete-' + i} />
-										<Menu target={'delete-' + i}>
-											<MenuItem
-												onClick={() => {
-													let s = Object.assign({}, this.state)
-													delete s.receipt.payers[id]
-													this.setState(s)
-												}}>
-												삭제
-											</MenuItem>
-										</Menu>
-									</td>
-								) : null}
-							</tr>
-						)
-					})}
-					{this.state.editMode ? (
-						<tr>
-							<td colSpan="3">
-								<OverlayTrigger rootClose trigger="click" placement="right" overlay={payerPopup}>
-									<label style={{ margin: 0 }}>
-										<Button ripple>
-											<Icon name="add_circle_outline" style={{ fontSize: '1.3rem' }} />
-											추가
-										</Button>
-									</label>
-								</OverlayTrigger>
-							</td>
-						</tr>
-					) : null}
-				</tbody>
-				<tfoot>
-					<tr>
-						<th>총</th>
-						<td>{totalPaied}</td>
-					</tr>
-				</tfoot>
-			</table>
-		)
-
+	if (!receipt || !members)
 		return (
-			<div className="Receipt popup">
+			<div className="popup">
 				<div>
-					<Card className="card">
-						<Card.Body>
-							<Card.Title>
-								<div className="title">
-									<EditableTextView
-										onChange={e => {
-											let s = Object.assign({}, this.state)
-											s.receipt.name = e.target.value
-											this.setState(s)
-										}}
-										label="영수증 이름"
-										editMode={this.state.editMode}
-										text={this.state.receipt.name}
-										style={{ width: '200px' }}
-									/>
-								</div>
-							</Card.Title>
-							<div>
-								<Tabs activeTab={this.state.tab} onChange={tab => this.setState({ tab })} ripple>
-									<Tab>영수증</Tab>
-									<Tab>결제</Tab>
-								</Tabs>
-								<section className="tab-page">{this.state.tab === 0 ? tab1 : tab2}</section>
-							</div>
-
-							<div className="action">
-								<div>
-									{this.state.editMode && this.info.receiptId !== 'new'
-										? [
-												<IconButton id="delete" key="button" name="delete">
-													삭제
-												</IconButton>,
-												<Menu target="delete" key="menu">
-													<MenuItem
-														onClick={() => {
-															this.delete()
-														}}>
-														삭제
-													</MenuItem>
-												</Menu>
-										  ]
-										: null}
-								</div>
-								<div></div>
-								<div>
-									<Button
-										onClick={() => {
-											this.close()
-										}}>
-										{this.state.editMode ? '취소' : '확인'}
-									</Button>
-									{this.state.editMode ? (
-										<Button
-											onClick={() => {
-												this.updateToFB(this.state.receipt)
-											}}>
-											저장
-										</Button>
-									) : null}
-								</div>
-							</div>
-						</Card.Body>
-					</Card>
+					<CircularProgress color="inherit" />
 				</div>
 			</div>
 		)
-	}
-}
 
-export default App
+	let totalPrice = 0
+	for (let i in receipt.items) {
+		let item = receipt.items[i]
+		totalPrice += item.price
+	}
+
+	const tab1 = (
+		<table className="receipt-table">
+			<thead>
+				<tr>
+					<th>상품명</th>
+					<th>가격</th>
+					<th>인원</th>
+					{editMode ? <th></th> : null}
+				</tr>
+			</thead>
+			<tbody>
+				{receipt.items.map((item, i) => {
+					return (
+						<tr key={'item-' + i}>
+							<td>
+								<EditableTextView
+									className="item-name"
+									onChange={(e) => {
+										let _receipt = { ...receipt }
+										_receipt.items[i].name = e.target.value
+										setReceipt(_receipt)
+									}}
+									label="상품명"
+									text={item.name}
+									editMode={editMode}
+								/>
+							</td>
+							<td>
+								<EditableTextView
+									className="item-price"
+									onChange={(e) => {
+										let _receipt = { ...receipt }
+										_receipt.items[i].price = parseFloat(e.target.value.replace(/[^\d.]/g, '')) || 0
+										setReceipt(_receipt)
+									}}
+									label="가격"
+									text={item.price}
+									editMode={editMode}
+									type="number"
+								/>
+							</td>
+							<td>
+								<IconButton
+									onClick={event => {
+										setMemberPopoverAction(
+											{
+												anchorEl: event.currentTarget,
+												index: i
+											}
+										)
+									}}>
+									<Person />
+									{receipt.items[i].buyers.length}
+								</IconButton>
+							</td>
+
+							{editMode ? (
+								<td>
+									<IconButton name="delete" id={'item-delete-' + i} onClick={event => {
+										setDeleteConfirmAction({
+											anchorEl: event.currentTarget,
+											deleteAction: () => {
+												let _receipt = { ...receipt }
+												_receipt.items.splice(i) //todo
+												setReceipt(_receipt)
+											},
+										})
+									}} ></IconButton>
+								</td>
+							) : null}
+						</tr>
+					)
+				})}
+				{editMode ? (
+					<tr>
+						<td colSpan="4">
+							<Button
+								onClick={() => {
+									let buyers = Object.keys(members)
+									let _receipt = { ...receipt }
+									receipt.items.push({
+										name: '',
+										buyers,
+										price: 0,
+									})
+									setReceipt(_receipt)
+								}}>
+								<Add />
+							</Button>
+						</td>
+					</tr>
+				) : null}
+			</tbody>
+			<tfoot>
+				<tr>
+					<th>총</th>
+					<td></td>
+					<td>
+						<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	)
+
+	let totalPaied = 0
+	for (let i in receipt.payers) {
+		let item = receipt.payers[i]
+		totalPaied += parseInt(item) || 0
+	}
+
+	const tab2 = (
+		<table className="payer-table">
+			<thead>
+				<tr>
+					<th>결제자</th>
+					<th>가격</th>
+					{editMode ? <th></th> : null}
+				</tr>
+			</thead>
+			<tbody>
+				{Object.entries(receipt.payers).map((data, i) => {
+					let id = data[0]
+					let price = data[1]
+
+					return (
+						<tr key={'payer-' + i}>
+							<td>{members[id]}</td>
+							<td>
+								<EditableTextView
+									onChange={(e) => {
+										setReceipt(receipt => {
+											let _receipt = { ...receipt }
+											_receipt.payers[id] = parseInt(e.target.value.replace(/[^\d.]/g, ''))
+											return _receipt
+										})
+									}}
+									label="가격"
+									text={price}
+									editMode={editMode}
+									type="number"
+									id={`pay-price-${i}`}
+								/>
+							</td>
+
+							{editMode ? (
+								<td>
+									<IconButton name="delete" id={'delete-' + i} onClick={
+										event => {
+											setDeleteConfirmAction({
+												anchorEl: event.currentTarget,
+												deleteAction: () => {
+													let _receipt = { ...receipt }
+													delete _receipt.payers[id]
+													setReceipt(_receipt)
+												},
+											})
+										}
+
+									} />
+								</td>
+							) : null}
+						</tr>
+					)
+				})}
+				{editMode ? (
+					<tr>
+						<td colSpan="3">
+							<label style={{ margin: 0 }}
+								onClick={event => {
+									setPayerPopoverAction(
+										{
+											anchorEl: event.currentTarget
+										}
+									)
+								}}>
+								<IconButton>
+									<Add />
+								</IconButton>
+							</label>
+						</td>
+					</tr>
+				) : null}
+			</tbody>
+			<tfoot>
+				<tr>
+					<th>총</th>
+					<td>
+						<NumberFormat value={totalPaied} displayType={'text'} thousandSeparator={true} />
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	)
+
+	return (
+		<div className="Receipt popup">
+			<Snackbar
+				open={errMsg != null && !errMsg.includes('CLOSE')}
+				autoHideDuration={5000}
+				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+				onClose={() => {
+					setErrMsg(errMsg + 'CLOSE')
+				}}>
+				<Alert elevation={6} variant="filled" severity="error">
+					{errMsg?.replace('CLOSE', '')}
+				</Alert>
+			</Snackbar>
+			<Popover id="popover-member"
+				anchorEl={memberPopoverAction?.anchorEl}
+				open={memberPopoverAction != null}
+				onClose={() => {
+					setMemberPopoverAction(null)
+				}}>
+				<List>
+					{Object.entries(members).map((data) => {
+						let id = data[0]
+						let name = data[1]
+
+						let buyers = receipt.items[memberPopoverAction?.index]?.buyers || []
+						let checked = buyers.includes(id)
+						return (
+							<ListItem key={id} role={undefined} dense button>
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={checked}
+											onChange={(e) => {
+												if (editMode) {
+													if (e.target.checked) buyers.push(id)
+													else buyers.splice(buyers.indexOf(id), 1)
+												}
+												setUpdate(update + 1)
+											}}
+											color="primary"
+										/>
+									}
+									label={name}
+								/>
+							</ListItem>
+						)
+					})}
+				</List>
+			</Popover>
+			<Popover id="popover-payer"
+				anchorEl={payerPopoverAction?.anchorEl}
+				open={payerPopoverAction != null}
+				onClose={() => {
+					setPayerPopoverAction(null)
+				}}>
+				<List>
+					{Object.entries(members).map((data) => {
+						let id = data[0]
+						let name = data[1]
+
+						return receipt.payers[id] === undefined ? (
+							<ListItem
+								key={id}
+								action
+								onClick={() => {
+									let _receipt = { ...receipt }
+									_receipt.payers[id] = 0
+									setReceipt(_receipt)
+								}}>
+								{name}
+							</ListItem>
+						) : null
+					})}
+				</List>
+			</Popover>
+			<Menu
+				keepMounted
+				anchorEl={deleteConfirmAction?.anchorEl}
+				open={deleteConfirmAction != null}
+				onClose={() => {
+					setDeleteConfirmAction(null)
+				}}>
+				<MenuItem
+					onClick={() => {
+						deleteConfirmAction.deleteAction()
+						setDeleteConfirmAction(null)
+					}}>
+					삭제
+				</MenuItem>
+			</Menu>
+			<div>
+				<Card className="card">
+					<CardContent>
+						<div className="title">
+							<EditableTextView
+								onChange={(e) => {
+									let _receipt = { ...receipt }
+									_receipt.name = e.target.value
+									setReceipt(_receipt)
+								}}
+								label="영수증 이름"
+								editMode={editMode}
+								text={receipt.name}
+								style={{ width: '200px' }}
+							/>
+						</div>
+						<div>
+							<AntTabs
+								centered
+								value={tab}
+								indicatorColor="primary"
+								textColor="primary"
+								onChange={(event, newValue) => setTab(newValue)}>
+								<AntTab label="영수증" />
+								<AntTab label="결제" />
+							</AntTabs>
+							<section className="tab-page">{tab === 0 ? tab1 : tab2}</section>
+						</div>
+
+						<div className="action">
+							<div>
+								{editMode && params.receiptId !== 'new'
+									?
+									(<IconButton id="delete" key="button" name="delete" onClick={event => {
+										setDeleteConfirmAction({
+											anchorEl: event.currentTarget,
+											deleteAction: () => {
+												deleteFromFB()
+											},
+										})
+									}}>
+										<Delete />
+									</IconButton>)
+									: null}
+							</div>
+							<div></div>
+							<div>
+								<Button
+									onClick={() => {
+										close()
+									}}>
+									{editMode ? '취소' : '확인'}
+								</Button>
+								{editMode ? (
+									<Button
+										onClick={() => {
+											updateToFB(receipt)
+										}}>
+										저장
+									</Button>
+								) : null}
+							</div>
+						</div>
+					</CardContent>
+				</Card>
+			</div>
+		</div>
+	)
+}

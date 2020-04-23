@@ -1,14 +1,21 @@
 .SettlementCard {
-	.item {
+	padding: 20px;
+	.title {
+		color: #facd60;
+		font-size: 1.3rem;
+	}
+	#body {
 		text-align: center;
+		color: #495057;
 		p {
-			font-size: 1.1rem;
+			font-size: 1rem;
 			margin: 0;
-			p {
-				display: inline;
+			font-weight: bold;
+			padding: 5px;
+			span.small {
 				color: #495057;
 				margin: 0px 5px 0px 0px;
-				font-size: 0.8rem;
+				font-size: 0.6rem;
 			}
 		}
 	}

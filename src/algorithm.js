@@ -49,7 +49,7 @@ export function calcSingleExpenditure(memberId, receipts) {
 			ret.push({
 				name: receipt.name,
 				totalPrice,
-				items
+				items,
 			})
 	}
 	return ret
@@ -104,4 +104,16 @@ export function bigNumberToCode(num) {
 	}
 	if (num !== 0) ret = digit[num] + ret
 	return ret
+}
+
+export function sortObject(o) {
+	var sorted = {},
+		key,
+		a = []
+	for (key in o) if (o.hasOwnProperty(key)) a.push(key)
+	a.sort()
+
+	for (key = 0; key < a.length; key++) sorted[a[key]] = o[a[key]]
+
+	return sorted
 }

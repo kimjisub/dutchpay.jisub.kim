@@ -2,22 +2,50 @@
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	background-color: #f6f7f9;
+	background-color: #facd60;
 	width: 100%;
 	min-height: 100vh;
 	font-size: 12px;
 	color: black;
 
-	header {
-		vertical-align: center;
-		text-align: center;
-		height: 160px;
+	section {
 		display: flex;
-		border-bottom: 1px solid gray;
-	}
+		width: 100%;
+		margin-top: -90px;
+		margin-bottom: 30px;
+		padding: 10px;
+		z-index: 1;
 
-	header h3 {
-		flex-grow: 2;
+		article {
+			margin: 10px auto;
+			padding: 50px 30px 30px 30px;
+			background-color: #ffffff;
+			box-shadow: 0 0 30px -10px;
+			border-radius: 30px;
+
+			.EditableTextView {
+				font-size: 1.8rem;
+				font-weight: bolder;
+			}
+
+			& > div {
+				flex-grow: 0;
+				display: flex;
+
+				#dashboard {
+					margin-bottom: -10px;
+					& > div {
+						margin: 10px 0;
+						position: sticky;
+						top: 10px;
+					}
+				}
+
+				#receipts {
+					display: block;
+				}
+			}
+		}
 	}
 
 	.card {
@@ -27,31 +55,6 @@
 
 	.card .mdl-card__menu {
 		margin: 4px;
-	}
-
-	#content {
-		display: flex;
-		flex-direction: row;
-		width: 100%;
-	}
-
-	#content > * {
-		flex-grow: 1;
-	}
-
-	#content > section {
-		flex-grow: 0;
-		display: flex;
-		margin: 10px;
-	}
-
-	#dashboard {
-		display: flex;
-		flex-direction: column;
-	}
-
-	#receipts {
-		display: block;
 	}
 
 	.add-card {
@@ -65,16 +68,35 @@
 		widows: 100%;
 	}
 
-	@media (max-width: 700px) {
-		#content {
-			display: flex;
-			flex-direction: row;
-			width: 100%;
+	@media (max-width: 800px) {
+		section {
+			article {
+				& > div {
+					display: flex;
+					flex-direction: column;
+					width: 100%;
+				}
+			}
 		}
+	}
 
-		#section {
-			display: flex;
-			flex-direction: column;
+	@media (max-width: 450px) {
+		section {
+			background-color: #facd60;
+			article {
+				width: 100%;
+				margin: 0;
+				padding: 20px;
+				box-shadow: 0 0 0 0;
+				border-radius: 0;
+				background-color: #facd60;
+
+				& > div {
+					display: flex;
+					flex-direction: column;
+					width: 100%;
+				}
+			}
 		}
 	}
 }

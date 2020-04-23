@@ -1,103 +1,101 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Card } from 'react-bootstrap'
+import NumberFormat from 'react-number-format'
 import './ReceiptCard.scss'
 
-class App extends Component {
-	constructor() {
-		super()
-		this.state = {
-			expend: true
-		}
-	}
+export default function (props) {
+	// eslint-disable-next-line no-unused-vars
+	const [expend, setExpend] = useState(true)
 
-	render() {
-		let totalPrice = 0
-		let paiedPrice = 0
+	let totalPrice = 0
+	let paiedPrice = 0
 
-		let itemList = this.props.receipt.items.map((item, i) => {
-			totalPrice += item.price
-			return (
-				<tr key={i}>
-					<td>{item.name}</td>
-					<td>{item.price}</td>
-					<td>{item.buyers.length}명</td>
-				</tr>
-			)
-		})
-
-		let payerList = []
-		for (let id in this.props.receipt.payers) {
-			let price = this.props.receipt.payers[id]
-			paiedPrice += price
-			payerList.push(
-				<tr key={id}>
-					<td>{this.props.members[id]}</td>
-					<td>{price}</td>
-					<td></td>
-				</tr>
-			)
-		}
-
-		let diff = totalPrice - paiedPrice
-		let statusMsg
-
-		if (diff === 0) statusMsg = '결제 완료'
-		else if (diff > 0) statusMsg = `${diff}원 미결제`
-		else if (diff < 0) statusMsg = `${-diff}원 초과결제`
-
+	let itemList = props.receipt.items.map((item, i) => {
+		totalPrice += item.price
 		return (
-			<Link to={this.props.to} className="ReceiptCard">
-				<Card className="receipt-card">
-					<Card.Body>
-						<Card.Title>{this.props.receipt.name}</Card.Title>
-						{this.state.expend
-							? [
-									<table responsive borderless key="table1">
-										<thead>
-											<tr>
-												<th>이름</th>
-												<th>가격</th>
-												<th>인원</th>
-											</tr>
-										</thead>
+			<tr key={i}>
+				<td>{item.name}</td>
+				<td>
+					<NumberFormat value={item.price} displayType={'text'} thousandSeparator={true} />
+				</td>
+				<td>{item.buyers.length}명</td>
+			</tr>
+		)
+	})
 
-										<tbody>{itemList}</tbody>
-										<tfoot>
-											<tr>
-												<th>총</th>
-												<th>{totalPrice}</th>
-												<th></th>
-											</tr>
-										</tfoot>
-									</table>,
-									<table responsive borderless key="table1">
-										<thead>
-											<tr>
-												<th>결제자</th>
-												<th>결제 금액</th>
-												<th></th>
-											</tr>
-										</thead>
-
-										<tbody>{payerList}</tbody>
-
-										<tfoot>
-											<tr>
-												<th>총</th>
-												<th>{paiedPrice}</th>
-												<th></th>
-											</tr>
-										</tfoot>
-									</table>
-							  ]
-							: null}
-					</Card.Body>
-					{this.state.expend ? <Card.Footer className="text-muted">{statusMsg}</Card.Footer> : null}
-				</Card>
-			</Link>
+	let payerList = []
+	for (let id in props.receipt.payers) {
+		let price = props.receipt.payers[id]
+		paiedPrice += price
+		payerList.push(
+			<tr key={id}>
+				<td>{props.members[id]}</td>
+				<td>
+					<NumberFormat value={price} displayType={'text'} thousandSeparator={true} />
+				</td>
+				<td></td>
+			</tr>
 		)
 	}
-}
 
-export default App
+	let diff = totalPrice - paiedPrice
+	let statusMsg
+
+	if (diff === 0) statusMsg = '결제 완료'
+	else if (diff > 0) statusMsg = <NumberFormat value={diff} displayType={'text'} thousandSeparator={true} suffix="원 미결제" />
+	else if (diff < 0) statusMsg = <NumberFormat value={-diff} displayType={'text'} thousandSeparator={true} suffix="원 초과결제" />
+
+	return (
+		<Link to={props.to} className="ReceiptCard">
+			<main className="card">
+				<div className="title">{props.receipt.name}</div>
+				{expend
+					? [
+							<table key="table1">
+								<thead>
+									<tr>
+										<th>이름</th>
+										<th>가격</th>
+										<th>인원</th>
+									</tr>
+								</thead>
+
+								<tbody>{itemList}</tbody>
+								<tfoot>
+									<tr>
+										<th>총</th>
+										<th>
+											<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
+										</th>
+										<th></th>
+									</tr>
+								</tfoot>
+							</table>,
+							<table key="table2">
+								<thead>
+									<tr>
+										<th>결제자</th>
+										<th>결제 금액</th>
+										<th></th>
+									</tr>
+								</thead>
+
+								<tbody>{payerList}</tbody>
+
+								<tfoot>
+									<tr>
+										<th>총</th>
+										<th>
+											<NumberFormat value={paiedPrice} displayType={'text'} thousandSeparator={true} />
+										</th>
+										<th></th>
+									</tr>
+								</tfoot>
+							</table>,
+					  ]
+					: null}
+				{expend ? statusMsg : null}
+			</main>
+		</Link>
+	)
+}

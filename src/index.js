@@ -1,10 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import * as serviceWorker from './serviceWorker'
 import { firestore } from './firebase'
 
 import './index.scss'
+import Header from './route/Header'
 import MainPage from './route/MainPage'
 import Group from './route/Group'
 import Receipt from './route/Receipt'
@@ -16,8 +17,12 @@ ReactDOM.render(
 	<Router>
 		<Route path="/:groupId/receipt/:receiptId" component={Receipt} />
 		<Route path="/:groupId/member/:memberId" component={Member} />
-		<Route path="/:groupId" component={Group} />
-		<Route exact path="/" component={MainPage} />
+
+		<Header />
+		<Switch>
+			<Route path="/:groupId" component={Group} />
+			<Route exact path="/" component={MainPage} />
+		</Switch>
 	</Router>,
 	document.getElementById('root')
 )

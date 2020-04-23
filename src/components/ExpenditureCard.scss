@@ -1,4 +1,9 @@
 .ExpenditureCard {
+	padding: 20px;
+	.title {
+		color: #facd60;
+		font-size: 1.3rem;
+	}
 	table {
 		width: 100%;
 		text-align: center;
@@ -12,6 +17,7 @@
 				font-size: 1rem;
 			}
 		}
+
 		tbody {
 			tr {
 				background: #fff;

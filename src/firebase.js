@@ -10,6 +10,18 @@ let config = {
 	measurementId: 'G-0Y9XGCYDRR'
 }
 
+// Test Project
+// config = {
+// 	apiKey: "AIzaSyDnwtmJRjv9whKJFnYR9bg7IDlghrmGmOY",
+// 	authDomain: "dutchpay-test-21f61.firebaseapp.com",
+// 	databaseURL: "https://dutchpay-test-21f61.firebaseio.com",
+// 	projectId: "dutchpay-test-21f61",
+// 	storageBucket: "dutchpay-test-21f61.appspot.com",
+// 	messagingSenderId: "813042392657",
+// 	appId: "1:813042392657:web:bde39eecebf75a8c0e2270",
+// 	measurementId: "G-B4TD3C97CH"
+// }
+
 export const firestore = () => {
 	if (!firebase.apps.length) firebase.initializeApp(config)
 	return firebase.firestore()

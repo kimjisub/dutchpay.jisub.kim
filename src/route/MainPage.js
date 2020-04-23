@@ -1,53 +1,57 @@
-import React, { Component } from 'react'
-import { Button, Snackbar } from 'react-mdl'
+import React, { useState, useEffect } from 'react'
+import { Button } from 'react-mdl'
+import { Snackbar } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
+import firebase from 'firebase'
 
 import './MainPage.scss'
 import { firestore } from '../firebase'
+import { fbLog } from '../logger'
 
-class MainPage extends Component {
-	constructor() {
-		super()
-		this.fs = firestore()
-		this.state = {
-			err: null
-		}
-	}
+let auth
+const fs = firestore()
 
-	render() {
-		return (
-			<div className="MainPage">
-				<Button
-					raised
-					ripple
-					onClick={() => {
-						this.fs
-							.collection('DutchPay')
-							.add({
-								name: '',
-								members: [],
-								timestamp: new Date()
-							})
-							.then(docRef => {
-								this.props.history.push({ pathname: `/${docRef.id}`, search: '?edit=true' })
-							})
-							.catch(err => {
-								this.setState({ err: err })
-							})
-					}}>
-					새로 만들기
-				</Button>
-				<Snackbar
-					active={this.state.err != null}
-					onClick={this.handleClickActionSnackbar}
-					onTimeout={() => {
-						this.setState({ err: null })
-					}}
-					action="Undo">
-					{this.state.err}
-				</Snackbar>
-			</div>
-		)
-	}
+export default function (props) {
+	const [errMsg, setErrMsg] = useState(null)
+	useEffect(() => {
+		auth = firebase.auth()
+	}, [])
+
+	return (
+		<div className="MainPage">
+			<Button
+				raised
+				ripple
+				onClick={() => {
+					fbLog('Add /DutchPay')
+					fs.collection('DutchPay')
+						.add({
+							name: '',
+							members: [],
+							owner: auth?.currentUser?.uid ?? '',
+							timestamp: new Date(),
+						})
+						.then((docRef) => {
+							props.history.push({ pathname: `/${docRef.id}`, search: '?edit=true' })
+						})
+						.catch((err) => {
+							console.log(err)
+							setErrMsg('로그인이 필요합니다')
+						})
+				}}>
+				새로 만들기
+			</Button>
+			<Snackbar
+				open={errMsg != null && !errMsg.includes('CLOSE')}
+				autoHideDuration={5000}
+				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+				onClose={() => {
+					setErrMsg(errMsg + 'CLOSE')
+				}}>
+				<Alert elevation={6} variant="filled" severity="error">
+					{errMsg?.replace('CLOSE', '')}
+				</Alert>
+			</Snackbar>
+		</div>
+	)
 }
-
-export default MainPage
