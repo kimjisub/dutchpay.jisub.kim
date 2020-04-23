@@ -36,34 +36,30 @@ export default function (props) {
 		setGroup(data)
 	}, [])
 
-	const onReceiptSnapshot = useCallback(
-		(querySnapshot) => {
-			setReceipts(receipts => {
-				let _receipts = { ...receipts }
-				querySnapshot.docChanges().forEach((change) => {
-					let id = change.doc.id
-					let data = change.doc.data()
-					console.log('Receipts', change.type, id)
+	const onReceiptSnapshot = useCallback((querySnapshot) => {
+		setReceipts((receipts) => {
+			let _receipts = { ...receipts }
+			querySnapshot.docChanges().forEach((change) => {
+				let id = change.doc.id
+				let data = change.doc.data()
+				console.log('Receipts', change.type, id)
 
-					switch (change.type) {
-						case 'added':
-							_receipts[id] = data
-							break
-						case 'modified':
-							_receipts[id] = data
-							break
-						case 'removed':
-							delete _receipts[id]
-							break
-						default:
-					}
-				})
-				return _receipts
+				switch (change.type) {
+					case 'added':
+						_receipts[id] = data
+						break
+					case 'modified':
+						_receipts[id] = data
+						break
+					case 'removed':
+						delete _receipts[id]
+						break
+					default:
+				}
 			})
-
-		},
-		[]
-	)
+			return _receipts
+		})
+	}, [])
 
 	// Subscribe Firestore
 	useEffect(() => {
@@ -89,7 +85,7 @@ export default function (props) {
 			fs.collection('DutchPay')
 				.doc(params.groupId)
 				.update({})
-				.then(() => { })
+				.then(() => {})
 				.catch((err) => {
 					fbLog(err)
 					setErrMsg('권한이 없습니다.')
@@ -97,11 +93,10 @@ export default function (props) {
 				})
 		} else {
 			// Apply Group Name
-			if (group)
-				setGroup(group => ({ ...group, name: groupName }))
+			if (group) setGroup((group) => ({ ...group, name: groupName }))
 		}
+		// eslint-disable-next-line
 	}, [editMode, history, params.groupId])
-
 
 	// Group Changed
 	useEffect(() => {
@@ -110,15 +105,13 @@ export default function (props) {
 			fs.collection('DutchPay')
 				.doc(params.groupId)
 				.set(group)
-				.then(() => { })
+				.then(() => {})
 				.catch((err) => {
 					setErrMsg('권한이 없습니다.')
 					setEditMode(false)
 				})
 		}
-
 	}, [group, editMode, params.groupId])
-
 
 	if (!group)
 		return (
