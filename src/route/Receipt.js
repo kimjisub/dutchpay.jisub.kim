@@ -1,16 +1,59 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
-import { Snackbar } from '@material-ui/core'
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { Snackbar, Popover, FormControlLabel, Checkbox, List, ListItem, Backdrop, CircularProgress, Tabs, Tab, Menu, MenuItem } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import queryString from 'query-string'
-import { OverlayTrigger, Popover, Card, ListGroup, Spinner } from 'react-bootstrap'
+import { Card } from 'react-bootstrap'
+import { Button, IconButton, Icon } from 'react-mdl'
 import { firestore } from '../firebase'
-import { Button, Tabs, Tab, IconButton, Menu, MenuItem, Checkbox, Icon } from 'react-mdl'
 import NumberFormat from 'react-number-format'
 import './Receipt.scss'
 import EditableTextView from '../components/EditableTextView'
 
 const fs = firestore()
+
+const AntTabs = withStyles({
+	root: {
+		borderBottom: '1px solid #e8e8e8',
+	},
+	indicator: {
+		backgroundColor: '#1890ff',
+	},
+})(Tabs);
+
+const AntTab = withStyles((theme) => ({
+	root: {
+		textTransform: 'none',
+		minWidth: 72,
+		fontWeight: theme.typography.fontWeightRegular,
+		marginRight: theme.spacing(4),
+		fontFamily: [
+			'-apple-system',
+			'BlinkMacSystemFont',
+			'"Segoe UI"',
+			'Roboto',
+			'"Helvetica Neue"',
+			'Arial',
+			'sans-serif',
+			'"Apple Color Emoji"',
+			'"Segoe UI Emoji"',
+			'"Segoe UI Symbol"',
+		].join(','),
+		'&:hover': {
+			color: '#40a9ff',
+			opacity: 1,
+		},
+		'&$selected': {
+			color: '#1890ff',
+			fontWeight: theme.typography.fontWeightMedium,
+		},
+		'&:focus': {
+			color: '#40a9ff',
+		},
+	},
+	selected: {},
+}))((props) => <Tab disableRipple {...props} />);
 
 export default function (props) {
 	const params = useParams()
@@ -20,10 +63,13 @@ export default function (props) {
 
 	const [tab, setTab] = useState(0)
 	const [update, setUpdate] = useState(0)
-	const [itemIndex, setItemIndex] = useState(-1)
 	const [members, setMembers] = useState(null)
 	const [receipt, setReceipt] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)
+
+	const [memberPopoverAction, setMemberPopoverAction] = useState(null)
+	const [payerPopoverAction, setPayerPopoverAction] = useState(null)
+	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
 
 	useEffect(() => {
 		fs.collection('DutchPay')
@@ -106,41 +152,10 @@ export default function (props) {
 		return (
 			<div className="popup">
 				<div>
-					<Spinner animation="border" />
+					<CircularProgress color="inherit" />
 				</div>
 			</div>
 		)
-
-	const memberPopup = (
-		<Popover id="popover-basic">
-			<Popover.Content>
-				<ListGroup variant="flush">
-					{Object.entries(members).map((data) => {
-						let id = data[0]
-						let name = data[1]
-
-						let buyers = receipt.items[itemIndex]?.buyers || []
-						let checked = buyers.includes(id)
-						return (
-							<ListGroup.Item key={id}>
-								<Checkbox
-									checked={checked}
-									label={name}
-									onChange={(e) => {
-										if (editMode) {
-											if (e.target.checked) buyers.push(id)
-											else buyers.splice(buyers.indexOf(id), 1)
-										}
-										setUpdate(update + 1)
-									}}
-								/>
-							</ListGroup.Item>
-						)
-					})}
-				</ListGroup>
-			</Popover.Content>
-		</Popover>
-	)
 
 	let totalPrice = 0
 	for (let i in receipt.items) {
@@ -180,7 +195,7 @@ export default function (props) {
 									className="item-price"
 									onChange={(e) => {
 										let _receipt = { ...receipt }
-										_receipt.items[i].price = parseFloat(e.target.value.replace(/[^\d\.]/g, '')) || 0
+										_receipt.items[i].price = parseFloat(e.target.value.replace(/[^\d.]/g, '')) || 0
 										setReceipt(_receipt)
 									}}
 									label="가격"
@@ -190,31 +205,33 @@ export default function (props) {
 								/>
 							</td>
 							<td>
-								<OverlayTrigger rootClose trigger="click" placement="right" overlay={memberPopup}>
-									<label
-										style={{ margin: 0 }}
-										onClick={() => {
-											setItemIndex(i)
-										}}>
-										<Icon name="person" />
-										{receipt.items[i].buyers.length}
-									</label>
-								</OverlayTrigger>
+								<label
+									style={{ margin: 0 }}
+									onClick={event => {
+										setMemberPopoverAction(
+											{
+												anchorEl: event.currentTarget,
+												index: i
+											}
+										)
+									}}>
+									<Icon name="person" />
+									{receipt.items[i].buyers.length}
+								</label>
 							</td>
 
 							{editMode ? (
 								<td>
-									<IconButton name="delete" id={'item-delete-' + i} />
-									<Menu target={'item-delete-' + i}>
-										<MenuItem
-											onClick={() => {
+									<IconButton name="delete" id={'item-delete-' + i} onClick={event => {
+										setDeleteConfirmAction({
+											anchorEl: event.currentTarget,
+											deleteAction: () => {
 												let _receipt = { ...receipt }
 												_receipt.items.splice(i) //todo
 												setReceipt(_receipt)
-											}}>
-											삭제
-										</MenuItem>
-									</Menu>
+											},
+										})
+									}} />
 								</td>
 							) : null}
 						</tr>
@@ -253,32 +270,6 @@ export default function (props) {
 		</table>
 	)
 
-	const payerPopup = (
-		<Popover id="popover-basic">
-			<Popover.Content>
-				<ListGroup variant="flush">
-					{Object.entries(members).map((data) => {
-						let id = data[0]
-						let name = data[1]
-
-						return receipt.payers[id] === undefined ? (
-							<ListGroup.Item
-								key={id}
-								action
-								onClick={() => {
-									let _receipt = { ...receipt }
-									_receipt.payers[id] = 0
-									setReceipt(_receipt)
-								}}>
-								{name}
-							</ListGroup.Item>
-						) : null
-					})}
-				</ListGroup>
-			</Popover.Content>
-		</Popover>
-	)
-
 	let totalPaied = 0
 	for (let i in receipt.payers) {
 		let item = receipt.payers[i]
@@ -305,9 +296,11 @@ export default function (props) {
 							<td>
 								<EditableTextView
 									onChange={(e) => {
-										let _receipt = { ...receipt }
-										_receipt.payers[id] = parseInt(e.target.value.replace(/[^\d\.]/g, ''))
-										setReceipt(_receipt)
+										setReceipt(receipt => {
+											let _receipt = { ...receipt }
+											_receipt.payers[id] = parseInt(e.target.value.replace(/[^\d.]/g, ''))
+											return _receipt
+										})
 									}}
 									label="가격"
 									text={price}
@@ -319,17 +312,19 @@ export default function (props) {
 
 							{editMode ? (
 								<td>
-									<IconButton name="delete" id={'delete-' + i} />
-									<Menu target={'delete-' + i}>
-										<MenuItem
-											onClick={() => {
-												let _receipt = { ...receipt }
-												delete _receipt.payers[id]
-												setReceipt(_receipt)
-											}}>
-											삭제
-										</MenuItem>
-									</Menu>
+									<IconButton name="delete" id={'delete-' + i} onClick={
+										event => {
+											setDeleteConfirmAction({
+												anchorEl: event.currentTarget,
+												deleteAction: () => {
+													let _receipt = { ...receipt }
+													delete _receipt.payers[id]
+													setReceipt(_receipt)
+												},
+											})
+										}
+
+									} />
 								</td>
 							) : null}
 						</tr>
@@ -338,14 +333,19 @@ export default function (props) {
 				{editMode ? (
 					<tr>
 						<td colSpan="3">
-							<OverlayTrigger rootClose trigger="click" placement="right" overlay={payerPopup}>
-								<label style={{ margin: 0 }}>
-									<Button ripple>
-										<Icon name="add_circle_outline" style={{ fontSize: '1.3rem' }} />
-										추가
+							<label style={{ margin: 0 }}
+								onClick={event => {
+									setPayerPopoverAction(
+										{
+											anchorEl: event.currentTarget
+										}
+									)
+								}}>
+								<Button ripple>
+									<Icon name="add_circle_outline" style={{ fontSize: '1.3rem' }} />
+									추가
 									</Button>
-								</label>
-							</OverlayTrigger>
+							</label>
 						</td>
 					</tr>
 				) : null}
@@ -374,6 +374,83 @@ export default function (props) {
 					{errMsg?.replace('CLOSE', '')}
 				</Alert>
 			</Snackbar>
+			<Popover id="popover-member"
+				anchorEl={memberPopoverAction?.anchorEl}
+				open={memberPopoverAction != null}
+				onClose={() => {
+					setMemberPopoverAction(null)
+				}}>
+				<List>
+					{Object.entries(members).map((data) => {
+						let id = data[0]
+						let name = data[1]
+
+						let buyers = receipt.items[memberPopoverAction?.index]?.buyers || []
+						let checked = buyers.includes(id)
+						return (
+							<ListItem key={id} role={undefined} dense button>
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={checked}
+											onChange={(e) => {
+												if (editMode) {
+													if (e.target.checked) buyers.push(id)
+													else buyers.splice(buyers.indexOf(id), 1)
+												}
+												setUpdate(update + 1)
+											}}
+											color="primary"
+										/>
+									}
+									label={name}
+								/>
+							</ListItem>
+						)
+					})}
+				</List>
+			</Popover>
+			<Popover id="popover-payer"
+				anchorEl={payerPopoverAction?.anchorEl}
+				open={payerPopoverAction != null}
+				onClose={() => {
+					setPayerPopoverAction(null)
+				}}>
+				<List>
+					{Object.entries(members).map((data) => {
+						let id = data[0]
+						let name = data[1]
+
+						return receipt.payers[id] === undefined ? (
+							<ListItem
+								key={id}
+								action
+								onClick={() => {
+									let _receipt = { ...receipt }
+									_receipt.payers[id] = 0
+									setReceipt(_receipt)
+								}}>
+								{name}
+							</ListItem>
+						) : null
+					})}
+				</List>
+			</Popover>
+			<Menu
+				keepMounted
+				anchorEl={deleteConfirmAction?.anchorEl}
+				open={deleteConfirmAction != null}
+				onClose={() => {
+					setDeleteConfirmAction(null)
+				}}>
+				<MenuItem
+					onClick={() => {
+						deleteConfirmAction.deleteAction()
+						setDeleteConfirmAction(null)
+					}}>
+					삭제
+				</MenuItem>
+			</Menu>
 			<div>
 				<Card className="card">
 					<Card.Body>
@@ -393,9 +470,14 @@ export default function (props) {
 							</div>
 						</Card.Title>
 						<div>
-							<Tabs activeTab={tab} onChange={(tab) => setTab(tab)} ripple>
-								<Tab>영수증</Tab>
-								<Tab>결제</Tab>
+							<Tabs
+								centered
+								value={tab}
+								indicatorColor="primary"
+								textColor="primary"
+								onChange={(event, newValue) => setTab(newValue)}>
+								<Tab label="영수증" />
+								<Tab label="결제" />
 							</Tabs>
 							<section className="tab-page">{tab === 0 ? tab1 : tab2}</section>
 						</div>
@@ -403,19 +485,17 @@ export default function (props) {
 						<div className="action">
 							<div>
 								{editMode && params.receiptId !== 'new'
-									? [
-										<IconButton id="delete" key="button" name="delete">
-											삭제
-											</IconButton>,
-										<Menu target="delete" key="menu">
-											<MenuItem
-												onClick={() => {
-													deleteFromFB()
-												}}>
-												삭제
-												</MenuItem>
-										</Menu>,
-									]
+									?
+									(<IconButton id="delete" key="button" name="delete" onClick={event => {
+										setDeleteConfirmAction({
+											anchorEl: event.currentTarget,
+											deleteAction: () => {
+												deleteFromFB()
+											},
+										})
+									}}>
+										삭제
+											</IconButton>)
 									: null}
 							</div>
 							<div></div>

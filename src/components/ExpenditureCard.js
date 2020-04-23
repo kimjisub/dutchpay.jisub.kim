@@ -96,16 +96,16 @@ export default function (props) {
 				</tfoot>
 			</table>
 			<Menu
-				anchorEl={deleteConfirmAction?.anchorEl}
 				keepMounted
+				anchorEl={deleteConfirmAction?.anchorEl}
 				open={deleteConfirmAction != null}
 				onClose={() => {
 					setDeleteConfirmAction(null)
 				}}>
 				<MenuItem
 					onClick={() => {
-						setDeleteConfirmAction(null)
 						deleteConfirmAction.deleteAction()
+						setDeleteConfirmAction(null)
 					}}>
 					삭제
 				</MenuItem>

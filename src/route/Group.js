@@ -100,7 +100,7 @@ export default function (props) {
 			if (group)
 				setGroup(group => ({ ...group, name: groupName }))
 		}
-	}, [editMode, history, params.groupId])
+	}, [editMode, history, params.groupId, group])
 
 
 	// Group Changed
