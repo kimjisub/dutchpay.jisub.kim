@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Menu, MenuItem } from '@material-ui/core'
 import { Textfield, IconButton } from 'react-mdl'
 import NumberFormat from 'react-number-format'

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import NumberFormat from 'react-number-format'
 import './ReceiptCard.scss'
 
 export default function (props) {
+	// eslint-disable-next-line no-unused-vars
 	const [expend, setExpend] = useState(true)
 
 	let totalPrice = 0

@@ -52,7 +52,7 @@ export default function (props) {
 				timestamp: new Date(),
 			})
 		}
-	}, [])
+	}, [params.groupId, params.receiptId])
 
 	function updateToFB(receipt) {
 		if (params.receiptId !== 'new')

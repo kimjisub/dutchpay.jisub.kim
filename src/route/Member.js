@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import queryString from 'query-string'
 import { Spinner } from 'react-bootstrap'
@@ -19,44 +19,44 @@ export default function (props) {
 	const [group, setGroup] = useState(null)
 	const [receipts, setReceipts] = useState({})
 
-	useEffect(() => {
-		fs.collection('DutchPay')
-			.doc(params.groupId)
-			.onSnapshot((doc) => {
-				let data = (window.$data = doc.data())
-				//console.log("Group Data Changed: ", data);
-				data.members = sortObject(data.members)
-				setGroup(data)
-			})
-
-		fs.collection('DutchPay')
-			.doc(params.groupId)
-			.collection('Receipts')
-			.orderBy('timestamp', 'asc')
-			.onSnapshot((querySnapshot) => {
-				let _receipts = { ...receipts }
-				querySnapshot.docChanges().forEach((change) => {
-					let id = change.doc.id
-					let data = change.doc.data()
-					console.log('Receipts', change.type, id)
-
-					switch (change.type) {
-						case 'added':
-							_receipts[id] = data
-							break
-						case 'modified':
-							_receipts[id] = data
-							break
-						case 'removed':
-							delete _receipts[id]
-							break
-						default:
-					}
-				})
-				setReceipts(_receipts)
-				console.log(_receipts)
-			})
+	const onGroupSnapshot = useCallback((doc) => {
+		let data = (window.$data = doc.data())
+		//console.log("Group Data Changed: ", data);
+		data.members = sortObject(data.members)
+		setGroup(data)
 	}, [])
+
+	const onReceiptSnapshot = useCallback(
+		(querySnapshot) => {
+			let _receipts = { ...receipts }
+			querySnapshot.docChanges().forEach((change) => {
+				let id = change.doc.id
+				let data = change.doc.data()
+				//console.log('Receipts', change.type, id)
+
+				switch (change.type) {
+					case 'added':
+						_receipts[id] = data
+						break
+					case 'modified':
+						_receipts[id] = data
+						break
+					case 'removed':
+						delete _receipts[id]
+						break
+					default:
+				}
+			})
+			setReceipts(_receipts)
+		},
+		[receipts]
+	)
+
+	useEffect(() => {
+		fs.collection('DutchPay').doc(params.groupId).onSnapshot(onGroupSnapshot)
+
+		fs.collection('DutchPay').doc(params.groupId).collection('Receipts').orderBy('timestamp', 'asc').onSnapshot(onReceiptSnapshot)
+	}, [params.groupId, onGroupSnapshot, onReceiptSnapshot])
 
 	function close() {
 		history.push({ pathname: `/${params.groupId}`, search: editMode ? '?edit=true' : '' })
