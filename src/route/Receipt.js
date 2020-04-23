@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Snackbar, Popover, FormControlLabel, Checkbox, List, ListItem, Backdrop, CircularProgress, Tabs, Tab, Menu, MenuItem } from '@material-ui/core'
+import { Snackbar, Popover, FormControlLabel, Checkbox, List, ListItem, Backdrop, CircularProgress, Tabs, Tab, Menu, MenuItem, Button, IconButton, Card, CardContent } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
+import { Person, Delete, Add } from '@material-ui/icons';
+
 import queryString from 'query-string'
-import { Card } from 'react-bootstrap'
-import { Button, IconButton, Icon } from 'react-mdl'
-import { firestore } from '../firebase'
 import NumberFormat from 'react-number-format'
+
+import { firestore } from '../firebase'
 import './Receipt.scss'
 import EditableTextView from '../components/EditableTextView'
 
@@ -205,8 +206,7 @@ export default function (props) {
 								/>
 							</td>
 							<td>
-								<label
-									style={{ margin: 0 }}
+								<IconButton
 									onClick={event => {
 										setMemberPopoverAction(
 											{
@@ -215,9 +215,9 @@ export default function (props) {
 											}
 										)
 									}}>
-									<Icon name="person" />
+									<Person />
 									{receipt.items[i].buyers.length}
-								</label>
+								</IconButton>
 							</td>
 
 							{editMode ? (
@@ -231,7 +231,7 @@ export default function (props) {
 												setReceipt(_receipt)
 											},
 										})
-									}} />
+									}} ></IconButton>
 								</td>
 							) : null}
 						</tr>
@@ -251,8 +251,7 @@ export default function (props) {
 									})
 									setReceipt(_receipt)
 								}}>
-								<Icon name="add_circle_outline" style={{ fontSize: '1.3rem' }} />
-								추가
+								<Add />
 							</Button>
 						</td>
 					</tr>
@@ -341,10 +340,9 @@ export default function (props) {
 										}
 									)
 								}}>
-								<Button ripple>
-									<Icon name="add_circle_outline" style={{ fontSize: '1.3rem' }} />
-									추가
-									</Button>
+								<IconButton>
+									<Add />
+								</IconButton>
 							</label>
 						</td>
 					</tr>
@@ -453,32 +451,30 @@ export default function (props) {
 			</Menu>
 			<div>
 				<Card className="card">
-					<Card.Body>
-						<Card.Title>
-							<div className="title">
-								<EditableTextView
-									onChange={(e) => {
-										let _receipt = { ...receipt }
-										_receipt.name = e.target.value
-										setReceipt(_receipt)
-									}}
-									label="영수증 이름"
-									editMode={editMode}
-									text={receipt.name}
-									style={{ width: '200px' }}
-								/>
-							</div>
-						</Card.Title>
+					<CardContent>
+						<div className="title">
+							<EditableTextView
+								onChange={(e) => {
+									let _receipt = { ...receipt }
+									_receipt.name = e.target.value
+									setReceipt(_receipt)
+								}}
+								label="영수증 이름"
+								editMode={editMode}
+								text={receipt.name}
+								style={{ width: '200px' }}
+							/>
+						</div>
 						<div>
-							<Tabs
+							<AntTabs
 								centered
 								value={tab}
 								indicatorColor="primary"
 								textColor="primary"
 								onChange={(event, newValue) => setTab(newValue)}>
-								<Tab label="영수증" />
-								<Tab label="결제" />
-							</Tabs>
+								<AntTab label="영수증" />
+								<AntTab label="결제" />
+							</AntTabs>
 							<section className="tab-page">{tab === 0 ? tab1 : tab2}</section>
 						</div>
 
@@ -494,8 +490,8 @@ export default function (props) {
 											},
 										})
 									}}>
-										삭제
-											</IconButton>)
+										<Delete />
+									</IconButton>)
 									: null}
 							</div>
 							<div></div>
@@ -516,7 +512,7 @@ export default function (props) {
 								) : null}
 							</div>
 						</div>
-					</Card.Body>
+					</CardContent>
 				</Card>
 			</div>
 		</div>
