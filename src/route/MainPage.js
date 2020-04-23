@@ -1,15 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from 'react-mdl'
 import { Snackbar } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
+import firebase from 'firebase'
 
 import './MainPage.scss'
 import { firestore } from '../firebase'
 
+let auth
 const fs = firestore()
 
 export default function (props) {
 	const [errMsg, setErrMsg] = useState(null)
+	useEffect(() => {
+		auth = firebase.auth()
+	}, [])
 
 	return (
 		<div className="MainPage">
@@ -21,6 +26,7 @@ export default function (props) {
 						.add({
 							name: '',
 							members: [],
+							owner: auth?.currentUser?.uid ?? '',
 							timestamp: new Date(),
 						})
 						.then((docRef) => {
