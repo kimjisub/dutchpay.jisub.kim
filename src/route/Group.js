@@ -14,6 +14,8 @@ import EditableTextView from '../components/EditableTextView'
 import './Group.scss'
 import { calcExpenditure, calcSettlement, sortObject } from '../algorithm'
 
+import { fbLog } from '../logger'
+
 const fs = firestore()
 
 export default function (props) {
@@ -21,6 +23,7 @@ export default function (props) {
 	const queries = queryString.parse(useLocation().search)
 	const history = useHistory()
 
+	const [groupName, setGroupName] = useState('')
 	const [group, setGroup] = useState(null)
 	const [receipts, setReceipts] = useState({})
 	const [editMode, setEditMode] = useState(queries.edit)
@@ -35,65 +38,87 @@ export default function (props) {
 
 	const onReceiptSnapshot = useCallback(
 		(querySnapshot) => {
-			let _receipts = { ...receipts }
-			querySnapshot.docChanges().forEach((change) => {
-				let id = change.doc.id
-				let data = change.doc.data()
-				console.log('Receipts', change.type, id)
+			setReceipts(receipts => {
+				let _receipts = { ...receipts }
+				querySnapshot.docChanges().forEach((change) => {
+					let id = change.doc.id
+					let data = change.doc.data()
+					console.log('Receipts', change.type, id)
 
-				switch (change.type) {
-					case 'added':
-						_receipts[id] = data
-						break
-					case 'modified':
-						_receipts[id] = data
-						break
-					case 'removed':
-						delete _receipts[id]
-						break
-					default:
-				}
+					switch (change.type) {
+						case 'added':
+							_receipts[id] = data
+							break
+						case 'modified':
+							_receipts[id] = data
+							break
+						case 'removed':
+							delete _receipts[id]
+							break
+						default:
+					}
+				})
+				return _receipts
 			})
-			setReceipts(_receipts)
+
 		},
-		[receipts]
+		[]
 	)
 
+	// Subscribe Firestore
 	useEffect(() => {
-		console.log(params.groupId, onGroupSnapshot, onReceiptSnapshot)
+		fbLog(`Subscribe /DutchPay/{${params.groupId}}`)
+		fbLog(`Subscribe /DutchPay/{${params.groupId}}/Receipts`)
 		const unsubscribeGroup = fs.collection('DutchPay').doc(params.groupId).onSnapshot(onGroupSnapshot)
 		const unsubscribeReceipts = fs.collection('DutchPay').doc(params.groupId).collection('Receipts').orderBy('timestamp', 'asc').onSnapshot(onReceiptSnapshot)
 
 		return () => {
+			fbLog(`Unsubscribe /DutchPay/{${params.groupId}}`)
+			fbLog(`Unsubscribe /DutchPay/{${params.groupId}}/Receipts`)
 			unsubscribeGroup()
 			unsubscribeReceipts()
 		}
 	}, [params.groupId, onGroupSnapshot, onReceiptSnapshot])
 
+	// EditMode Changed
 	useEffect(() => {
 		history.push({ pathname: history.location.pathname, search: editMode ? '?edit=true' : '' })
-		if (editMode)
+		if (editMode) {
+			// Permission Test
+			fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
 			fs.collection('DutchPay')
 				.doc(params.groupId)
 				.update({})
-				.then(() => {})
-				.catch((e) => {
+				.then(() => { })
+				.catch((err) => {
+					fbLog(err)
 					setErrMsg('권한이 없습니다.')
 					setEditMode(false)
 				})
-	}, [editMode])
+		} else {
+			// Apply Group Name
+			if (group)
+				setGroup(group => ({ ...group, name: groupName }))
+		}
+	}, [editMode, history, params.groupId])
 
-	function saveGroupSetting() {
-		if (group)
+
+	// Group Changed
+	useEffect(() => {
+		if (group) {
+			fbLog(`Set /DutchPay/{${params.groupId}}`)
 			fs.collection('DutchPay')
 				.doc(params.groupId)
 				.set(group)
-				.then(() => {})
-				.catch((e) => {
+				.then(() => { })
+				.catch((err) => {
 					setErrMsg('권한이 없습니다.')
 					setEditMode(false)
 				})
-	}
+		}
+
+	}, [group, editMode, params.groupId])
+
 
 	if (!group)
 		return (
@@ -145,9 +170,7 @@ export default function (props) {
 							text={group.name}
 							editMode={editMode}
 							onChange={(e) => {
-								let _group = Object.assign({}, group)
-								_group.name = e.target.value
-								setGroup(_group)
+								setGroupName(e.target.value)
 							}}
 						/>
 						정산 내역서
@@ -156,20 +179,8 @@ export default function (props) {
 							name={editMode ? 'check' : 'edit'}
 							onClick={() => {
 								if (editMode) {
-									saveGroupSetting()
 									setEditMode(false)
 								} else setEditMode(true)
-							}}
-						/>
-						<IconButton
-							ripple
-							name="edit"
-							onClick={() => {
-								console.log(receipts)
-								let _receipts = { ...receipts }
-								_receipts['test'] = { name: '테스트', items: [], payers: {}, timestamp: null }
-								console.log(receipts, _receipts)
-								setReceipts(_receipts)
 							}}
 						/>
 					</span>

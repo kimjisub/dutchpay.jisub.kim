@@ -61,7 +61,9 @@ export default function (props) {
 				.collection('Receipts')
 				.doc(params.receiptId)
 				.set(receipt)
-				.then(() => {})
+				.then(() => {
+					close()
+				})
 				.catch((e) => {
 					setErrMsg('권한이 없습니다.')
 					history.push({ pathname: history.location.pathname })
@@ -402,18 +404,18 @@ export default function (props) {
 							<div>
 								{editMode && params.receiptId !== 'new'
 									? [
-											<IconButton id="delete" key="button" name="delete">
-												삭제
+										<IconButton id="delete" key="button" name="delete">
+											삭제
 											</IconButton>,
-											<Menu target="delete" key="menu">
-												<MenuItem
-													onClick={() => {
-														deleteFromFB()
-													}}>
-													삭제
+										<Menu target="delete" key="menu">
+											<MenuItem
+												onClick={() => {
+													deleteFromFB()
+												}}>
+												삭제
 												</MenuItem>
-											</Menu>,
-									  ]
+										</Menu>,
+									]
 									: null}
 							</div>
 							<div></div>

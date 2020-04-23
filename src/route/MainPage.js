@@ -6,6 +6,7 @@ import firebase from 'firebase'
 
 import './MainPage.scss'
 import { firestore } from '../firebase'
+import { fbLog } from '../logger'
 
 let auth
 const fs = firestore()
@@ -22,6 +23,7 @@ export default function (props) {
 				raised
 				ripple
 				onClick={() => {
+					fbLog('Add /DutchPay')
 					fs.collection('DutchPay')
 						.add({
 							name: '',
@@ -33,6 +35,7 @@ export default function (props) {
 							props.history.push({ pathname: `/${docRef.id}`, search: '?edit=true' })
 						})
 						.catch((err) => {
+							console.log(err)
 							setErrMsg('로그인이 필요합니다')
 						})
 				}}>
