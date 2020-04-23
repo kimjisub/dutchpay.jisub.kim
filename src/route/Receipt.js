@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Snackbar, Popover, FormControlLabel, Checkbox, List, ListItem, Backdrop, CircularProgress, Tabs, Tab, Menu, MenuItem, Button, IconButton, Card, CardContent } from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles';
+import { Snackbar, Popover, FormControlLabel, Checkbox, List, ListItem, CircularProgress, Tabs, Tab, Menu, MenuItem, Button, IconButton, Card, CardContent } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import { Person, Delete, Add } from '@material-ui/icons';
 
