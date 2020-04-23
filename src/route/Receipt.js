@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
+import { Snackbar } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 import queryString from 'query-string'
 import { OverlayTrigger, Popover, Card, ListGroup, Spinner } from 'react-bootstrap'
 import { firestore } from '../firebase'
@@ -21,6 +23,7 @@ export default function (props) {
 	const [itemIndex, setItemIndex] = useState(-1)
 	const [members, setMembers] = useState(null)
 	const [receipt, setReceipt] = useState(null)
+	const [errMsg, setErrMsg] = useState(null)
 
 	useEffect(() => {
 		fs.collection('DutchPay')
@@ -58,8 +61,10 @@ export default function (props) {
 				.collection('Receipts')
 				.doc(params.receiptId)
 				.set(receipt)
-				.then(() => {
-					history.push({ pathname: `/${params.groupId}`, search: queries.editMode ? '?edit=true' : '' })
+				.then(() => {})
+				.catch((e) => {
+					setErrMsg('권한이 없습니다.')
+					history.push({ pathname: history.location.pathname })
 				})
 		else
 			fs.collection('DutchPay')
@@ -68,6 +73,10 @@ export default function (props) {
 				.add(receipt)
 				.then(() => {
 					close()
+				})
+				.catch((e) => {
+					setErrMsg('권한이 없습니다.')
+					history.push({ pathname: history.location.pathname })
 				})
 	}
 
@@ -80,6 +89,10 @@ export default function (props) {
 				.delete()
 				.then(() => {
 					close()
+				})
+				.catch((e) => {
+					setErrMsg('권한이 없습니다.')
+					history.push({ pathname: history.location.pathname })
 				})
 	}
 
@@ -348,6 +361,17 @@ export default function (props) {
 
 	return (
 		<div className="Receipt popup">
+			<Snackbar
+				open={errMsg != null && !errMsg.includes('CLOSE')}
+				autoHideDuration={5000}
+				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+				onClose={() => {
+					setErrMsg(errMsg + 'CLOSE')
+				}}>
+				<Alert elevation={6} variant="filled" severity="error">
+					{errMsg?.replace('CLOSE', '')}
+				</Alert>
+			</Snackbar>
 			<div>
 				<Card className="card">
 					<Card.Body>

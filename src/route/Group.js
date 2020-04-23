@@ -23,7 +23,7 @@ export default function (props) {
 
 	const [group, setGroup] = useState(null)
 	const [receipts, setReceipts] = useState({})
-	const [editMode, _setEditMode] = useState(queries.edit)
+	const [editMode, setEditMode] = useState(queries.edit)
 	const [errMsg, setErrMsg] = useState(null)
 
 	useEffect(() => {
@@ -41,12 +41,12 @@ export default function (props) {
 			.collection('Receipts')
 			.orderBy('timestamp', 'asc')
 			.onSnapshot((querySnapshot) => {
+				console.log(receipts)
 				let _receipts = { ...receipts }
-				console.log(receipts, _receipts)
 				querySnapshot.docChanges().forEach((change) => {
 					let id = change.doc.id
 					let data = change.doc.data()
-					//console.log('Receipts', change.type, id)
+					console.log('Receipts', change.type, id)
 
 					switch (change.type) {
 						case 'added':
@@ -61,25 +61,34 @@ export default function (props) {
 						default:
 					}
 				})
+				console.log(receipts, _receipts)
 				setReceipts(_receipts)
 			})
 	}, [])
 
-	function setEditMode(mode) {
-		history.push({ pathname: '/' + params.groupId, search: mode ? '?edit=true' : '' })
-		_setEditMode(mode)
-	}
+	useEffect(() => {
+		history.push({ pathname: history.location.pathname, search: editMode ? '?edit=true' : '' })
+		if (editMode)
+			fs.collection('DutchPay')
+				.doc(params.groupId)
+				.update({})
+				.then(() => {})
+				.catch((e) => {
+					setErrMsg('권한이 없습니다.')
+					setEditMode(false)
+				})
+	}, [editMode])
 
-	function saveGroupSetting(finishEdit = false) {
-		fs.collection('DutchPay')
-			.doc(params.groupId)
-			.set(group)
-			.then(() => {
-				if (finishEdit) setEditMode(false)
-			})
-			.catch((e) => {
-				setErrMsg('권한이 없습니다.')
-			})
+	function saveGroupSetting() {
+		if (group)
+			fs.collection('DutchPay')
+				.doc(params.groupId)
+				.set(group)
+				.then(() => {})
+				.catch((e) => {
+					setErrMsg('권한이 없습니다.')
+					setEditMode(false)
+				})
 	}
 
 	if (!group)
@@ -142,8 +151,21 @@ export default function (props) {
 							ripple
 							name={editMode ? 'check' : 'edit'}
 							onClick={() => {
-								if (editMode) saveGroupSetting(true)
-								else setEditMode(true)
+								if (editMode) {
+									saveGroupSetting()
+									setEditMode(false)
+								} else setEditMode(true)
+							}}
+						/>
+						<IconButton
+							ripple
+							name="edit"
+							onClick={() => {
+								console.log(receipts)
+								let _receipts = { ...receipts }
+								_receipts['test'] = { name: '테스트', items: [], payers: {}, timestamp: null }
+								console.log(receipts, _receipts)
+								setReceipts(_receipts)
 							}}
 						/>
 					</span>
@@ -157,7 +179,6 @@ export default function (props) {
 										let _group = Object.assign({}, group)
 										_group.members = members
 										setGroup(_group)
-										saveGroupSetting()
 									}}
 									onMemberClick={(id) => {
 										history.push({ pathname: '/' + params.groupId + '/member/' + id, search: editMode ? '?edit=true' : '' })

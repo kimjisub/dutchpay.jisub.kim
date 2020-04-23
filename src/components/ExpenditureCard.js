@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { Textfield, IconButton, Menu, MenuItem } from 'react-mdl'
+import { Menu, MenuItem } from '@material-ui/core'
+import { Textfield, IconButton } from 'react-mdl'
 import NumberFormat from 'react-number-format'
 import { bigNumberToCode } from '../algorithm'
 import './ExpenditureCard.scss'
 
 export default function (props) {
 	const [addName, setAddName] = useState('')
+	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
 
 	return (
 		<main className="ExpenditureCard card">
@@ -40,19 +42,23 @@ export default function (props) {
 								</td>
 								{props.editMode ? (
 									<td>
-										<IconButton name="close" id={'member-delete-' + id} disabled={!(spend === 0 && paied === 0)} />
-										<Menu target={'member-delete-' + id}>
-											<MenuItem
-												onClick={() => {
-													if (spend === 0 && paied === 0) {
-														let members = Object.assign({}, props.members)
-														delete members[id]
-														props.onMembersChange(members)
-													}
-												}}>
-												삭제
-											</MenuItem>
-										</Menu>
+										<IconButton
+											name="close"
+											id={'member-delete-' + id}
+											disabled={!(spend === 0 && paied === 0)}
+											onClick={(event) => {
+												setDeleteConfirmAction({
+													anchorEl: event.currentTarget,
+													deleteAction: () => {
+														if (spend === 0 && paied === 0) {
+															let members = Object.assign({}, props.members)
+															delete members[id]
+															props.onMembersChange(members)
+														}
+													},
+												})
+											}}
+										/>
 									</td>
 								) : null}
 							</tr>
@@ -89,6 +95,21 @@ export default function (props) {
 					) : null}
 				</tfoot>
 			</table>
+			<Menu
+				anchorEl={deleteConfirmAction?.anchorEl}
+				keepMounted
+				open={deleteConfirmAction != null}
+				onClose={() => {
+					setDeleteConfirmAction(null)
+				}}>
+				<MenuItem
+					onClick={() => {
+						setDeleteConfirmAction(null)
+						deleteConfirmAction.deleteAction()
+					}}>
+					삭제
+				</MenuItem>
+			</Menu>
 		</main>
 	)
 }
