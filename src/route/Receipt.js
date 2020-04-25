@@ -188,7 +188,7 @@ export default function (props) {
 					<th>상품명</th>
 					<th>가격</th>
 					<th>인원</th>
-					{editMode ? <th></th> : null}
+					{editMode ? <th>삭제</th> : null}
 				</tr>
 			</thead>
 			<tbody>
@@ -246,7 +246,7 @@ export default function (props) {
 												anchorEl: event.currentTarget,
 												deleteAction: () => {
 													let _receipt = { ...receipt }
-													_receipt.items.splice(i) //todo
+													_receipt.items.splice(i, 1)
 													setReceipt(_receipt)
 												},
 											})
