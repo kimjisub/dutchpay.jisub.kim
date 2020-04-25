@@ -16,7 +16,7 @@ export default function (props) {
 			<tr key={i}>
 				<td>{item.name}</td>
 				<td>
-					<NumberFormat value={item.price} displayType={'text'} thousandSeparator={true} />
+					<NumberFormat value={parseFloat(item.price).toFixed(2)} displayType={'text'} thousandSeparator={true} />
 				</td>
 				<td>{item.buyers.length}명</td>
 			</tr>
@@ -31,7 +31,7 @@ export default function (props) {
 			<tr key={id}>
 				<td>{props.members[id]}</td>
 				<td>
-					<NumberFormat value={price} displayType={'text'} thousandSeparator={true} />
+					<NumberFormat value={parseFloat(price).toFixed(2)} displayType={'text'} thousandSeparator={true} />
 				</td>
 				<td></td>
 			</tr>
@@ -42,8 +42,8 @@ export default function (props) {
 	let statusMsg
 
 	if (diff === 0) statusMsg = '결제 완료'
-	else if (diff > 0) statusMsg = <NumberFormat value={diff} displayType={'text'} thousandSeparator={true} suffix="원 미결제" />
-	else if (diff < 0) statusMsg = <NumberFormat value={-diff} displayType={'text'} thousandSeparator={true} suffix="원 초과결제" />
+	else if (diff > 0) statusMsg = <NumberFormat value={parseFloat(diff).toFixed(2)} displayType={'text'} thousandSeparator={true} suffix="원 미결제" />
+	else if (diff < 0) statusMsg = <NumberFormat value={parseFloat(-diff).toFixed(2)} displayType={'text'} thousandSeparator={true} suffix="원 초과결제" />
 
 	return (
 		<Link to={props.to} className="ReceiptCard">
@@ -65,7 +65,7 @@ export default function (props) {
 									<tr>
 										<th>총</th>
 										<th>
-											<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
+											<NumberFormat value={parseFloat(totalPrice).toFixed(2)} displayType={'text'} thousandSeparator={true} />
 										</th>
 										<th></th>
 									</tr>
@@ -86,7 +86,7 @@ export default function (props) {
 									<tr>
 										<th>총</th>
 										<th>
-											<NumberFormat value={paiedPrice} displayType={'text'} thousandSeparator={true} />
+											<NumberFormat value={parseFloat(paiedPrice).toFixed(2)} displayType={'text'} thousandSeparator={true} />
 										</th>
 										<th></th>
 									</tr>
