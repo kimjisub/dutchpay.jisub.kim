@@ -10,7 +10,7 @@ import { firestore } from '../firebase'
 import ExpenditureCard from '../components/ExpenditureCard'
 import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
-import EditableTextView from '../components/EditableTextView'
+import EditableTextView from '../elements/EditableTextView'
 import './Group.scss'
 import { calcExpenditure, calcSettlement, sortObject } from '../algorithm'
 
@@ -87,7 +87,6 @@ export default function (props) {
 				.update({})
 				.then(() => {})
 				.catch((err) => {
-					fbLog(err)
 					setErrMsg('권한이 없습니다.')
 					setEditMode(false)
 				})
