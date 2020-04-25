@@ -1,16 +1,34 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
-import { withStyles } from '@material-ui/core/styles';
-import { Snackbar, Popover, FormControlLabel, Checkbox, List, ListItem, CircularProgress, Tabs, Tab, Menu, MenuItem, Button, IconButton, Card, CardContent } from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles'
+import {
+	Snackbar,
+	Popover,
+	ListItemIcon,
+	ListItemText,
+	Checkbox,
+	List,
+	ListItem,
+	CircularProgress,
+	Tabs,
+	Tab,
+	Menu,
+	MenuItem,
+	Button,
+	IconButton,
+	Card,
+	CardContent,
+} from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
-import { Person, Delete, Add } from '@material-ui/icons';
+import { Person, Delete, Add } from '@material-ui/icons'
 
 import queryString from 'query-string'
 import NumberFormat from 'react-number-format'
 
 import { firestore } from '../firebase'
 import './Receipt.scss'
-import EditableTextView from '../components/EditableTextView'
+import EditableTextView from '../elements/EditableTextView'
+import EditableNumberView from '../elements/EditableNumberView'
 
 const fs = firestore()
 
@@ -21,7 +39,7 @@ const AntTabs = withStyles({
 	indicator: {
 		backgroundColor: '#1890ff',
 	},
-})(Tabs);
+})(Tabs)
 
 const AntTab = withStyles((theme) => ({
 	root: {
@@ -54,7 +72,7 @@ const AntTab = withStyles((theme) => ({
 		},
 	},
 	selected: {},
-}))((props) => <Tab disableRipple {...props} />);
+}))((props) => <Tab disableRipple {...props} />)
 
 export default function (props) {
 	const params = useParams()
@@ -63,7 +81,6 @@ export default function (props) {
 	const editMode = queries.edit === 'true'
 
 	const [tab, setTab] = useState(0)
-	const [update, setUpdate] = useState(0)
 	const [members, setMembers] = useState(null)
 	const [receipt, setReceipt] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)
@@ -192,28 +209,28 @@ export default function (props) {
 								/>
 							</td>
 							<td>
-								<EditableTextView
+								<EditableNumberView
 									className="item-price"
-									onChange={(e) => {
-										let _receipt = { ...receipt }
-										_receipt.items[i].price = parseFloat(e.target.value.replace(/[^\d.]/g, '')) || 0
-										setReceipt(_receipt)
+									onValueChange={(values) => {
+										const { value } = values
+										setReceipt((receipt) => {
+											let _receipt = { ...receipt }
+											_receipt.items[i].price = parseFloat(value) || 0
+											return _receipt
+										})
 									}}
 									label="가격"
-									text={item.price}
+									value={item.price}
 									editMode={editMode}
-									type="number"
 								/>
 							</td>
 							<td>
 								<IconButton
-									onClick={event => {
-										setMemberPopoverAction(
-											{
-												anchorEl: event.currentTarget,
-												index: i
-											}
-										)
+									onClick={(event) => {
+										setMemberPopoverAction({
+											anchorEl: event.currentTarget,
+											index: i,
+										})
 									}}>
 									<Person />
 									{receipt.items[i].buyers.length}
@@ -222,16 +239,20 @@ export default function (props) {
 
 							{editMode ? (
 								<td>
-									<IconButton name="delete" id={'item-delete-' + i} onClick={event => {
-										setDeleteConfirmAction({
-											anchorEl: event.currentTarget,
-											deleteAction: () => {
-												let _receipt = { ...receipt }
-												_receipt.items.splice(i) //todo
-												setReceipt(_receipt)
-											},
-										})
-									}} ></IconButton>
+									<IconButton
+										id={'item-delete-' + i}
+										onClick={(event) => {
+											setDeleteConfirmAction({
+												anchorEl: event.currentTarget,
+												deleteAction: () => {
+													let _receipt = { ...receipt }
+													_receipt.items.splice(i) //todo
+													setReceipt(_receipt)
+												},
+											})
+										}}>
+										<Delete />
+									</IconButton>
 								</td>
 							) : null}
 						</tr>
@@ -240,8 +261,8 @@ export default function (props) {
 				{editMode ? (
 					<tr>
 						<td colSpan="4">
-							<Button
-								onClick={() => {
+							<IconButton
+								onClick={(event) => {
 									let buyers = Object.keys(members)
 									let _receipt = { ...receipt }
 									receipt.items.push({
@@ -252,7 +273,7 @@ export default function (props) {
 									setReceipt(_receipt)
 								}}>
 								<Add />
-							</Button>
+							</IconButton>
 						</td>
 					</tr>
 				) : null}
@@ -293,26 +314,27 @@ export default function (props) {
 						<tr key={'payer-' + i}>
 							<td>{members[id]}</td>
 							<td>
-								<EditableTextView
-									onChange={(e) => {
-										setReceipt(receipt => {
+								<EditableNumberView
+									onValueChange={(values) => {
+										const { value } = values
+										setReceipt((receipt) => {
 											let _receipt = { ...receipt }
-											_receipt.payers[id] = parseInt(e.target.value.replace(/[^\d.]/g, ''))
+											_receipt.payers[id] = parseFloat(value) || 0
 											return _receipt
 										})
 									}}
 									label="가격"
-									text={price}
+									value={price}
 									editMode={editMode}
-									type="number"
 									id={`pay-price-${i}`}
 								/>
 							</td>
 
 							{editMode ? (
 								<td>
-									<IconButton name="delete" id={'delete-' + i} onClick={
-										event => {
+									<IconButton
+										id={'delete-' + i}
+										onClick={(event) => {
 											setDeleteConfirmAction({
 												anchorEl: event.currentTarget,
 												deleteAction: () => {
@@ -321,9 +343,9 @@ export default function (props) {
 													setReceipt(_receipt)
 												},
 											})
-										}
-
-									} />
+										}}>
+										<Delete />
+									</IconButton>
 								</td>
 							) : null}
 						</tr>
@@ -332,18 +354,14 @@ export default function (props) {
 				{editMode ? (
 					<tr>
 						<td colSpan="3">
-							<label style={{ margin: 0 }}
-								onClick={event => {
-									setPayerPopoverAction(
-										{
-											anchorEl: event.currentTarget
-										}
-									)
+							<IconButton
+								onClick={(event) => {
+									setPayerPopoverAction({
+										anchorEl: event.currentTarget,
+									})
 								}}>
-								<IconButton>
-									<Add />
-								</IconButton>
-							</label>
+								<Add />
+							</IconButton>
 						</td>
 					</tr>
 				) : null}
@@ -372,7 +390,8 @@ export default function (props) {
 					{errMsg?.replace('CLOSE', '')}
 				</Alert>
 			</Snackbar>
-			<Popover id="popover-member"
+			<Popover
+				id="popover-member"
 				anchorEl={memberPopoverAction?.anchorEl}
 				open={memberPopoverAction != null}
 				onClose={() => {
@@ -386,29 +405,28 @@ export default function (props) {
 						let buyers = receipt.items[memberPopoverAction?.index]?.buyers || []
 						let checked = buyers.includes(id)
 						return (
-							<ListItem key={id} role={undefined} dense button>
-								<FormControlLabel
-									control={
-										<Checkbox
-											checked={checked}
-											onChange={(e) => {
-												if (editMode) {
-													if (e.target.checked) buyers.push(id)
-													else buyers.splice(buyers.indexOf(id), 1)
-												}
-												setUpdate(update + 1)
-											}}
-											color="primary"
-										/>
+							<ListItem
+								key={id}
+								role={undefined}
+								dense
+								button
+								onClick={(e) => {
+									if (editMode) {
+										if (!checked) buyers.push(id)
+										else buyers.splice(buyers.indexOf(id), 1)
 									}
-									label={name}
-								/>
+								}}>
+								<ListItemIcon>
+									<Checkbox edge="start" checked={checked} tabIndex={-1} disableRipple />
+								</ListItemIcon>
+								<ListItemText primary={name} />
 							</ListItem>
 						)
 					})}
 				</List>
 			</Popover>
-			<Popover id="popover-payer"
+			<Popover
+				id="popover-payer"
 				anchorEl={payerPopoverAction?.anchorEl}
 				open={payerPopoverAction != null}
 				onClose={() => {
@@ -422,7 +440,7 @@ export default function (props) {
 						return receipt.payers[id] === undefined ? (
 							<ListItem
 								key={id}
-								action
+								button
 								onClick={() => {
 									let _receipt = { ...receipt }
 									_receipt.payers[id] = 0
@@ -466,12 +484,7 @@ export default function (props) {
 							/>
 						</div>
 						<div>
-							<AntTabs
-								centered
-								value={tab}
-								indicatorColor="primary"
-								textColor="primary"
-								onChange={(event, newValue) => setTab(newValue)}>
+							<AntTabs centered value={tab} indicatorColor="primary" textColor="primary" onChange={(event, newValue) => setTab(newValue)}>
 								<AntTab label="영수증" />
 								<AntTab label="결제" />
 							</AntTabs>
@@ -480,19 +493,22 @@ export default function (props) {
 
 						<div className="action">
 							<div>
-								{editMode && params.receiptId !== 'new'
-									?
-									(<IconButton id="delete" key="button" name="delete" onClick={event => {
-										setDeleteConfirmAction({
-											anchorEl: event.currentTarget,
-											deleteAction: () => {
-												deleteFromFB()
-											},
-										})
-									}}>
+								{editMode && params.receiptId !== 'new' ? (
+									<IconButton
+										id="delete"
+										key="button"
+										name="delete"
+										onClick={(event) => {
+											setDeleteConfirmAction({
+												anchorEl: event.currentTarget,
+												deleteAction: () => {
+													deleteFromFB()
+												},
+											})
+										}}>
 										<Delete />
-									</IconButton>)
-									: null}
+									</IconButton>
+								) : null}
 							</div>
 							<div></div>
 							<div>
