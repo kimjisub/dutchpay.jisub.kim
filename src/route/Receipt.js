@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
+import queryString from 'query-string'
+import NumberFormat from 'react-number-format'
+import './Receipt.scss'
+
+// Backend
+import { firestore } from '../firebase'
+import { sortObject } from '../algorithm'
+
+// Components
+import EditableTextView from '../elements/EditableTextView'
+import EditableNumberView from '../elements/EditableNumberView'
+
+// Material Components
 import { withStyles } from '@material-ui/core/styles'
 import {
 	Snackbar,
@@ -22,14 +35,6 @@ import {
 } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import { Person, Delete, Add } from '@material-ui/icons'
-import './Receipt.scss'
-
-import queryString from 'query-string'
-import NumberFormat from 'react-number-format'
-
-import { firestore } from '../firebase'
-import EditableTextView from '../elements/EditableTextView'
-import EditableNumberView from '../elements/EditableNumberView'
 
 const fs = firestore()
 
@@ -399,7 +404,7 @@ export default function (props) {
 					setMemberPopoverAction(null)
 				}}>
 				<List>
-					{Object.entries(members).map((data) => {
+					{Object.entries(sortObject(members)).map((data) => {
 						let id = data[0]
 						let name = data[1]
 
@@ -413,8 +418,14 @@ export default function (props) {
 								button
 								onClick={(e) => {
 									if (editMode) {
+										let _receipt = { ...receipt }
+										let buyers = _receipt.items[memberPopoverAction?.index]?.buyers || []
+										let checked = buyers.includes(id)
+
 										if (!checked) buyers.push(id)
 										else buyers.splice(buyers.indexOf(id), 1)
+
+										setReceipt(_receipt)
 									}
 								}}>
 								<ListItemIcon>
@@ -434,7 +445,7 @@ export default function (props) {
 					setPayerPopoverAction(null)
 				}}>
 				<List>
-					{Object.entries(members).map((data) => {
+					{Object.entries(sortObject(members)).map((data) => {
 						let id = data[0]
 						let name = data[1]
 
@@ -446,6 +457,8 @@ export default function (props) {
 									let _receipt = { ...receipt }
 									_receipt.payers[id] = 0
 									setReceipt(_receipt)
+
+									setPayerPopoverAction(null)
 								}}>
 								{name}
 							</ListItem>
