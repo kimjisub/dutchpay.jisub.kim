@@ -18,21 +18,6 @@ code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-.list-group-item:first-child {
-	border-top: 0px !important;
-}
-
-.my-masonry-grid {
-	display: -webkit-box; /* Not needed if autoprefixing */
-	display: -ms-flexbox; /* Not needed if autoprefixing */
-	display: flex;
-	width: auto;
-}
-.my-masonry-grid_column {
-	padding-left: 0px; /* gutter size */
-	background-clip: padding-box;
-}
-
 .popup {
 	display: flex;
 	align-items: center;
