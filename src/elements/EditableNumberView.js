@@ -1,6 +1,8 @@
 import React from 'react'
-import NumberFormat from 'react-number-format'
 import './EditableNumberView.scss'
+
+// Components
+import NumberFormat from 'react-number-format'
 
 export default function (props) {
 	let view
@@ -21,7 +23,7 @@ export default function (props) {
 	}
 
 	return (
-		<p className={'EditableNumberView ' + props.className} style={props.style}>
+		<p className={'EditableNumberView ' + (props.className || '')} style={props.style}>
 			{view}
 		</p>
 	)

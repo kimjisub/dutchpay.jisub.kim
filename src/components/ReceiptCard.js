@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import NumberFormat from 'react-number-format'
 import './ReceiptCard.scss'
+
+// Components
+import NumberFormat from 'react-number-format'
 
 export default function (props) {
 	// eslint-disable-next-line no-unused-vars

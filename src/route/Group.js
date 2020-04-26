@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link, useParams, useLocation, useHistory } from 'react-router-dom'
-import { IconButton } from 'react-mdl'
-import { Card, Spinner } from 'react-bootstrap'
-import { Snackbar } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
-
 import queryString from 'query-string'
+import './Group.scss'
+
+// Backend
 import { firestore } from '../firebase'
+import { calcExpenditure, calcSettlement, sortObject } from '../algorithm'
+import { fbLog } from '../logger'
+
+// Components
+import { Add, Check, Edit } from '@material-ui/icons'
+import { Alert } from '@material-ui/lab'
+import { Snackbar, CircularProgress, IconButton } from '@material-ui/core'
+
+// Custom Components
 import ExpenditureCard from '../components/ExpenditureCard'
 import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
 import EditableTextView from '../elements/EditableTextView'
-import './Group.scss'
-import { calcExpenditure, calcSettlement, sortObject } from '../algorithm'
-
-import { fbLog } from '../logger'
 
 const fs = firestore()
 
@@ -116,7 +119,7 @@ export default function (props) {
 		return (
 			<div className="popup">
 				<div>
-					<Spinner animation="border" />
+					<CircularProgress color="inherit" />
 				</div>
 			</div>
 		)
@@ -158,6 +161,7 @@ export default function (props) {
 				<article>
 					<span>
 						<EditableTextView
+							className="group-title"
 							label="모임 이름"
 							text={group.name}
 							editMode={editMode}
@@ -167,14 +171,12 @@ export default function (props) {
 						/>
 						정산 내역서
 						<IconButton
-							ripple
-							name={editMode ? 'check' : 'edit'}
 							onClick={() => {
-								if (editMode) {
-									setEditMode(false)
-								} else setEditMode(true)
-							}}
-						/>
+								if (editMode) setEditMode(false)
+								else setEditMode(true)
+							}}>
+							{editMode ? <Check /> : <Edit />}
+						</IconButton>
 					</span>
 					<div>
 						<aside id="dashboard">
@@ -198,9 +200,9 @@ export default function (props) {
 						<main id="receipts">
 							{editMode ? (
 								<Link to={`/${params.groupId}/receipt/new?edit=true`}>
-									<Card className="add-card">
-										<Card.Body>추가하기</Card.Body>
-									</Card>
+									<IconButton>
+										<Add />
+									</IconButton>
 								</Link>
 							) : null}
 							{receiptCards}

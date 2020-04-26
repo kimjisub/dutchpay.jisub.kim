@@ -1,6 +1,8 @@
 import React from 'react'
-import NumberFormat from 'react-number-format'
 import './SettlementCard.scss'
+
+// Components
+import NumberFormat from 'react-number-format'
 
 export default function (props) {
 	return (

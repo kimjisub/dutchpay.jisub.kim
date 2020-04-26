@@ -23,7 +23,7 @@
 			box-shadow: 0 0 30px -10px;
 			border-radius: 30px;
 
-			.EditableTextView {
+			.group-title {
 				font-size: 1.8rem;
 				font-weight: bolder;
 			}
@@ -51,10 +51,6 @@
 	.card {
 		width: 300px;
 		margin: 10px;
-	}
-
-	.card .mdl-card__menu {
-		margin: 4px;
 	}
 
 	.add-card {

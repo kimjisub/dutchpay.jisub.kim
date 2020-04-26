@@ -3,10 +3,10 @@ import { useParams, useLocation, useHistory } from 'react-router-dom'
 import queryString from 'query-string'
 import { Spinner } from 'react-bootstrap'
 import { firestore } from '../firebase'
-import { Button } from 'react-mdl'
 import NumberFormat from 'react-number-format'
 import './Member.scss'
 import { calcSingleExpenditure, sortObject } from '../algorithm'
+import { Button } from '@material-ui/core'
 
 const fs = firestore()
 

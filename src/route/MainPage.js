@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button } from 'react-mdl'
-import { Snackbar } from '@material-ui/core'
+import { Snackbar, Button } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import firebase from 'firebase'
 
@@ -20,8 +19,6 @@ export default function (props) {
 	return (
 		<div className="MainPage">
 			<Button
-				raised
-				ripple
 				onClick={() => {
 					fbLog('Add /DutchPay')
 					fs.collection('DutchPay')

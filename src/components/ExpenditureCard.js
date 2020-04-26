@@ -1,9 +1,16 @@
 import React, { useState } from 'react'
-import { Menu, MenuItem } from '@material-ui/core'
-import { Textfield, IconButton } from 'react-mdl'
-import NumberFormat from 'react-number-format'
-import { bigNumberToCode } from '../algorithm'
 import './ExpenditureCard.scss'
+
+// Backend
+import { bigNumberToCode } from '../algorithm'
+
+// Components
+import NumberFormat from 'react-number-format'
+import { Add, Delete } from '@material-ui/icons'
+import { Menu, MenuItem, IconButton } from '@material-ui/core'
+
+// Custom Components
+import EditableTextView from '../elements/EditableTextView'
 
 export default function (props) {
 	const [addName, setAddName] = useState('')
@@ -43,8 +50,6 @@ export default function (props) {
 								{props.editMode ? (
 									<td>
 										<IconButton
-											name="close"
-											id={'member-delete-' + id}
 											disabled={!(spend === 0 && paied === 0)}
 											onClick={(event) => {
 												setDeleteConfirmAction({
@@ -57,8 +62,9 @@ export default function (props) {
 														}
 													},
 												})
-											}}
-										/>
+											}}>
+											<Delete />
+										</IconButton>
 									</td>
 								) : null}
 							</tr>
@@ -69,10 +75,10 @@ export default function (props) {
 					{props.editMode ? (
 						<tr>
 							<th colSpan="3">
-								<Textfield
-									className="mdl-textfield-small textfield-add-name"
+								<EditableTextView
 									label="이름"
-									value={addName}
+									text={addName}
+									editMode={true}
 									onChange={(e) => {
 										setAddName(e.target.value)
 									}}
@@ -80,15 +86,13 @@ export default function (props) {
 							</th>
 							<th>
 								<IconButton
-									ripple
-									name="add"
 									onClick={() => {
 										let members = Object.assign({}, props.members)
 										members[bigNumberToCode(new Date())] = addName
 										props.onMembersChange(members)
 										setAddName('')
 									}}>
-									추가
+									<Add />
 								</IconButton>
 							</th>
 						</tr>

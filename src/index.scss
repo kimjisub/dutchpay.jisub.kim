@@ -18,25 +18,6 @@ code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-.mdl-textfield__label {
-	margin: 0;
-}
-
-.mdl-textfield-small {
-	flex-grow: 1;
-	margin-left: 4px;
-	margin-right: 4px;
-	padding: 0;
-}
-
-.mdl-textfield-small .mdl-textfield__label {
-	top: 4px;
-}
-
-.mdl-textfield-small .mdl-textfield__label:after {
-	bottom: 0px;
-}
-
 .list-group-item:first-child {
 	border-top: 0px !important;
 }

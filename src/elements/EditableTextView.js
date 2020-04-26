@@ -19,7 +19,7 @@ export default function (props) {
 	}
 
 	return (
-		<p className={'EditableTextView ' + props.className} style={props.style}>
+		<p className={'EditableTextView ' + (props.className || '')} style={props.style}>
 			{view}
 		</p>
 	)

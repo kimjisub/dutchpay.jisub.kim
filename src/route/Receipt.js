@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import queryString from 'query-string'
-import NumberFormat from 'react-number-format'
 import './Receipt.scss'
 
 // Backend
@@ -9,11 +8,10 @@ import { firestore } from '../firebase'
 import { sortObject } from '../algorithm'
 
 // Components
-import EditableTextView from '../elements/EditableTextView'
-import EditableNumberView from '../elements/EditableNumberView'
-
-// Material Components
+import NumberFormat from 'react-number-format'
 import { withStyles } from '@material-ui/core/styles'
+import { Person, Delete, Add } from '@material-ui/icons'
+import { Alert } from '@material-ui/lab'
 import {
 	Snackbar,
 	Popover,
@@ -33,8 +31,10 @@ import {
 	CardContent,
 	CardActions,
 } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
-import { Person, Delete, Add } from '@material-ui/icons'
+
+// Custom Components
+import EditableTextView from '../elements/EditableTextView'
+import EditableNumberView from '../elements/EditableNumberView'
 
 const fs = firestore()
 
