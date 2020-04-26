@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { Snackbar, Button } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
-import firebase from 'firebase'
-
 import './MainPage.scss'
+
+// Backend
+import firebase from 'firebase'
 import { firestore } from '../firebase'
 import { fbLog } from '../logger'
+
+// Components
+import { Snackbar, Button } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 
 let auth
 const fs = firestore()

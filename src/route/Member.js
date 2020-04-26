@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import queryString from 'query-string'
-import { firestore } from '../firebase'
-import NumberFormat from 'react-number-format'
 import './Member.scss'
+
+// Backend
+import { firestore } from '../firebase'
 import { calcSingleExpenditure, sortObject } from '../algorithm'
+
+// Components
+import NumberFormat from 'react-number-format'
 import { Button, CircularProgress } from '@material-ui/core'
 
 const fs = firestore()
