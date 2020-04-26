@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import queryString from 'query-string'
-import { Spinner } from 'react-bootstrap'
 import { firestore } from '../firebase'
 import NumberFormat from 'react-number-format'
 import './Member.scss'
 import { calcSingleExpenditure, sortObject } from '../algorithm'
-import { Button } from '@material-ui/core'
+import { Button, CircularProgress } from '@material-ui/core'
 
 const fs = firestore()
 
@@ -66,7 +65,7 @@ export default function (props) {
 		return (
 			<div className="Member popup">
 				<div>
-					<Spinner animation="border" />
+					<CircularProgress color="inherit" />
 				</div>
 			</div>
 		)
