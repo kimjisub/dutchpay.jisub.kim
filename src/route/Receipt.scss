@@ -1,38 +1,76 @@
 .Receipt {
+	color: '#fff';
 	.card {
 		display: inline-block;
-		width: 60%;
+		width: 80%;
 		min-width: 300px;
 		max-width: 500px;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
-	}
+		.title {
+			font-size: 1.7rem;
+			margin: auto;
+			font-weight: bolder;
+			width: 70%;
+			padding: 10px;
+		}
 
-	.mdl-list li {
-		text-align: center;
-		display: flex;
-	}
+		.receipt-table {
+			width: 100%;
+			th,
+			td {
+				.person {
+					padding: 12px 10px 12px 10px;
+					.count {
+						font-size: 0.9rem;
+						font-weight: bold;
+					}
+				}
+				& > p {
+					width: 100%;
+				}
 
-	.action {
-		display: inline-flex;
-		width: 100%;
-	}
+				&:nth-child(1) {
+					width: 50%;
+					text-align: left;
+				}
+				&:nth-child(2) {
+					width: 50%;
+					text-align: left;
+				}
+			}
+		}
 
-	.action :nth-child(2) {
-		flex-grow: 1;
-	}
+		.payer-table {
+			width: 100%;
+			th,
+			td {
+				& > p {
+					width: 100%;
+				}
 
-	.item-name {
-		width: 100%;
-		min-width: 30px;
-	}
+				.person {
+					padding: 12px 10px 12px 10px;
+					.count {
+						font-size: 0.9rem;
+						font-weight: bold;
+					}
+				}
 
-	table {
-		width: 100%;
-	}
+				&:nth-child(1) {
+					width: 100px;
+					text-align: left;
+				}
+				&:nth-child(2) {
+					width: 70%;
+					text-align: left;
+				}
+			}
+		}
 
-	table .material-icons {
-		font-size: 1rem;
+		.space {
+			margin: auto;
+		}
 	}
 }

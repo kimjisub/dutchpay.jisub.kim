@@ -21,7 +21,7 @@ export default function (props) {
 	}
 
 	return (
-		<p className="EditableNumberView" style={props.style}>
+		<p className={'EditableNumberView ' + props.className} style={props.style}>
 			{view}
 		</p>
 	)

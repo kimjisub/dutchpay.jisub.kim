@@ -18,15 +18,16 @@ import {
 	IconButton,
 	Card,
 	CardContent,
+	CardActions,
 } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import { Person, Delete, Add } from '@material-ui/icons'
+import './Receipt.scss'
 
 import queryString from 'query-string'
 import NumberFormat from 'react-number-format'
 
 import { firestore } from '../firebase'
-import './Receipt.scss'
 import EditableTextView from '../elements/EditableTextView'
 import EditableNumberView from '../elements/EditableNumberView'
 
@@ -197,7 +198,6 @@ export default function (props) {
 						<tr key={'item-' + i}>
 							<td>
 								<EditableTextView
-									className="item-name"
 									onChange={(e) => {
 										let _receipt = { ...receipt }
 										_receipt.items[i].name = e.target.value
@@ -226,14 +226,16 @@ export default function (props) {
 							</td>
 							<td>
 								<IconButton
+									id={'item-delete-' + i}
+									className="person"
 									onClick={(event) => {
 										setMemberPopoverAction({
 											anchorEl: event.currentTarget,
 											index: i,
 										})
 									}}>
-									<Person />
-									{receipt.items[i].buyers.length}
+									<Person fontSize="small" />
+									<span className="count">{receipt.items[i].buyers.length}</span>
 								</IconButton>
 							</td>
 
@@ -251,13 +253,15 @@ export default function (props) {
 												},
 											})
 										}}>
-										<Delete />
+										<Delete fontSize="small" />
 									</IconButton>
 								</td>
 							) : null}
 						</tr>
 					)
 				})}
+			</tbody>
+			<tfoot>
 				{editMode ? (
 					<tr>
 						<td colSpan="4">
@@ -277,11 +281,8 @@ export default function (props) {
 						</td>
 					</tr>
 				) : null}
-			</tbody>
-			<tfoot>
 				<tr>
 					<th>총</th>
-					<td></td>
 					<td>
 						<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
 					</td>
@@ -301,8 +302,8 @@ export default function (props) {
 			<thead>
 				<tr>
 					<th>결제자</th>
-					<th>가격</th>
-					{editMode ? <th></th> : null}
+					<th>결제 금액</th>
+					{editMode ? <th>삭제</th> : null}
 				</tr>
 			</thead>
 			<tbody>
@@ -344,13 +345,15 @@ export default function (props) {
 												},
 											})
 										}}>
-										<Delete />
+										<Delete fontSize="small" />
 									</IconButton>
 								</td>
 							) : null}
 						</tr>
 					)
 				})}
+			</tbody>
+			<tfoot>
 				{editMode ? (
 					<tr>
 						<td colSpan="3">
@@ -365,8 +368,6 @@ export default function (props) {
 						</td>
 					</tr>
 				) : null}
-			</tbody>
-			<tfoot>
 				<tr>
 					<th>총</th>
 					<td>
@@ -467,70 +468,60 @@ export default function (props) {
 					삭제
 				</MenuItem>
 			</Menu>
-			<div>
-				<Card className="card">
-					<CardContent>
-						<div className="title">
-							<EditableTextView
-								onChange={(e) => {
-									let _receipt = { ...receipt }
-									_receipt.name = e.target.value
-									setReceipt(_receipt)
-								}}
-								label="영수증 이름"
-								editMode={editMode}
-								text={receipt.name}
-								style={{ width: '200px' }}
-							/>
-						</div>
-						<div>
-							<AntTabs centered value={tab} indicatorColor="primary" textColor="primary" onChange={(event, newValue) => setTab(newValue)}>
-								<AntTab label="영수증" />
-								<AntTab label="결제" />
-							</AntTabs>
-							<section className="tab-page">{tab === 0 ? tab1 : tab2}</section>
-						</div>
-
-						<div className="action">
-							<div>
-								{editMode && params.receiptId !== 'new' ? (
-									<IconButton
-										id="delete"
-										key="button"
-										name="delete"
-										onClick={(event) => {
-											setDeleteConfirmAction({
-												anchorEl: event.currentTarget,
-												deleteAction: () => {
-													deleteFromFB()
-												},
-											})
-										}}>
-										<Delete />
-									</IconButton>
-								) : null}
-							</div>
-							<div></div>
-							<div>
-								<Button
-									onClick={() => {
-										close()
-									}}>
-									{editMode ? '취소' : '확인'}
-								</Button>
-								{editMode ? (
-									<Button
-										onClick={() => {
-											updateToFB(receipt)
-										}}>
-										저장
-									</Button>
-								) : null}
-							</div>
-						</div>
-					</CardContent>
-				</Card>
-			</div>
+			<Card className="card">
+				<CardContent>
+					<EditableTextView
+						className="title"
+						onChange={(e) => {
+							let _receipt = { ...receipt }
+							_receipt.name = e.target.value
+							setReceipt(_receipt)
+						}}
+						label="영수증 이름"
+						editMode={editMode}
+						text={receipt.name}
+					/>
+					<div>
+						<AntTabs centered value={tab} indicatorColor="primary" textColor="primary" onChange={(event, newValue) => setTab(newValue)}>
+							<AntTab label="영수증" />
+							<AntTab label="결제" />
+						</AntTabs>
+						<section className="tab-page">{tab === 0 ? tab1 : tab2}</section>
+					</div>
+				</CardContent>
+				<CardActions>
+					{editMode && params.receiptId !== 'new' ? (
+						<IconButton
+							key="button"
+							name="delete"
+							onClick={(event) => {
+								setDeleteConfirmAction({
+									anchorEl: event.currentTarget,
+									deleteAction: () => {
+										deleteFromFB()
+									},
+								})
+							}}>
+							<Delete />
+						</IconButton>
+					) : null}
+					<div className="space"></div>
+					<Button
+						onClick={() => {
+							close()
+						}}>
+						{editMode ? '취소' : '확인'}
+					</Button>
+					{editMode ? (
+						<Button
+							onClick={() => {
+								updateToFB(receipt)
+							}}>
+							저장
+						</Button>
+					) : null}
+				</CardActions>
+			</Card>
 		</div>
 	)
 }
