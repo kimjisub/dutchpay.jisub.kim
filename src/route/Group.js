@@ -138,8 +138,8 @@ export default function (props) {
 				onExpanded={() => {
 					setExpanded(expanded !== key ? key : null)
 				}}
-				onClick={(receiptId) => {
-					history.push({ pathname: '/' + params.groupId + '/receipt/' + receiptId, search: editMode ? '?edit=true' : '' })
+				onClick={() => {
+					history.push({ pathname: '/' + params.groupId + '/receipt/' + key, search: editMode ? '?edit=true' : '' })
 				}}
 				to={`/${params.groupId}/receipt/${key}${editMode ? '?edit=true' : ''}`}
 				editMode={editMode}
