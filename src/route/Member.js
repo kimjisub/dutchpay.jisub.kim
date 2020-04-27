@@ -9,7 +9,7 @@ import { calcSingleExpenditure, sortObject } from '../algorithm'
 
 // Components
 import NumberFormat from 'react-number-format'
-import { Button, CircularProgress } from '@material-ui/core'
+import { Button, CircularProgress, Card, Typography, Table, TableHead, TableBody, TableFooter, TableRow, TableCell } from '@material-ui/core'
 
 const fs = firestore()
 
@@ -78,42 +78,52 @@ export default function (props) {
 
 	return (
 		<div className="Member popup">
-			<main>
-				<p id="title">
-					<span id="name">{group.members[params.memberId]}</span>님의 지출 내역
-				</p>
+			<Card className="card">
+				<Typography className="title" variant="h5" component="h2">
+					<span id="name">{group.members[params.memberId]}</span>님의 지출 및 결제 내역
+				</Typography>
 
-				<div id="list">
-					<ol>
+				<Table size="small">
+					<TableHead>
+						<TableRow>
+							<TableCell>영수증 이름</TableCell>
+							<TableCell>가격</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
 						{singleExpenditure.map((receipt, i) => {
 							return (
-								<li key={i}>
-									<div>
-										<p>{receipt.name}</p>
-										<p>
-											<NumberFormat value={receipt.totalPrice} displayType={'text'} thousandSeparator={true} />
-										</p>
-									</div>
-
-									<ol>
-										{receipt.items.map((item, i) => {
-											return (
-												<li key={i}>
-													<div>
-														<p>{item.name}</p>
-														<p>
-															<NumberFormat value={item.price} displayType={'text'} thousandSeparator={true} />
-														</p>
-													</div>
-												</li>
-											)
-										})}
-									</ol>
-								</li>
+								<TableRow key={i}>
+									<TableCell>{receipt.name}</TableCell>
+									<TableCell>
+										<NumberFormat value={receipt.totalPrice} displayType={'text'} thousandSeparator={true} />
+									</TableCell>
+									{/* <ol>
+									{receipt.items.map((item, i) => {
+										return (
+											<li key={i}>
+												<div>
+													<p>{item.name}</p>
+													<p>
+														<NumberFormat value={item.price} displayType={'text'} thousandSeparator={true} />
+													</p>
+												</div>
+											</li>
+										)
+									})}
+								</ol> */}
+								</TableRow>
 							)
 						})}
-					</ol>
-				</div>
+					</TableBody>
+
+					<TableFooter>
+						<TableRow>
+							<TableCell>총</TableCell>
+							<TableCell>가격</TableCell>
+						</TableRow>
+					</TableFooter>
+				</Table>
 				<div className="action">
 					<div>
 						<Button
@@ -124,7 +134,7 @@ export default function (props) {
 						</Button>
 					</div>
 				</div>
-			</main>
+			</Card>
 		</div>
 	)
 }
