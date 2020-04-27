@@ -7,7 +7,7 @@ import { bigNumberToCode } from '../algorithm'
 // Components
 import NumberFormat from 'react-number-format'
 import { Add, Delete } from '@material-ui/icons'
-import { Menu, MenuItem, IconButton } from '@material-ui/core'
+import { Menu, MenuItem, IconButton, Card, Typography } from '@material-ui/core'
 
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
@@ -17,8 +17,10 @@ export default function (props) {
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
 
 	return (
-		<main className="ExpenditureCard card">
-			<div className="title">지출 내역</div>
+		<Card className="ExpenditureCard" variant="outlined">
+			<Typography className="title" variant="h5" component="h2">
+				지출 내역
+			</Typography>
 			<table>
 				<thead>
 					<tr>
@@ -114,6 +116,6 @@ export default function (props) {
 					삭제
 				</MenuItem>
 			</Menu>
-		</main>
+		</Card>
 	)
 }

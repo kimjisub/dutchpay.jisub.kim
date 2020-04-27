@@ -31,6 +31,7 @@ export default function (props) {
 	const [receipts, setReceipts] = useState({})
 	const [editMode, setEditMode] = useState(queries.edit)
 	const [errMsg, setErrMsg] = useState(null)
+	const [expanded, setExpanded] = useState(null)
 
 	const onGroupSnapshot = useCallback((doc) => {
 		let data = (window.$data = doc.data())
@@ -133,6 +134,13 @@ export default function (props) {
 				key={key}
 				receipt={receipt}
 				members={group.members}
+				expanded={expanded === key}
+				onExpanded={() => {
+					setExpanded(expanded !== key ? key : null)
+				}}
+				onClick={(receiptId) => {
+					history.push({ pathname: '/' + params.groupId + '/receipt/' + receiptId, search: editMode ? '?edit=true' : '' })
+				}}
 				to={`/${params.groupId}/receipt/${key}${editMode ? '?edit=true' : ''}`}
 				editMode={editMode}
 			/>
@@ -205,6 +213,12 @@ export default function (props) {
 									</IconButton>
 								</Link>
 							) : null}
+							{/* <ReceiptList
+							receipts={receipts}
+							onItemClick={(receiptId)=>{
+								
+							}}
+							members={group.members}/> */}
 							{receiptCards}
 						</main>
 					</div>
