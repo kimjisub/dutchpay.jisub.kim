@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useRef } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import { Link, useParams, useLocation, useHistory } from 'react-router-dom'
 import queryString from 'query-string'
 import './Group.scss'
@@ -36,20 +36,19 @@ export default function (props) {
 			case 'fromFirebase':
 				setGroupName(data.name)
 				break
-			case 'saveLocal':
-				break
 			case 'saveFirebase':
 				if (data) {
 					fbLog(`Set /DutchPay/{${params.groupId}}`)
 					fs.collection('DutchPay')
 						.doc(params.groupId)
 						.set(data)
-						.then(() => {})
-						.catch((err) => {
-							setErrMsg('권한이 없습니다.')
-							editModeDispatch({ type: 'permissionDenied', data: false })
+						.then(() => {
+							editModeDispatch({ type: 'updateApproved' })
 						})
-				}
+						.catch((err) => {
+							editModeDispatch({ type: 'updateDenied' })
+						})
+				} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
 				break
 			default:
 		}
@@ -73,45 +72,62 @@ export default function (props) {
 				default:
 			}
 		})
-		return _state
+		return sortObject(_state, (a, b) => {
+			const Atarget = _state[a].timestamp
+			const Btarget = _state[b].timestamp
+			return Atarget > Btarget ? 1 : -1
+		})
 	}, {})
 
 	const [editMode, editModeDispatch] = useReducer((state, action) => {
-		const { type, data } = action
-		if (data)
-			// 수정모드 요청시
-			switch (type) {
-				case 'userRequest':
-					if (group) {
-						fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
-						fs.collection('DutchPay')
-							.doc(params.groupId)
-							.update({})
-							.then(() => {})
-							.catch((err) => {
-								editModeDispatch({ type: 'permissionDenied', data: false })
-							})
-					}
-					break
-				default:
-			}
-		// 데이터 저장 요청시
-		else
-			switch (type) {
-				case 'permissionDenied':
-					setErrMsg('권한이 없습니다.')
-					break
-				case 'userRequest':
-					if (group) {
-						groupDispatch({ type: 'saveFirebase', data: { ...group }, name: groupName }) //name: groupName
-					}
-					break
-				default:
-			}
+		let { type } = action
+		let editMode = false
+		console.log(type)
+		switch (type) {
+			case 'groupLoaded':
+				if (queries.editMode === 'true') editModeDispatch({ type: 'requestEditMode' })
+				break
+			case 'requestEditMode': // 수정모드로 진입하려고 함.
+				editMode = false
+				if (group) {
+					fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
+					fs.collection('DutchPay')
+						.doc(params.groupId)
+						.update({})
+						.then(() => {
+							editModeDispatch({ type: 'editModeApproved' })
+						})
+						.catch((err) => {
+							editModeDispatch({ type: 'editModeDenied' })
+						})
+				} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
+				break
+			case 'editModeApproved':
+				editMode = true
+				break
+			case 'editModeDenied':
+				editMode = false
+				setErrMsg('권한이 없습니다.')
+				break
+			case 'requestUpdate':
+				editMode = true
+				if (group) {
+					groupDispatch({ type: 'saveFirebase', data: { ...group }, name: groupName })
+				}
+				break
+			case 'updateApproved':
+				editMode = false
+				break
+			case 'updateDenied':
+				editMode = true
+				setErrMsg('저장에 문제가 있습니다.')
+				break
+			default:
+		}
 
-		history.push({ pathname: history.location.pathname, search: data ? '?edit=true' : '' })
-		return data
-	}, queries.edit === 'true')
+		history.push({ pathname: history.location.pathname, search: editMode ? '?edit=true' : '' })
+		return editMode
+	}, false)
 
 	// Subscribe Firestore
 	useEffect(() => {
@@ -124,7 +140,10 @@ export default function (props) {
 				let data = (window.$data = doc.data())
 				console.log('Group Data Changed: ', data)
 				data.members = sortObject(data.members)
+
 				groupDispatch({ type: 'fromFirebase', data })
+				console.log('call groupLoaded')
+				editModeDispatch({ type: 'groupLoaded' })
 			})
 		const unsubscribeReceipts = fs
 			.collection('DutchPay')
@@ -136,7 +155,7 @@ export default function (props) {
 				querySnapshot.docChanges().forEach((change) => {
 					let id = change.doc.id
 					let data = change.doc.data()
-					console.log('Receipts', change.type, id)
+					//console.log('Receipts', change.type, id)
 
 					actions.push({ type: change.type, id, data })
 				})
@@ -204,7 +223,7 @@ export default function (props) {
 				<article>
 					<span>
 						<EditableTextView
-							id="group-title"
+							className="group-title"
 							label="모임 이름"
 							text={groupName}
 							editMode={editMode}
@@ -215,7 +234,8 @@ export default function (props) {
 						정산 내역서
 						<IconButton
 							onClick={() => {
-								editModeDispatch({ type: 'userRequest', data: !editMode })
+								if (editMode) editModeDispatch({ type: 'requestUpdate' })
+								else editModeDispatch({ type: 'requestEditMode' })
 							}}>
 							{editMode ? <Check /> : <Edit />}
 						</IconButton>

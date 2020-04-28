@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import queryString from 'query-string'
 import './Member.scss'
@@ -6,6 +6,7 @@ import './Member.scss'
 // Backend
 import { firestore } from '../firebase'
 import { calcSingleExpenditure, sortObject } from '../algorithm'
+import { fbLog } from '../logger'
 
 // Components
 import NumberFormat from 'react-number-format'
@@ -22,44 +23,60 @@ export default function (props) {
 	const [group, setGroup] = useState(null)
 	const [receipts, setReceipts] = useState({})
 
-	const onGroupSnapshot = useCallback((doc) => {
-		let data = (window.$data = doc.data())
-		//console.log("Group Data Changed: ", data);
-		data.members = sortObject(data.members)
-		setGroup(data)
-	}, [])
-
-	const onReceiptSnapshot = useCallback(
-		(querySnapshot) => {
-			let _receipts = { ...receipts }
-			querySnapshot.docChanges().forEach((change) => {
-				let id = change.doc.id
-				let data = change.doc.data()
-				//console.log('Receipts', change.type, id)
-
-				switch (change.type) {
-					case 'added':
-						_receipts[id] = data
-						break
-					case 'modified':
-						_receipts[id] = data
-						break
-					case 'removed':
-						delete _receipts[id]
-						break
-					default:
-				}
-			})
-			setReceipts(_receipts)
-		},
-		[receipts]
-	)
-
 	useEffect(() => {
-		fs.collection('DutchPay').doc(params.groupId).onSnapshot(onGroupSnapshot)
+		fbLog(`Subscribe /DutchPay/{${params.groupId}}`)
+		fbLog(`Subscribe /DutchPay/{${params.groupId}}/Receipts`)
+		const unsubscribeGroup = fs
+			.collection('DutchPay')
+			.doc(params.groupId)
+			.onSnapshot((doc) => {
+				let data = (window.$data = doc.data())
+				console.log('Group Data Changed: ', data)
+				data.members = sortObject(data.members)
+				setGroup(data)
+			})
+		const unsubscribeReceipts = fs
+			.collection('DutchPay')
+			.doc(params.groupId)
+			.collection('Receipts')
+			.orderBy('timestamp', 'asc')
+			.onSnapshot((querySnapshot) => {
+				setReceipts((receipts) => {
+					let _receipts = { ...receipts }
+					querySnapshot.docChanges().forEach((change) => {
+						let id = change.doc.id
+						let data = change.doc.data()
+						//console.log('Receipts', change.type, id)
 
-		fs.collection('DutchPay').doc(params.groupId).collection('Receipts').orderBy('timestamp', 'asc').onSnapshot(onReceiptSnapshot)
-	}, [params.groupId, onGroupSnapshot, onReceiptSnapshot])
+						switch (change.type) {
+							case 'added':
+								_receipts[id] = data
+								break
+							case 'modified':
+								_receipts[id] = data
+								break
+							case 'removed':
+								delete _receipts[id]
+								break
+							default:
+						}
+					})
+
+					return sortObject(_receipts, (a, b) => {
+						const Atarget = _receipts[a].timestamp
+						const Btarget = _receipts[b].timestamp
+						return Atarget > Btarget ? 1 : -1
+					})
+				})
+			})
+
+		return () => {
+			fbLog(`Unsubscribe /DutchPay/{${params.groupId}}`)
+			fbLog(`Unsubscribe /DutchPay/{${params.groupId}}/Receipts`)
+			unsubscribeGroup()
+			unsubscribeReceipts()
+		}
+	}, [params.groupId])
 
 	function close() {
 		history.push({ pathname: `/${params.groupId}`, search: editMode ? '?edit=true' : '' })

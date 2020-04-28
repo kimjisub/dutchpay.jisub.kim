@@ -6,6 +6,7 @@ import './Receipt.scss'
 // Backend
 import { firestore } from '../firebase'
 import { sortObject } from '../algorithm'
+import { fbLog } from '../logger'
 
 // Components
 import NumberFormat from 'react-number-format'
@@ -96,6 +97,7 @@ export default function (props) {
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
 
 	useEffect(() => {
+		fbLog(`Get /DutchPay/{${params.groupId}}`)
 		fs.collection('DutchPay')
 			.doc(params.groupId)
 			.get()
@@ -103,7 +105,8 @@ export default function (props) {
 				if (doc.exists) setMembers(doc.data().members)
 			})
 
-		if (params.receiptId !== 'new')
+		if (params.receiptId !== 'new') {
+			fbLog(`Get /DutchPay/{${params.groupId}}/Receipt/{${params.receiptId}}`)
 			fs.collection('DutchPay')
 				.doc(params.groupId)
 				.collection('Receipts')
@@ -114,7 +117,7 @@ export default function (props) {
 						setReceipt(doc.data())
 					}
 				})
-		else {
+		} else {
 			setReceipt({
 				name: '',
 				items: [],
