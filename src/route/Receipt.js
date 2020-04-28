@@ -31,7 +31,6 @@ import {
 	Card,
 	CardContent,
 	CardActions,
-	Typography,
 	Table,
 	TableHead,
 	TableBody,

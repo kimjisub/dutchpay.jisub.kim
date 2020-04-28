@@ -6,7 +6,6 @@ import NumberFormat from 'react-number-format'
 import { ExpandMore } from '@material-ui/icons'
 import {
 	Typography,
-	TableContainer,
 	Table,
 	TableBody,
 	TableCell,
@@ -16,7 +15,6 @@ import {
 	ExpansionPanel,
 	ExpansionPanelSummary,
 	CardActionArea,
-	Paper,
 } from '@material-ui/core'
 
 export default function (props) {
