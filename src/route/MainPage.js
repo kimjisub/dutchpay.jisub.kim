@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import './MainPage.scss'
 
 // Backend
-import firebase from 'firebase'
-import { firestore } from '../firebase'
+import { firestore, firebaseAuth } from '../firebase'
 import { fbLog } from '../logger'
 
 // Components
 import { Snackbar, Button } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 
-let auth
+const auth = firebaseAuth()
 const fs = firestore()
 
 export default function (props) {
 	const [errMsg, setErrMsg] = useState(null)
-	useEffect(() => {
-		auth = firebase.auth()
-	}, [])
 
 	return (
 		<div className="MainPage">
