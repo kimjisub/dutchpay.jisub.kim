@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useReducer, useRef } from 'react'
 import { Link, useParams, useLocation, useHistory } from 'react-router-dom'
 import queryString from 'query-string'
 import './Group.scss'
@@ -27,50 +27,121 @@ export default function (props) {
 	const history = useHistory()
 
 	const [groupName, setGroupName] = useState('')
-	const [group, setGroup] = useState(null)
-	const [receipts, setReceipts] = useState({})
-	const [editMode, setEditMode] = useState(queries.edit)
 	const [errMsg, setErrMsg] = useState(null)
 	const [expanded, setExpanded] = useState(null)
 
-	const onGroupSnapshot = useCallback((doc) => {
-		let data = (window.$data = doc.data())
-		//console.log("Group Data Changed: ", data);
-		data.members = sortObject(data.members)
-		setGroup(data)
-	}, [])
-
-	const onReceiptSnapshot = useCallback((querySnapshot) => {
-		setReceipts((receipts) => {
-			let _receipts = { ...receipts }
-			querySnapshot.docChanges().forEach((change) => {
-				let id = change.doc.id
-				let data = change.doc.data()
-				console.log('Receipts', change.type, id)
-
-				switch (change.type) {
-					case 'added':
-						_receipts[id] = data
-						break
-					case 'modified':
-						_receipts[id] = data
-						break
-					case 'removed':
-						delete _receipts[id]
-						break
-					default:
+	const [group, groupDispatch] = useReducer((state, action) => {
+		const { type, data } = action
+		switch (type) {
+			case 'fromFirebase':
+				setGroupName(data.name)
+				break
+			case 'saveLocal':
+				break
+			case 'saveFirebase':
+				if (data) {
+					fbLog(`Set /DutchPay/{${params.groupId}}`)
+					fs.collection('DutchPay')
+						.doc(params.groupId)
+						.set(data)
+						.then(() => {})
+						.catch((err) => {
+							setErrMsg('권한이 없습니다.')
+							editModeDispatch({ type: 'permissionDenied', data: false })
+						})
 				}
-			})
-			return _receipts
+				break
+			default:
+		}
+		return data
+	}, null)
+
+	const [receipts, receiptsDispatch] = useReducer((state, actions) => {
+		let _state = { ...state }
+		actions.forEach((action) => {
+			const { type, id, data } = action
+			switch (type) {
+				case 'added':
+					_state[id] = data
+					break
+				case 'modified':
+					_state[id] = data
+					break
+				case 'removed':
+					delete _state[id]
+					break
+				default:
+			}
 		})
-	}, [])
+		return _state
+	}, {})
+
+	const [editMode, editModeDispatch] = useReducer((state, action) => {
+		const { type, data } = action
+		if (data)
+			// 수정모드 요청시
+			switch (type) {
+				case 'userRequest':
+					if (group) {
+						fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
+						fs.collection('DutchPay')
+							.doc(params.groupId)
+							.update({})
+							.then(() => {})
+							.catch((err) => {
+								editModeDispatch({ type: 'permissionDenied', data: false })
+							})
+					}
+					break
+				default:
+			}
+		// 데이터 저장 요청시
+		else
+			switch (type) {
+				case 'permissionDenied':
+					setErrMsg('권한이 없습니다.')
+					break
+				case 'userRequest':
+					if (group) {
+						groupDispatch({ type: 'saveFirebase', data: { ...group }, name: groupName }) //name: groupName
+					}
+					break
+				default:
+			}
+
+		history.push({ pathname: history.location.pathname, search: data ? '?edit=true' : '' })
+		return data
+	}, queries.edit === 'true')
 
 	// Subscribe Firestore
 	useEffect(() => {
 		fbLog(`Subscribe /DutchPay/{${params.groupId}}`)
 		fbLog(`Subscribe /DutchPay/{${params.groupId}}/Receipts`)
-		const unsubscribeGroup = fs.collection('DutchPay').doc(params.groupId).onSnapshot(onGroupSnapshot)
-		const unsubscribeReceipts = fs.collection('DutchPay').doc(params.groupId).collection('Receipts').orderBy('timestamp', 'asc').onSnapshot(onReceiptSnapshot)
+		const unsubscribeGroup = fs
+			.collection('DutchPay')
+			.doc(params.groupId)
+			.onSnapshot((doc) => {
+				let data = (window.$data = doc.data())
+				console.log('Group Data Changed: ', data)
+				data.members = sortObject(data.members)
+				groupDispatch({ type: 'fromFirebase', data })
+			})
+		const unsubscribeReceipts = fs
+			.collection('DutchPay')
+			.doc(params.groupId)
+			.collection('Receipts')
+			.orderBy('timestamp', 'asc')
+			.onSnapshot((querySnapshot) => {
+				let actions = []
+				querySnapshot.docChanges().forEach((change) => {
+					let id = change.doc.id
+					let data = change.doc.data()
+					console.log('Receipts', change.type, id)
+
+					actions.push({ type: change.type, id, data })
+				})
+				receiptsDispatch(actions)
+			})
 
 		return () => {
 			fbLog(`Unsubscribe /DutchPay/{${params.groupId}}`)
@@ -78,43 +149,7 @@ export default function (props) {
 			unsubscribeGroup()
 			unsubscribeReceipts()
 		}
-	}, [params.groupId, onGroupSnapshot, onReceiptSnapshot])
-
-	// EditMode Changed
-	useEffect(() => {
-		history.push({ pathname: history.location.pathname, search: editMode ? '?edit=true' : '' })
-		if (editMode) {
-			// Permission Test
-			fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
-			fs.collection('DutchPay')
-				.doc(params.groupId)
-				.update({})
-				.then(() => {})
-				.catch((err) => {
-					setErrMsg('권한이 없습니다.')
-					setEditMode(false)
-				})
-		} else {
-			// Apply Group Name
-			if (group) setGroup((group) => ({ ...group, name: groupName }))
-		}
-		// eslint-disable-next-line
-	}, [editMode, history, params.groupId])
-
-	// Group Changed
-	useEffect(() => {
-		if (group) {
-			fbLog(`Set /DutchPay/{${params.groupId}}`)
-			fs.collection('DutchPay')
-				.doc(params.groupId)
-				.set(group)
-				.then(() => {})
-				.catch((err) => {
-					setErrMsg('권한이 없습니다.')
-					setEditMode(false)
-				})
-		}
-	}, [group, editMode, params.groupId])
+	}, [params.groupId])
 
 	if (!group)
 		return (
@@ -169,9 +204,9 @@ export default function (props) {
 				<article>
 					<span>
 						<EditableTextView
-							className="group-title"
+							id="group-title"
 							label="모임 이름"
-							text={group.name}
+							text={groupName}
 							editMode={editMode}
 							onChange={(e) => {
 								setGroupName(e.target.value)
@@ -180,8 +215,7 @@ export default function (props) {
 						정산 내역서
 						<IconButton
 							onClick={() => {
-								if (editMode) setEditMode(false)
-								else setEditMode(true)
+								editModeDispatch({ type: 'userRequest', data: !editMode })
 							}}>
 							{editMode ? <Check /> : <Edit />}
 						</IconButton>
@@ -193,9 +227,9 @@ export default function (props) {
 									expenditure={expenditure}
 									members={group.members}
 									onMembersChange={(members) => {
-										let _group = Object.assign({}, group)
+										let _group = { ...group }
 										_group.members = members
-										setGroup(_group)
+										groupDispatch({ type: 'saveFirebase', data: _group })
 									}}
 									onMemberClick={(id) => {
 										history.push({ pathname: '/' + params.groupId + '/member/' + id, search: editMode ? '?edit=true' : '' })
@@ -213,12 +247,6 @@ export default function (props) {
 									</IconButton>
 								</Link>
 							) : null}
-							{/* <ReceiptList
-							receipts={receipts}
-							onItemClick={(receiptId)=>{
-								
-							}}
-							members={group.members}/> */}
 							{receiptCards}
 						</main>
 					</div>
