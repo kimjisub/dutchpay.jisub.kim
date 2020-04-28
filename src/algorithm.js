@@ -24,6 +24,12 @@ export function calcExpenditure(members, receipts) {
 		}
 	}
 
+	for (let id in members)
+		ret[id] = {
+			spend: parseFloat(ret[id].spend.toFixed(2)),
+			paied: parseFloat(ret[id].paied.toFixed(2)),
+		}
+
 	return ret
 }
 
@@ -41,14 +47,14 @@ export function calcSingleExpenditure(memberId, receipts) {
 			let eachPrice = item.price / item.buyers.length
 			if (item.buyers.includes(memberId)) {
 				totalPrice += eachPrice
-				items.push({ name: item.name, price: eachPrice })
+				items.push({ name: item.name, price: parseFloat(eachPrice.toFixed(2)) })
 			}
 		}
 
 		if (items.length)
 			ret.push({
 				name: receipt.name,
-				totalPrice,
+				totalPrice: parseFloat(totalPrice.toFixed(2)),
 				items,
 			})
 	}
@@ -70,7 +76,7 @@ export function calcSettlement(expenditure) {
 				if (data[to] < 0) {
 					if (data[from] <= -data[to]) {
 						let value = Math.min(data[from], -data[to])
-						ret.push({ from, to, value })
+						ret.push({ from, to, value: parseFloat(value.toFixed(2)) })
 						data[to] += data[from]
 						data[from] -= data[from]
 						break
@@ -84,7 +90,7 @@ export function calcSettlement(expenditure) {
 			for (let to in data) {
 				if (data[to] < 0) {
 					let value = Math.min(data[from], -data[to])
-					ret.push({ from, to, value })
+					ret.push({ from, to, value: parseFloat(value.toFixed(2)) })
 					data[to] += value
 					data[from] -= value
 				}
@@ -106,12 +112,13 @@ export function bigNumberToCode(num) {
 	return ret
 }
 
-export function sortObject(o) {
+export function sortObject(o, fn) {
+	fn = fn || ((a, b) => (a > b ? 1 : -1))
 	var sorted = {},
 		key,
 		a = []
 	for (key in o) if (o.hasOwnProperty(key)) a.push(key)
-	a.sort()
+	a.sort(fn)
 
 	for (key = 0; key < a.length; key++) sorted[a[key]] = o[a[key]]
 

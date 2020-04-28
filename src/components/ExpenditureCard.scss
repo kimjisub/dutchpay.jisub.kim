@@ -1,23 +1,13 @@
 .ExpenditureCard {
 	padding: 20px;
+	margin: 10px;
 	.title {
 		color: #facd60;
-		font-size: 1.3rem;
+		font-size: 1.2rem;
+		font-weight: bold;
 	}
-	table {
-		width: 100%;
-		text-align: center;
-		color: #495057;
-		tr {
-			border: 10px solid #0000;
-			th {
-				font-size: 1.2rem;
-			}
-			td {
-				font-size: 1rem;
-			}
-		}
 
+	table {
 		tbody {
 			tr {
 				background: #fff;
@@ -31,28 +21,5 @@
 				}
 			}
 		}
-	}
-	ul {
-		display: flex;
-		flex-direction: row;
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		li {
-			flex-grow: 1;
-			flex-basis: 0;
-			margin: 0;
-			padding: 0;
-			border: 0;
-			text-align: right;
-			color: #495057;
-			&:nth-child(1) {
-				text-align: center;
-			}
-		}
-	}
-
-	.textfield-add-name {
-		width: 100%;
 	}
 }

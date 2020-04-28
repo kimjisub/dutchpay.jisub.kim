@@ -5,7 +5,6 @@
 	background-color: #facd60;
 	width: 100%;
 	min-height: 100vh;
-	font-size: 12px;
 	color: black;
 
 	section {
@@ -23,7 +22,7 @@
 			box-shadow: 0 0 30px -10px;
 			border-radius: 30px;
 
-			.EditableTextView {
+			.group-title {
 				font-size: 1.8rem;
 				font-weight: bolder;
 			}
@@ -43,6 +42,7 @@
 
 				#receipts {
 					display: block;
+					margin: 10px;
 				}
 			}
 		}
@@ -51,10 +51,6 @@
 	.card {
 		width: 300px;
 		margin: 10px;
-	}
-
-	.card .mdl-card__menu {
-		margin: 4px;
 	}
 
 	.add-card {

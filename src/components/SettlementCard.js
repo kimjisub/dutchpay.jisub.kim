@@ -1,11 +1,16 @@
 import React from 'react'
-import NumberFormat from 'react-number-format'
 import './SettlementCard.scss'
+
+// Components
+import NumberFormat from 'react-number-format'
+import { Card, Typography } from '@material-ui/core'
 
 export default function (props) {
 	return (
-		<main className="SettlementCard card">
-			<div className="title">정산</div>
+		<Card className="SettlementCard" variant="outlined">
+			<Typography className="title" variant="h5" component="h2">
+				정산
+			</Typography>
 
 			<div id="body">
 				{props.settlement.map((data, i) => {
@@ -25,6 +30,6 @@ export default function (props) {
 					)
 				})}
 			</div>
-		</main>
+		</Card>
 	)
 }

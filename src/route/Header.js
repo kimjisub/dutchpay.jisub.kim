@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import firebase from 'firebase'
 import * as firebaseui from 'firebaseui'
 import './Header.scss'
 
-let auth
+// Backend
+import { firebaseAuth } from '../firebase'
+
+const auth = firebaseAuth()
 let fbui
 
 export default function () {
 	const [user, setUser] = useState(null)
 	useEffect(() => {
-		auth = firebase.auth()
 		fbui = new firebaseui.auth.AuthUI(auth)
 		auth.onAuthStateChanged((user) => {
 			setUser(user)
@@ -28,10 +29,10 @@ export default function () {
 						fbui.start('#firebaseui-auth-container', {
 							signInOptions: [
 								{
-									provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+									provider: auth.EmailAuthProvider.PROVIDER_ID,
 									requireDisplayName: false,
 								},
-								firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+								auth.GoogleAuthProvider.PROVIDER_ID,
 							],
 						})
 					}}>

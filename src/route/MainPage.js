@@ -1,27 +1,23 @@
-import React, { useState, useEffect } from 'react'
-import { Button } from 'react-mdl'
-import { Snackbar } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
-import firebase from 'firebase'
-
+import React, { useState } from 'react'
 import './MainPage.scss'
-import { firestore } from '../firebase'
+
+// Backend
+import { firestore, firebaseAuth } from '../firebase'
 import { fbLog } from '../logger'
 
-let auth
+// Components
+import { Snackbar, Button } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
+
+const auth = firebaseAuth()
 const fs = firestore()
 
 export default function (props) {
 	const [errMsg, setErrMsg] = useState(null)
-	useEffect(() => {
-		auth = firebase.auth()
-	}, [])
 
 	return (
 		<div className="MainPage">
 			<Button
-				raised
-				ripple
 				onClick={() => {
 					fbLog('Add /DutchPay')
 					fs.collection('DutchPay')

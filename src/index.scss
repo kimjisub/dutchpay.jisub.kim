@@ -1,8 +1,11 @@
+@import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+
 body {
 	margin: 0;
-	font-family: 'NanumSquare', sans-serif !important;
-	font-weight: bold;
+	//font-family: 'NanumSquare', sans-serif !important;
+	//font-weight: bold;
 	//font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+	font-family: 'Noto Sans KR', sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 
@@ -16,40 +19,6 @@ body {
 
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
-.mdl-textfield__label {
-	margin: 0;
-}
-
-.mdl-textfield-small {
-	flex-grow: 1;
-	margin-left: 4px;
-	margin-right: 4px;
-	padding: 0;
-}
-
-.mdl-textfield-small .mdl-textfield__label {
-	top: 4px;
-}
-
-.mdl-textfield-small .mdl-textfield__label:after {
-	bottom: 0px;
-}
-
-.list-group-item:first-child {
-	border-top: 0px !important;
-}
-
-.my-masonry-grid {
-	display: -webkit-box; /* Not needed if autoprefixing */
-	display: -ms-flexbox; /* Not needed if autoprefixing */
-	display: flex;
-	width: auto;
-}
-.my-masonry-grid_column {
-	padding-left: 0px; /* gutter size */
-	background-clip: padding-box;
 }
 
 .popup {
