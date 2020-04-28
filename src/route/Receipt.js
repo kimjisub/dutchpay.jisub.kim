@@ -31,6 +31,13 @@ import {
 	Card,
 	CardContent,
 	CardActions,
+	Typography,
+	Table,
+	TableHead,
+	TableBody,
+	TableFooter,
+	TableRow,
+	TableCell,
 } from '@material-ui/core'
 
 // Custom Components
@@ -191,20 +198,20 @@ export default function (props) {
 	}
 
 	const tab1 = (
-		<table className="receipt-table">
-			<thead>
-				<tr>
-					<th>상품명</th>
-					<th>가격</th>
-					<th>인원</th>
-					{editMode ? <th>삭제</th> : null}
-				</tr>
-			</thead>
-			<tbody>
+		<Table className="receipt-table" size="small">
+			<TableHead>
+				<TableRow>
+					<TableCell>상품명</TableCell>
+					<TableCell align="right">가격</TableCell>
+					<TableCell align="right">인원</TableCell>
+					{editMode ? <TableCell>삭제</TableCell> : null}
+				</TableRow>
+			</TableHead>
+			<TableBody>
 				{receipt.items.map((item, i) => {
 					return (
-						<tr key={'item-' + i}>
-							<td>
+						<TableRow key={'item-' + i}>
+							<TableCell>
 								<EditableTextView
 									onChange={(e) => {
 										let _receipt = { ...receipt }
@@ -215,8 +222,8 @@ export default function (props) {
 									text={item.name}
 									editMode={editMode}
 								/>
-							</td>
-							<td>
+							</TableCell>
+							<TableCell align="right">
 								<EditableNumberView
 									className="item-price"
 									onValueChange={(values) => {
@@ -231,8 +238,8 @@ export default function (props) {
 									value={item.price}
 									editMode={editMode}
 								/>
-							</td>
-							<td>
+							</TableCell>
+							<TableCell align="right">
 								<IconButton
 									id={'item-delete-' + i}
 									className="person"
@@ -245,10 +252,10 @@ export default function (props) {
 									<Person fontSize="small" />
 									<span className="count">{receipt.items[i].buyers.length}</span>
 								</IconButton>
-							</td>
+							</TableCell>
 
 							{editMode ? (
-								<td>
+								<TableCell>
 									<IconButton
 										id={'item-delete-' + i}
 										onClick={(event) => {
@@ -263,16 +270,16 @@ export default function (props) {
 										}}>
 										<Delete fontSize="small" />
 									</IconButton>
-								</td>
+								</TableCell>
 							) : null}
-						</tr>
+						</TableRow>
 					)
 				})}
-			</tbody>
-			<tfoot>
+			</TableBody>
+			<TableFooter>
 				{editMode ? (
-					<tr>
-						<td colSpan="4">
+					<TableRow>
+						<TableCell colSpan="4">
 							<IconButton
 								onClick={(event) => {
 									let buyers = Object.keys(members)
@@ -286,17 +293,18 @@ export default function (props) {
 								}}>
 								<Add />
 							</IconButton>
-						</td>
-					</tr>
+						</TableCell>
+					</TableRow>
 				) : null}
-				<tr>
-					<th>총</th>
-					<td>
+				<TableRow>
+					<TableCell>총</TableCell>
+					<TableCell></TableCell>
+					<TableCell align="right">
 						<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
-					</td>
-				</tr>
-			</tfoot>
-		</table>
+					</TableCell>
+				</TableRow>
+			</TableFooter>
+		</Table>
 	)
 
 	let totalPaied = 0

@@ -21,5 +21,12 @@
 				}
 			}
 		}
+		tfoot {
+			& > *:last-child {
+				td {
+					border: 0;
+				}
+			}
+		}
 	}
 }

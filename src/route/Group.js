@@ -259,7 +259,7 @@ export default function (props) {
 								<SettlementCard members={group.members} settlement={settlement} />
 							</div>
 						</aside>
-						<main id="receipts">
+						<div id="receipts">
 							{editMode ? (
 								<Link to={`/${params.groupId}/receipt/new?edit=true`}>
 									<IconButton>
@@ -268,7 +268,7 @@ export default function (props) {
 								</Link>
 							) : null}
 							{receiptCards}
-						</main>
+						</div>
 					</div>
 				</article>
 			</section>
