@@ -97,23 +97,21 @@ export default function (props) {
 		console.log(type)
 		switch (type) {
 			case 'initalize':
-				console.log(queries.editMode)
-				if (queries.editMode === 'true') editModeDispatch({ type: 'requestEditMode' })
+				console.log(queries.edit)
+				if (queries.edit === 'true') editModeDispatch({ type: 'requestEditMode' })
 				break
 			case 'requestEditMode': // 수정모드로 진입하려고 함.
 				editMode = false
-				if (group) {
-					fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
-					fs.collection('DutchPay')
-						.doc(params.groupId)
-						.update({})
-						.then(() => {
-							editModeDispatch({ type: 'editModeApproved' })
-						})
-						.catch((err) => {
-							editModeDispatch({ type: 'editModeDenied' })
-						})
-				} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
+				fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
+				fs.collection('DutchPay')
+					.doc(params.groupId)
+					.update({})
+					.then(() => {
+						editModeDispatch({ type: 'editModeApproved' })
+					})
+					.catch((err) => {
+						editModeDispatch({ type: 'editModeDenied' })
+					})
 				break
 			case 'editModeApproved':
 				editMode = true
