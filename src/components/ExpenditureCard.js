@@ -13,7 +13,6 @@ import { Menu, MenuItem, IconButton, Card, Typography, Table, TableHead, TableBo
 import EditableTextView from '../elements/EditableTextView'
 
 export default function (props) {
-	console.log('expenditurecard render')
 	const [addName, setAddName] = useState('')
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
 

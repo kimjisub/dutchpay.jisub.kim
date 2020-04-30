@@ -63,7 +63,7 @@
 		widows: 100%;
 	}
 
-	@media (max-width: 1000px) {
+	@media (max-width: 800px) {
 		section {
 			article {
 				& > div {
@@ -75,7 +75,7 @@
 		}
 	}
 
-	@media (max-width: 500px) {
+	@media (max-width: 450px) {
 		section {
 			// background-color: #facd60;
 			article {

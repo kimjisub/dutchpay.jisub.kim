@@ -1,5 +1,5 @@
 .ReceiptCard {
-	min-width: 350px;
+	min-width: 250px;
 	.title {
 		font-size: 1rem;
 		font-weight: bold;
@@ -14,7 +14,7 @@
 			border: 1px solid rgba(0, 0, 0, 0.12);
 		}
 
-		tbody {
+		& > *:nth-child(2) {
 			border-top-left-radius: 4px;
 			border-top-right-radius: 4px;
 		}
