@@ -3,6 +3,8 @@ import * as firebaseui from 'firebaseui'
 import './Header.scss'
 
 // Backend
+import firebase from 'firebase/app'
+import 'firebase/auth'
 import { firebaseAuth } from '../firebase'
 
 const auth = firebaseAuth()
@@ -29,10 +31,10 @@ export default function () {
 						fbui.start('#firebaseui-auth-container', {
 							signInOptions: [
 								{
-									provider: auth.EmailAuthProvider.PROVIDER_ID,
+									provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
 									requireDisplayName: false,
 								},
-								auth.GoogleAuthProvider.PROVIDER_ID,
+								firebase.auth.GoogleAuthProvider.PROVIDER_ID,
 							],
 						})
 					}}>

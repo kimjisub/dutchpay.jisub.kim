@@ -42,6 +42,18 @@ export default function (props) {
 					fs.collection('DutchPay')
 						.doc(params.groupId)
 						.set(data)
+						.then(() => {})
+						.catch((err) => {
+							setErrMsg('권한이 없습니다.')
+						})
+				} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
+				break
+			case 'saveFirebaseAndDone':
+				if (data) {
+					fbLog(`Set /DutchPay/{${params.groupId}}`)
+					fs.collection('DutchPay')
+						.doc(params.groupId)
+						.set(data)
 						.then(() => {
 							editModeDispatch({ type: 'updateApproved' })
 						})
@@ -84,23 +96,22 @@ export default function (props) {
 		let editMode = false
 		console.log(type)
 		switch (type) {
-			case 'groupLoaded':
-				if (queries.editMode === 'true') editModeDispatch({ type: 'requestEditMode' })
+			case 'initalize':
+				console.log(queries.edit)
+				if (queries.edit === 'true') editModeDispatch({ type: 'requestEditMode' })
 				break
 			case 'requestEditMode': // 수정모드로 진입하려고 함.
 				editMode = false
-				if (group) {
-					fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
-					fs.collection('DutchPay')
-						.doc(params.groupId)
-						.update({})
-						.then(() => {
-							editModeDispatch({ type: 'editModeApproved' })
-						})
-						.catch((err) => {
-							editModeDispatch({ type: 'editModeDenied' })
-						})
-				} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
+				fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
+				fs.collection('DutchPay')
+					.doc(params.groupId)
+					.update({})
+					.then(() => {
+						editModeDispatch({ type: 'editModeApproved' })
+					})
+					.catch((err) => {
+						editModeDispatch({ type: 'editModeDenied' })
+					})
 				break
 			case 'editModeApproved':
 				editMode = true
@@ -111,16 +122,14 @@ export default function (props) {
 				break
 			case 'requestUpdate':
 				editMode = true
-				if (group) {
-					groupDispatch({ type: 'saveFirebase', data: { ...group }, name: groupName })
-				}
+				if (group) groupDispatch({ type: 'saveFirebaseAndDone', data: { ...group }, name: groupName })
 				break
 			case 'updateApproved':
 				editMode = false
 				break
 			case 'updateDenied':
 				editMode = true
-				setErrMsg('저장에 문제가 있습니다.')
+				setErrMsg('권한이 없습니다.')
 				break
 			default:
 		}
@@ -128,6 +137,10 @@ export default function (props) {
 		history.push({ pathname: history.location.pathname, search: editMode ? '?edit=true' : '' })
 		return editMode
 	}, false)
+
+	useEffect(() => {
+		editModeDispatch({ type: 'initalize' })
+	}, [])
 
 	// Subscribe Firestore
 	useEffect(() => {
@@ -142,8 +155,6 @@ export default function (props) {
 				data.members = sortObject(data.members)
 
 				groupDispatch({ type: 'fromFirebase', data })
-				console.log('call groupLoaded')
-				editModeDispatch({ type: 'groupLoaded' })
 			})
 		const unsubscribeReceipts = fs
 			.collection('DutchPay')
@@ -259,7 +270,7 @@ export default function (props) {
 								<SettlementCard members={group.members} settlement={settlement} />
 							</div>
 						</aside>
-						<main id="receipts">
+						<div id="receipts">
 							{editMode ? (
 								<Link to={`/${params.groupId}/receipt/new?edit=true`}>
 									<IconButton>
@@ -268,7 +279,7 @@ export default function (props) {
 								</Link>
 							) : null}
 							{receiptCards}
-						</main>
+						</div>
 					</div>
 				</article>
 			</section>

@@ -31,6 +31,12 @@ import {
 	Card,
 	CardContent,
 	CardActions,
+	Table,
+	TableHead,
+	TableBody,
+	TableFooter,
+	TableRow,
+	TableCell,
 } from '@material-ui/core'
 
 // Custom Components
@@ -191,20 +197,20 @@ export default function (props) {
 	}
 
 	const tab1 = (
-		<table className="receipt-table">
-			<thead>
-				<tr>
-					<th>상품명</th>
-					<th>가격</th>
-					<th>인원</th>
-					{editMode ? <th>삭제</th> : null}
-				</tr>
-			</thead>
-			<tbody>
+		<Table className="receipt-table" size="small">
+			<TableHead>
+				<TableRow>
+					<TableCell>상품명</TableCell>
+					<TableCell align="right">가격</TableCell>
+					<TableCell align="right">인원</TableCell>
+					{editMode ? <TableCell>삭제</TableCell> : null}
+				</TableRow>
+			</TableHead>
+			<TableBody>
 				{receipt.items.map((item, i) => {
 					return (
-						<tr key={'item-' + i}>
-							<td>
+						<TableRow key={'item-' + i}>
+							<TableCell>
 								<EditableTextView
 									onChange={(e) => {
 										let _receipt = { ...receipt }
@@ -215,8 +221,8 @@ export default function (props) {
 									text={item.name}
 									editMode={editMode}
 								/>
-							</td>
-							<td>
+							</TableCell>
+							<TableCell align="right">
 								<EditableNumberView
 									className="item-price"
 									onValueChange={(values) => {
@@ -231,8 +237,8 @@ export default function (props) {
 									value={item.price}
 									editMode={editMode}
 								/>
-							</td>
-							<td>
+							</TableCell>
+							<TableCell align="right">
 								<IconButton
 									id={'item-delete-' + i}
 									className="person"
@@ -245,10 +251,10 @@ export default function (props) {
 									<Person fontSize="small" />
 									<span className="count">{receipt.items[i].buyers.length}</span>
 								</IconButton>
-							</td>
+							</TableCell>
 
 							{editMode ? (
-								<td>
+								<TableCell>
 									<IconButton
 										id={'item-delete-' + i}
 										onClick={(event) => {
@@ -263,16 +269,16 @@ export default function (props) {
 										}}>
 										<Delete fontSize="small" />
 									</IconButton>
-								</td>
+								</TableCell>
 							) : null}
-						</tr>
+						</TableRow>
 					)
 				})}
-			</tbody>
-			<tfoot>
+			</TableBody>
+			<TableFooter>
 				{editMode ? (
-					<tr>
-						<td colSpan="4">
+					<TableRow>
+						<TableCell colSpan="4">
 							<IconButton
 								onClick={(event) => {
 									let buyers = Object.keys(members)
@@ -286,17 +292,18 @@ export default function (props) {
 								}}>
 								<Add />
 							</IconButton>
-						</td>
-					</tr>
+						</TableCell>
+					</TableRow>
 				) : null}
-				<tr>
-					<th>총</th>
-					<td>
+				<TableRow>
+					<TableCell>총</TableCell>
+					<TableCell></TableCell>
+					<TableCell align="right">
 						<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
-					</td>
-				</tr>
-			</tfoot>
-		</table>
+					</TableCell>
+				</TableRow>
+			</TableFooter>
+		</Table>
 	)
 
 	let totalPaied = 0
@@ -306,23 +313,23 @@ export default function (props) {
 	}
 
 	const tab2 = (
-		<table className="payer-table">
-			<thead>
-				<tr>
-					<th>결제자</th>
-					<th>결제 금액</th>
-					{editMode ? <th>삭제</th> : null}
-				</tr>
-			</thead>
-			<tbody>
+		<Table className="payer-table">
+			<TableHead>
+				<TableRow>
+					<TableCell>결제자</TableCell>
+					<TableCell align="right">결제 금액</TableCell>
+					{editMode ? <TableCell>삭제</TableCell> : null}
+				</TableRow>
+			</TableHead>
+			<TableBody>
 				{Object.entries(receipt.payers).map((data, i) => {
 					let id = data[0]
 					let price = data[1]
 
 					return (
-						<tr key={'payer-' + i}>
-							<td>{members[id]}</td>
-							<td>
+						<TableRow key={'payer-' + i}>
+							<TableCell>{members[id]}</TableCell>
+							<TableCell align="right">
 								<EditableNumberView
 									onValueChange={(values) => {
 										const { value } = values
@@ -337,10 +344,10 @@ export default function (props) {
 									editMode={editMode}
 									id={`pay-price-${i}`}
 								/>
-							</td>
+							</TableCell>
 
 							{editMode ? (
-								<td>
+								<TableCell>
 									<IconButton
 										id={'delete-' + i}
 										onClick={(event) => {
@@ -355,16 +362,16 @@ export default function (props) {
 										}}>
 										<Delete fontSize="small" />
 									</IconButton>
-								</td>
+								</TableCell>
 							) : null}
-						</tr>
+						</TableRow>
 					)
 				})}
-			</tbody>
-			<tfoot>
+			</TableBody>
+			<TableFooter>
 				{editMode ? (
-					<tr>
-						<td colSpan="3">
+					<TableRow>
+						<TableCell colSpan="3">
 							<IconButton
 								onClick={(event) => {
 									setPayerPopoverAction({
@@ -373,18 +380,41 @@ export default function (props) {
 								}}>
 								<Add />
 							</IconButton>
-						</td>
-					</tr>
+						</TableCell>
+					</TableRow>
 				) : null}
-				<tr>
-					<th>총</th>
-					<td>
+				<TableRow>
+					<TableCell>총</TableCell>
+					<TableCell align="right">
 						<NumberFormat value={totalPaied} displayType={'text'} thousandSeparator={true} />
-					</td>
-				</tr>
-			</tfoot>
-		</table>
+					</TableCell>
+				</TableRow>
+			</TableFooter>
+		</Table>
 	)
+
+	let nextStep = null
+
+	if (editMode) {
+		if (tab === 0 && totalPaied === 0) {
+			nextStep = (
+				<Button
+					onClick={() => {
+						setTab(1)
+					}}>
+					다음
+				</Button>
+			)
+		} else
+			nextStep = (
+				<Button
+					onClick={() => {
+						updateToFB(receipt)
+					}}>
+					저장
+				</Button>
+			)
+	}
 
 	return (
 		<div className="Receipt popup">
@@ -528,14 +558,7 @@ export default function (props) {
 						}}>
 						{editMode ? '취소' : '확인'}
 					</Button>
-					{editMode ? (
-						<Button
-							onClick={() => {
-								updateToFB(receipt)
-							}}>
-							저장
-						</Button>
-					) : null}
+					{nextStep}
 				</CardActions>
 			</Card>
 		</div>

@@ -12,7 +12,6 @@
 		width: 100%;
 		margin-top: -90px;
 		margin-bottom: 30px;
-		padding: 10px;
 		z-index: 1;
 
 		article {
@@ -49,7 +48,7 @@
 	}
 
 	.card {
-		width: 300px;
+		width: 350px;
 		margin: 10px;
 	}
 
@@ -78,14 +77,14 @@
 
 	@media (max-width: 450px) {
 		section {
-			background-color: #facd60;
+			// background-color: #facd60;
 			article {
 				width: 100%;
 				margin: 0;
 				padding: 20px;
 				box-shadow: 0 0 0 0;
 				border-radius: 0;
-				background-color: #facd60;
+				// background-color: #facd60;
 
 				& > div {
 					display: flex;
