@@ -2,15 +2,38 @@ header {
 	position: relative;
 	vertical-align: center;
 	text-align: center;
-	height: 160px;
+	height: 80px;
 	display: flex;
 	background-color: #ffffff;
 
-	#brand {
-		color: #facd60;
-		display: block;
-		margin: 30px;
-		font-size: 1.3rem;
-		font-weight: bolder;
+	.header {
+		display: flex;
+		width: 100%;
+		margin: 20px;
+		& > * {
+			flex-grow: 0;
+			align-self: center;
+		}
+
+		.brand {
+			color: #facd60;
+			display: block;
+			font-size: 1.3rem;
+			font-weight: bolder;
+		}
+		.center {
+			flex-grow: 1;
+		}
+
+		.profileBtn {
+			height: 40px;
+		}
+	}
+
+	ul {
+		text-align: center;
+		li {
+			display: inline-block;
+		}
 	}
 }

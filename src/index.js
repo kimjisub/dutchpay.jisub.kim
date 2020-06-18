@@ -18,7 +18,7 @@ ReactDOM.render(
 		<Route path="/:groupId/receipt/:receiptId" component={Receipt} />
 		<Route path="/:groupId/member/:memberId" component={Member} />
 
-		<Header />
+		<Route component={Header} />
 		<Switch>
 			<Route path="/:groupId" component={Group} />
 			<Route exact path="/" component={MainPage} />

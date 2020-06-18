@@ -7,6 +7,11 @@
 	min-height: 100vh;
 	color: black;
 
+	.whiteBox {
+		height: 100px;
+		background-color: #ffffff;
+	}
+
 	section {
 		display: flex;
 		width: 100%;
@@ -42,6 +47,13 @@
 				#receipts {
 					display: block;
 					margin: 10px;
+					min-width: 252px;
+
+					.addButton {
+						width: 100%;
+						padding: 10px;
+						margin-bottom: 10px;
+					}
 				}
 			}
 		}
