@@ -8,7 +8,7 @@ export default function (props) {
 		view = (
 			<input
 				placeholder={props.label}
-				defaultValue={props.text}
+				value={props.text}
 				onChange={(e) => {
 					if (props.onChange) props.onChange(e)
 				}}
