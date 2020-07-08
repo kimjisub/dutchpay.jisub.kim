@@ -11,7 +11,7 @@ import { fbLog } from '../logger'
 // Components
 import { Add, Check, Edit } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
-import { Snackbar, CircularProgress, IconButton } from '@material-ui/core'
+import { Snackbar, CircularProgress, IconButton, Button } from '@material-ui/core'
 
 // Custom Components
 import ExpenditureCard from '../components/ExpenditureCard'
@@ -230,6 +230,7 @@ export default function (props) {
 					{errMsg?.replace('CLOSE', '')}
 				</Alert>
 			</Snackbar>
+			<div className="whiteBox" />
 			<section>
 				<article>
 					<span>
@@ -273,12 +274,14 @@ export default function (props) {
 						<div id="receipts">
 							{editMode ? (
 								<Link to={`/${params.groupId}/receipt/new?edit=true`}>
-									<IconButton>
-										<Add />
-									</IconButton>
+									<div>
+										<Button className="addButton">
+											<Add />
+										</Button>
+									</div>
 								</Link>
 							) : null}
-							{receiptCards}
+							<div>{receiptCards}</div>
 						</div>
 					</div>
 				</article>

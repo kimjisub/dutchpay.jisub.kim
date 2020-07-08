@@ -488,7 +488,7 @@ export default function (props) {
 								button
 								onClick={() => {
 									let _receipt = { ...receipt }
-									_receipt.payers[id] = 0
+									_receipt.payers[id] = Object.keys(receipt.payers).length === 0 ? totalPrice : 0
 									setReceipt(_receipt)
 
 									setPayerPopoverAction(null)
