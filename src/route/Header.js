@@ -41,8 +41,18 @@ export default function (props) {
 					vertical: 'top',
 					horizontal: 'right',
 				}}>
-				The content of the Popover.
+				{user == null ? null : (
+					<Button
+						onClick={() => {
+							auth.signOut()
+							setOpenProfile(null)
+						}}>
+						로그아웃
+					</Button>
+				)}
 			</Popover>
+
+			<div id="firebaseui-auth-container"></div>
 
 			<Snackbar
 				open={errMsg != null && !errMsg.includes('CLOSE')}
@@ -55,8 +65,6 @@ export default function (props) {
 					{errMsg?.replace('CLOSE', '')}
 				</Alert>
 			</Snackbar>
-
-			<div id="firebaseui-auth-container"></div>
 
 			<div className="header">
 				<a href="https://dutchpay.kimjisub.me" className="brand">
@@ -87,35 +95,25 @@ export default function (props) {
 								새로 만들기
 							</Button>
 						</li>
-						<li>목록 보기</li>
+						<li>
+							<Button>목록 보기</Button>
+						</li>
 					</ul>
 				</div>
 				<div>
-					{user == null ? (
-						<p
-							id="signin"
-							onClick={() => {
+					<Button
+						className="profileBtn"
+						onClick={(event) => {
+							setOpenProfile(event.currentTarget)
+
+							if (user == null) {
 								fbui.start('#firebaseui-auth-container', {
-									signInOptions: [
-										{
-											provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-											requireDisplayName: false,
-										},
-										firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-									],
+									signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
 								})
-							}}>
-							로그인
-						</p>
-					) : (
-						<Button
-							className="profileBtn"
-							onClick={(event) => {
-								setOpenProfile(event.currentTarget)
-							}}>
-							{user.displayName}
-						</Button>
-					)}
+							}
+						}}>
+						{user == null ? '로그인' : user.displayName}
+					</Button>
 				</div>
 			</div>
 		</header>
