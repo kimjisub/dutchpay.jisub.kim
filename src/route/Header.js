@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import * as firebaseui from 'firebaseui'
 import './Header.scss'
 
 // Backend
@@ -14,14 +13,13 @@ import { Alert } from '@material-ui/lab'
 
 const auth = firebaseAuth()
 const fs = firestore()
-let fbui
+const fbAuthProvider = new firebase.auth.GoogleAuthProvider()
 
 export default function (props) {
 	const [user, setUser] = useState(null)
 	const [openProfile, setOpenProfile] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)
 	useEffect(() => {
-		fbui = new firebaseui.auth.AuthUI(auth)
 		auth.onAuthStateChanged((user) => {
 			setUser(user)
 		})
@@ -41,7 +39,22 @@ export default function (props) {
 					vertical: 'top',
 					horizontal: 'right',
 				}}>
-				{user == null ? null : (
+				{user == null ? (
+					<Button
+						onClick={() => {
+							firebase
+								.auth()
+								.signInWithPopup(fbAuthProvider)
+								.then((result) => {
+									setOpenProfile(null)
+								})
+								.catch((error) => {
+									setErrMsg(error.message)
+								})
+						}}>
+						구글로 로그인
+					</Button>
+				) : (
 					<Button
 						onClick={() => {
 							auth.signOut()
@@ -105,12 +118,6 @@ export default function (props) {
 						className="profileBtn"
 						onClick={(event) => {
 							setOpenProfile(event.currentTarget)
-
-							if (user == null) {
-								fbui.start('#firebaseui-auth-container', {
-									signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
-								})
-							}
 						}}>
 						{user == null ? '로그인' : user.displayName}
 					</Button>
