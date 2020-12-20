@@ -11,6 +11,9 @@ import { fbLog } from '../logger'
 import { Button, Popover, Snackbar } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 
+// Assets
+import GoogleLogo from '../assets/googleLogo.svg'
+
 const auth = firebaseAuth()
 const fs = firestore()
 const fbAuthProvider = new firebase.auth.GoogleAuthProvider()
@@ -52,6 +55,7 @@ export default function (props) {
 									setErrMsg(error.message)
 								})
 						}}>
+						<img src={GoogleLogo} alt="google logo" height="15px" />
 						구글로 로그인
 					</Button>
 				) : (

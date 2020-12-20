@@ -4,18 +4,7 @@ import './ReceiptCard.scss'
 // Components
 import NumberFormat from 'react-number-format'
 import { ExpandMore } from '@material-ui/icons'
-import {
-	Typography,
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableRow,
-	TableFooter,
-	ExpansionPanel,
-	ExpansionPanelSummary,
-	CardActionArea,
-} from '@material-ui/core'
+import { Typography, Table, TableBody, TableCell, TableHead, TableRow, TableFooter, Accordion, AccordionSummary, CardActionArea } from '@material-ui/core'
 
 export default function (props) {
 	let totalPrice = 0
@@ -55,12 +44,12 @@ export default function (props) {
 	else if (diff > 0) statusMsg = <NumberFormat value={parseFloat(diff.toFixed(2))} displayType={'text'} thousandSeparator={true} suffix="원 미결제" />
 	else if (diff < 0) statusMsg = <NumberFormat value={parseFloat((-diff).toFixed(2))} displayType={'text'} thousandSeparator={true} suffix="원 초과결제" />
 	return (
-		<ExpansionPanel variant="outlined" className="ReceiptCard" expanded={props.expanded} onChange={props.onExpanded}>
-			<ExpansionPanelSummary expandIcon={<ExpandMore />}>
+		<Accordion variant="outlined" className="ReceiptCard" expanded={props.expanded} onChange={props.onExpanded}>
+			<AccordionSummary expandIcon={<ExpandMore />}>
 				<Typography className="title" variant="h5" component="h2">
 					{props.receipt.name}
 				</Typography>
-			</ExpansionPanelSummary>
+			</AccordionSummary>
 			<CardActionArea
 				onClick={() => {
 					props.onClick()
@@ -115,6 +104,6 @@ export default function (props) {
 				</div>
 				{statusMsg}
 			</CardActionArea>
-		</ExpansionPanel>
+		</Accordion>
 	)
 }
