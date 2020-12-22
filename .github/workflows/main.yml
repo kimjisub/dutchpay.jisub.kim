@@ -9,25 +9,25 @@ jobs:
   build:
     #name: Build React
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: 1. Checkout Repo.
-      uses: actions/checkout@master
-      
-    - name: 2. Cache node_modules
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-build-
-          ${{ runner.OS }}-
- 
-    - name: 3. Install Npm Packages
-      run: npm install
-      
-    - name: 4. Build React
-      run: npm run build
-        
-    - name: 5. Deploy to Firebase
-      run: node ./node_modules/firebase-tools/lib/bin/firebase.js deploy --token ${{ secrets.FIREBASE_TOKEN }}
+      - name: 1. Checkout Repo.
+        uses: actions/checkout@master
+
+      - name: 2. Cache node_modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: 3. Install Npm Packages
+        run: yarn
+
+      - name: 4. Build React
+        run: yarn build
+
+      - name: 5. Deploy to Firebase
+        run: node ./node_modules/firebase-tools/lib/bin/firebase.js deploy --token ${{ secrets.FIREBASE_TOKEN }}
