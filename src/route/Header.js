@@ -102,7 +102,7 @@ export default function (props) {
 											timestamp: new Date(),
 										})
 										.then((docRef) => {
-											props.history.push({ pathname: `/${docRef.id}`, search: '?edit=true' })
+											props.history.push({ pathname: `/groups/${docRef.id}`, search: '?edit=true' })
 										})
 										.catch((err) => {
 											console.log(err)

@@ -178,7 +178,7 @@ export default function (props) {
 	}
 
 	function close() {
-		history.push({ pathname: `/${params.groupId}`, search: editMode ? '?edit=true' : '' })
+		history.push({ pathname: `/groups/${params.groupId}`, search: editMode ? '?edit=true' : '' })
 	}
 
 	if (!receipt || !members)

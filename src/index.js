@@ -15,13 +15,14 @@ window.$fs = firestore()
 
 ReactDOM.render(
 	<Router>
-		<Route path="/:groupId/receipt/:receiptId" component={Receipt} />
-		<Route path="/:groupId/member/:memberId" component={Member} />
+		<Route path="/groups/:groupId/receipts/:receiptId" component={Receipt} />
+		<Route path="/groups/:groupId/members/:memberId" component={Member} />
 
 		<Route component={Header} />
 		<Switch>
-			<Route path="/:groupId" component={Group} />
+			<Route path="/groups/:groupId" component={Group} />
 			<Route exact path="/" component={MainPage} />
+			<Route exact path="/groups" component={MainPage} />
 		</Switch>
 	</Router>,
 	document.getElementById('root')

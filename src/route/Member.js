@@ -79,7 +79,7 @@ export default function (props) {
 	}, [params.groupId])
 
 	function close() {
-		history.push({ pathname: `/${params.groupId}`, search: editMode ? '?edit=true' : '' })
+		history.push({ pathname: `/groups/${params.groupId}`, search: editMode ? '?edit=true' : '' })
 	}
 
 	if (!group)

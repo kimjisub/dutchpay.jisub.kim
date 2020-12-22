@@ -97,8 +97,9 @@ export default function (props) {
 		console.log(type)
 		switch (type) {
 			case 'initalize':
-				console.log(queries.edit)
-				if (queries.edit === 'true') editModeDispatch({ type: 'requestEditMode' })
+				const isEditMode = queries.edit === 'true'
+				console.log('editMode', isEditMode)
+				if (isEditMode) editModeDispatch({ type: 'requestEditMode' })
 				break
 			case 'requestEditMode': // 수정모드로 진입하려고 함.
 				editMode = false
@@ -204,9 +205,9 @@ export default function (props) {
 					setExpanded(expanded !== key ? key : null)
 				}}
 				onClick={() => {
-					history.push({ pathname: '/' + params.groupId + '/receipt/' + key, search: editMode ? '?edit=true' : '' })
+					history.push({ pathname: '/groups/' + params.groupId + '/receipts/' + key, search: editMode ? '?edit=true' : '' })
 				}}
-				to={`/${params.groupId}/receipt/${key}${editMode ? '?edit=true' : ''}`}
+				to={`/groups/${params.groupId}/receipts/${key}${editMode ? '?edit=true' : ''}`}
 				editMode={editMode}
 			/>
 		)
@@ -264,7 +265,7 @@ export default function (props) {
 										groupDispatch({ type: 'saveFirebase', data: _group })
 									}}
 									onMemberClick={(id) => {
-										history.push({ pathname: '/' + params.groupId + '/member/' + id, search: editMode ? '?edit=true' : '' })
+										history.push({ pathname: '/groups/' + params.groupId + '/members/' + id, search: editMode ? '?edit=true' : '' })
 									}}
 									editMode={editMode}
 								/>
@@ -273,7 +274,7 @@ export default function (props) {
 						</aside>
 						<div id="receipts">
 							{editMode ? (
-								<Link to={`/${params.groupId}/receipt/new?edit=true`}>
+								<Link to={`/groups/${params.groupId}/receipts/new?edit=true`}>
 									<div>
 										<Button className="addButton">
 											<Add />
