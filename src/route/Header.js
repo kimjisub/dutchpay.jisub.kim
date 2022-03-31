@@ -84,7 +84,7 @@ export default function (props) {
 			</Snackbar>
 
 			<div className="header">
-				<a href="https://dutchpay.kimjisub.me" className="brand">
+				<a href="https://dutchpay.jisub.kim" className="brand">
 					dutchpay
 				</a>
 
