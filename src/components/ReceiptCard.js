@@ -46,9 +46,14 @@ export default function (props) {
 	return (
 		<Accordion variant="outlined" className="ReceiptCard" expanded={props.expanded} onChange={props.onExpanded}>
 			<AccordionSummary expandIcon={<ExpandMore />}>
-				<Typography className="title" variant="h5" component="h2">
-					{props.receipt.name}
-				</Typography>
+				<div className="summary">
+					<Typography className="title" variant="h5">
+						{props.receipt.name}
+					</Typography>
+					<Typography className="date" variant="subtitle1">
+						{new Date(props.receipt.timestamp.seconds * 1000).toLocaleString()}
+					</Typography>
+				</div>
 			</AccordionSummary>
 			<CardActionArea
 				onClick={() => {

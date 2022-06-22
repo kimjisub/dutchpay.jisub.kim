@@ -7,7 +7,7 @@ import { bigNumberToCode } from '../algorithm'
 // Components
 import NumberFormat from 'react-number-format'
 import { Add, Delete } from '@material-ui/icons'
-import { Menu, MenuItem, IconButton, Card, Typography, Table, TableHead, TableBody, TableFooter, TableRow, td } from '@material-ui/core'
+import { Menu, MenuItem, IconButton, Typography } from '@material-ui/core'
 
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'

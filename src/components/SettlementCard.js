@@ -3,7 +3,7 @@ import './SettlementCard.scss'
 
 // Components
 import NumberFormat from 'react-number-format'
-import { Card, Typography } from '@material-ui/core'
+import { Typography } from '@material-ui/core'
 
 export default function (props) {
 	return (

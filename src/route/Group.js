@@ -231,10 +231,9 @@ export default function (props) {
 					{errMsg?.replace('CLOSE', '')}
 				</Alert>
 			</Snackbar>
-			<div className="whiteBox" />
-			<section>
+			<div id="area">
 				<article>
-					<span>
+					<div className="top">
 						<EditableTextView
 							className="group-title"
 							label="모임 이름"
@@ -251,7 +250,7 @@ export default function (props) {
 							}}>
 							{editMode ? <Check /> : <Edit />}
 						</IconButton>
-					</span>
+					</div>
 					<div>
 						<aside id="dashboard">
 							<div>
@@ -285,7 +284,7 @@ export default function (props) {
 						</div>
 					</div>
 				</article>
-			</section>
+			</div>
 			<footer>기획,개발: 김지섭 디자인: 손채린</footer>
 		</div>
 	)

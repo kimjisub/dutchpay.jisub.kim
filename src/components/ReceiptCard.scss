@@ -1,8 +1,17 @@
 .ReceiptCard {
 	min-width: 300px;
-	.title {
-		font-size: 1rem;
-		font-weight: bold;
+	.summary {
+		width: 100%;
+		display: flex;
+		.title {
+			font-size: 1rem;
+			font-weight: bold;
+			flex-grow: 1;
+		}
+		.date {
+			font-size: 0.5rem;
+			font-weight: bold;
+		}
 	}
 
 	.table-wrapper {
