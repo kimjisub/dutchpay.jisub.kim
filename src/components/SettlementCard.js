@@ -7,7 +7,7 @@ import { Card, Typography } from '@material-ui/core'
 
 export default function (props) {
 	return (
-		<Card className="SettlementCard" variant="outlined">
+		<div className="SettlementCard" variant="outlined">
 			<Typography className="title" variant="h5" component="h2">
 				정산
 			</Typography>
@@ -30,6 +30,6 @@ export default function (props) {
 					)
 				})}
 			</div>
-		</Card>
+		</div>
 	)
 }

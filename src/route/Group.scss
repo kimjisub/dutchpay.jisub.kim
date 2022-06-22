@@ -20,6 +20,7 @@
 		z-index: 1;
 
 		article {
+			width: 700px;
 			margin: 10px auto;
 			padding: 50px 30px 30px 30px;
 			background-color: #ffffff;
@@ -75,9 +76,10 @@
 		widows: 100%;
 	}
 
-	@media (max-width: 800px) {
+	@media (max-width: 900px) {
 		section {
 			article {
+				width: 400px;
 				& > div {
 					display: flex;
 					flex-direction: column;
@@ -87,7 +89,7 @@
 		}
 	}
 
-	@media (max-width: 450px) {
+	@media (max-width: 500px) {
 		section {
 			// background-color: #facd60;
 			article {

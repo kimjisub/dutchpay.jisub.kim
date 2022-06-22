@@ -7,7 +7,7 @@ import { bigNumberToCode } from '../algorithm'
 // Components
 import NumberFormat from 'react-number-format'
 import { Add, Delete } from '@material-ui/icons'
-import { Menu, MenuItem, IconButton, Card, Typography, Table, TableHead, TableBody, TableFooter, TableRow, TableCell } from '@material-ui/core'
+import { Menu, MenuItem, IconButton, Card, Typography, Table, TableHead, TableBody, TableFooter, TableRow, td } from '@material-ui/core'
 
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
@@ -26,20 +26,20 @@ export default function (props) {
 		spendSum += spend
 		paiedSum += paied
 		return (
-			<TableRow
+			<tr
 				key={id}
 				onClick={() => {
 					if (!props.editMode) props.onMemberClick(id)
 				}}>
-				<TableCell>{name}</TableCell>
-				<TableCell align="right">
+				<td>{name}</td>
+				<td align="right">
 					<NumberFormat value={spend} displayType={'text'} thousandSeparator={true} />
-				</TableCell>
-				<TableCell align="right">
+				</td>
+				<td align="right">
 					<NumberFormat value={paied} displayType={'text'} thousandSeparator={true} />
-				</TableCell>
+				</td>
 				{props.editMode ? (
-					<TableCell>
+					<td>
 						<IconButton
 							size="small"
 							disabled={!(spend === 0 && paied === 0)}
@@ -57,31 +57,31 @@ export default function (props) {
 							}}>
 							<Delete />
 						</IconButton>
-					</TableCell>
+					</td>
 				) : null}
-			</TableRow>
+			</tr>
 		)
 	})
 
 	return (
-		<Card className="ExpenditureCard" variant="outlined">
+		<div className="ExpenditureCard">
 			<Typography className="title" variant="h5" component="h2">
 				지출 내역
 			</Typography>
-			<Table size="small">
-				<TableHead>
-					<TableRow>
-						<TableCell>이름</TableCell>
-						<TableCell align="right">지출</TableCell>
-						<TableCell align="right">결제</TableCell>
-						{props.editMode ? <TableCell>삭제</TableCell> : null}
-					</TableRow>
-				</TableHead>
-				<TableBody>{tableBody}</TableBody>
-				<TableFooter>
+			<table>
+				<thead>
+					<tr>
+						<td>이름</td>
+						<td align="right">지출</td>
+						<td align="right">결제</td>
+						{props.editMode ? <td>삭제</td> : null}
+					</tr>
+				</thead>
+				<tbody>{tableBody}</tbody>
+				<tfoot>
 					{props.editMode ? (
-						<TableRow>
-							<TableCell colSpan="3">
+						<tr>
+							<td colSpan="3">
 								<EditableTextView
 									label="이름"
 									text={addName}
@@ -90,8 +90,8 @@ export default function (props) {
 										setAddName(e.target.value)
 									}}
 								/>
-							</TableCell>
-							<TableCell>
+							</td>
+							<td>
 								<IconButton
 									size="small"
 									onClick={() => {
@@ -102,21 +102,21 @@ export default function (props) {
 									}}>
 									<Add />
 								</IconButton>
-							</TableCell>
-						</TableRow>
+							</td>
+						</tr>
 					) : null}
 
-					<TableRow>
-						<TableCell>총</TableCell>
-						<TableCell align="right">
+					<tr>
+						<td>총</td>
+						<td align="right">
 							<NumberFormat value={parseFloat(spendSum.toFixed(2))} displayType={'text'} thousandSeparator={true} />
-						</TableCell>
-						<TableCell align="right">
+						</td>
+						<td align="right">
 							<NumberFormat value={parseFloat(paiedSum.toFixed(2))} displayType={'text'} thousandSeparator={true} />
-						</TableCell>
-					</TableRow>
-				</TableFooter>
-			</Table>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
 			<Menu
 				keepMounted
 				anchorEl={deleteConfirmAction?.anchorEl}
@@ -132,6 +132,6 @@ export default function (props) {
 					삭제
 				</MenuItem>
 			</Menu>
-		</Card>
+		</div>
 	)
 }

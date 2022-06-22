@@ -244,7 +244,6 @@ export default function (props) {
 								setGroupName(e.target.value)
 							}}
 						/>
-						정산 내역서
 						<IconButton
 							onClick={() => {
 								if (editMode) editModeDispatch({ type: 'requestUpdate' })
