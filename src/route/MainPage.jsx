@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useNavigateSearch } from '../hooks/useNavigationSearch'
 import './MainPage.scss'
 
 // Backend
-import firebase from 'firebase/app'
 import 'firebase/auth'
 import { firestore, firebaseAuth } from '../firebase'
 import { fbLog } from '../logger'
 
 // Components
-import { Button, Popover, Snackbar } from '@material-ui/core'
+import { Button, Snackbar } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 
 const auth = firebaseAuth()

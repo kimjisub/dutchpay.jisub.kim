@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
-import { useNavigateSearch } from '../hooks/useNavigationSearch'
 import './App.scss'
 
 // Backend
 import firebase from 'firebase/app'
 import 'firebase/auth'
-import { firestore, firebaseAuth } from '../firebase'
-import { fbLog } from '../logger'
+import { firebaseAuth } from '../firebase'
 
 // Components
 import { Button, Popover, Snackbar } from '@material-ui/core'
@@ -17,11 +15,9 @@ import { Alert } from '@material-ui/lab'
 import GoogleLogo from '../assets/googleLogo.svg'
 
 const auth = firebaseAuth()
-const fs = firestore()
 const fbAuthProvider = new firebase.auth.GoogleAuthProvider()
 
 export default function (props) {
-	const navigateSearch = useNavigateSearch()
 	const [user, setUser] = useState(null)
 	const [openProfile, setOpenProfile] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)

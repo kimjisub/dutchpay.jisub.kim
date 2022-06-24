@@ -15,22 +15,20 @@ import Member from './route/Member'
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
 root.render(
-	<React.StrictMode>
-		<BrowserRouter>
-			<Routes>
-				<Route path="/" element={<App />}>
-					<Route index element={<MainPage />} />
-					<Route path="groups">
-						<Route index element={<Groups />} />
-						<Route path=":groupId" element={<Group />}>
-							<Route path="receipts/:receiptId" element={<Receipt />} />
-							<Route path="members/:memberId" element={<Member />} />
-						</Route>
+	<BrowserRouter>
+		<Routes>
+			<Route path="/" element={<App />}>
+				<Route index element={<MainPage />} />
+				<Route path="groups">
+					<Route index element={<Groups />} />
+					<Route path=":groupId" element={<Group />}>
+						<Route path="receipts/:receiptId" element={<Receipt />} />
+						<Route path="members/:memberId" element={<Member />} />
 					</Route>
 				</Route>
-			</Routes>
-		</BrowserRouter>
-	</React.StrictMode>
+			</Route>
+		</Routes>
+	</BrowserRouter>
 )
 
 serviceWorker.unregister()

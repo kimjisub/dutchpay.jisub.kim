@@ -10,7 +10,7 @@ import { fbLog } from '../logger'
 
 // Components
 import NumberFormat from 'react-number-format'
-import { Button, CircularProgress, Card, Typography, table, thead, tbody, tfoot, tr, td } from '@material-ui/core'
+import { CircularProgress, Typography } from '@material-ui/core'
 
 const fs = firestore()
 
