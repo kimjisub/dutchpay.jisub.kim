@@ -4,7 +4,7 @@ import './ReceiptCard.scss'
 // Components
 import NumberFormat from 'react-number-format'
 import { ExpandMore } from '@material-ui/icons'
-import { Typography, Accordion, AccordionSummary, CardActionArea } from '@material-ui/core'
+import { Accordion, AccordionSummary, CardActionArea } from '@material-ui/core'
 import { format } from 'date-fns'
 
 export default function ReceiptCard(props) {

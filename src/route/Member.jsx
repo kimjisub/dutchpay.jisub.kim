@@ -10,7 +10,7 @@ import { fbLog } from '../logger'
 
 // Components
 import NumberFormat from 'react-number-format'
-import { CircularProgress, Typography } from '@material-ui/core'
+import { CircularProgress } from '@material-ui/core'
 
 const fs = firestore()
 
@@ -99,9 +99,9 @@ export default function Member(props) {
 				close()
 			}}>
 			<div className="card" onClick={() => {}}>
-				<Typography className="title" variant="h5" component="h2">
+				<p className="title">
 					<span id="name">{group.members[params.memberId]}</span>
-				</Typography>
+				</p>
 
 				<div className="table-wrapper">
 					<table size="small">
