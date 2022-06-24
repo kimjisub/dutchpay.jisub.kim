@@ -224,7 +224,6 @@ export default function (props) {
 
 	return (
 		<div className="Group">
-			<Outlet />
 			<Snackbar
 				open={errMsg != null && !errMsg.includes('CLOSE')}
 				autoHideDuration={5000}
@@ -291,6 +290,7 @@ export default function (props) {
 					</div>
 				</section>
 			</div>
+			<Outlet />
 		</div>
 	)
 }

@@ -300,7 +300,6 @@ export default function (props) {
 				) : null}
 				<tr>
 					<td>총</td>
-					<td></td>
 					<td align="right">
 						<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
 					</td>
@@ -517,28 +516,26 @@ export default function (props) {
 					삭제
 				</MenuItem>
 			</Menu>
-			<Card className="card">
-				<CardContent>
-					<EditableTextView
-						className="title"
-						onChange={(e) => {
-							let _receipt = { ...receipt }
-							_receipt.name = e.target.value
-							setReceipt(_receipt)
-						}}
-						label="영수증 이름"
-						editMode={editMode}
-						text={receipt.name}
-					/>
-					<div>
-						<AntTabs centered value={tab} indicatorColor="primary" textColor="primary" onChange={(event, newValue) => setTab(newValue)}>
-							<AntTab label="영수증" />
-							<AntTab label="결제" />
-						</AntTabs>
-						<section className="tab-page">{tab === 0 ? tab1 : tab2}</section>
-					</div>
-				</CardContent>
-				<CardActions>
+			<div className="card">
+				<EditableTextView
+					className="title"
+					onChange={(e) => {
+						let _receipt = { ...receipt }
+						_receipt.name = e.target.value
+						setReceipt(_receipt)
+					}}
+					label="영수증 이름"
+					editMode={editMode}
+					text={receipt.name}
+				/>
+				<div className="content">
+					<AntTabs centered value={tab} indicatorColor="primary" textColor="primary" onChange={(event, newValue) => setTab(newValue)}>
+						<AntTab label="영수증" />
+						<AntTab label="결제" />
+					</AntTabs>
+					<section className="tab-page">{tab === 0 ? tab1 : tab2}</section>
+				</div>
+				<div className="actions">
 					{editMode && params.receiptId !== 'new' ? (
 						<IconButton
 							key="button"
@@ -562,8 +559,8 @@ export default function (props) {
 						{editMode ? '취소' : '확인'}
 					</Button>
 					{nextStep}
-				</CardActions>
-			</Card>
+				</div>
+			</div>
 		</div>
 	)
 }

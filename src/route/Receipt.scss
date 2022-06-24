@@ -1,16 +1,18 @@
 .Receipt {
 	color: '#fff';
 	.card {
-		display: inline-block;
+		background: white;
+		border-radius: 30px;
+		display: flex;
+		flex-direction: column;
 		width: 80%;
 		min-width: 300px;
 		max-width: 500px;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
+		height: 90vh;
+		padding: 25px;
+		box-sizing: border-box;
 		.title {
 			font-size: 1.7rem;
-			margin: auto;
 			font-weight: bolder;
 			width: 70%;
 			padding: 10px;
@@ -59,11 +61,10 @@
 				}
 
 				&:nth-child(1) {
-					width: 100px;
+					width: 120px;
 					text-align: left;
 				}
 				&:nth-child(2) {
-					width: 70%;
 					text-align: left;
 				}
 			}
@@ -71,6 +72,14 @@
 
 		.space {
 			margin: auto;
+		}
+
+		.content {
+			flex-grow: 1;
+		}
+
+		.actions {
+			display: flex;
 		}
 	}
 }

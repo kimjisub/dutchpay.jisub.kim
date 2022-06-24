@@ -10,7 +10,7 @@ import { fbLog } from '../logger'
 
 // Components
 import NumberFormat from 'react-number-format'
-import { Button, CircularProgress, Card, Typography, Table, TableHead, TableBody, TableFooter, TableRow, TableCell } from '@material-ui/core'
+import { Button, CircularProgress, Card, Typography, table, thead, tbody, tfoot, tr, td } from '@material-ui/core'
 
 const fs = firestore()
 
@@ -91,31 +91,37 @@ export default function (props) {
 			</div>
 		)
 
-	let singleExpenditure = calcSingleExpenditure(params.memberId, receipts)
+	const singleExpenditure = calcSingleExpenditure(params.memberId, receipts)
+	const totalExpenditure = Object.values(singleExpenditure).reduce((acc, cur) => acc + cur.totalPrice, 0)
 
 	return (
-		<div className="Member popup">
-			<Card className="card">
+		<div
+			className="Member popup"
+			onClick={() => {
+				close()
+			}}>
+			<div className="card" onClick={() => {}}>
 				<Typography className="title" variant="h5" component="h2">
-					<span id="name">{group.members[params.memberId]}</span>님의 지출 및 결제 내역
+					<span id="name">{group.members[params.memberId]}</span>
 				</Typography>
 
-				<Table size="small">
-					<TableHead>
-						<TableRow>
-							<TableCell>영수증 이름</TableCell>
-							<TableCell>가격</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{singleExpenditure.map((receipt, i) => {
-							return (
-								<TableRow key={i}>
-									<TableCell>{receipt.name}</TableCell>
-									<TableCell>
-										<NumberFormat value={receipt.totalPrice} displayType={'text'} thousandSeparator={true} />
-									</TableCell>
-									{/* <ol>
+				<div className="table-wrapper">
+					<table size="small">
+						<thead>
+							<tr>
+								<td>영수증 이름</td>
+								<td>가격</td>
+							</tr>
+						</thead>
+						<tbody>
+							{singleExpenditure.map((receipt, i) => {
+								return (
+									<tr key={i}>
+										<td>{receipt.name}</td>
+										<td>
+											<NumberFormat value={receipt.totalPrice} displayType={'text'} thousandSeparator={true} />
+										</td>
+										{/* <ol>
 									{receipt.items.map((item, i) => {
 										return (
 											<li key={i}>
@@ -129,29 +135,22 @@ export default function (props) {
 										)
 									})}
 								</ol> */}
-								</TableRow>
-							)
-						})}
-					</TableBody>
+									</tr>
+								)
+							})}
+						</tbody>
 
-					<TableFooter>
-						<TableRow>
-							<TableCell>총</TableCell>
-							<TableCell>가격</TableCell>
-						</TableRow>
-					</TableFooter>
-				</Table>
-				<div className="action">
-					<div>
-						<Button
-							onClick={() => {
-								close()
-							}}>
-							확인
-						</Button>
-					</div>
+						<tfoot>
+							<tr>
+								<td>총</td>
+								<td>
+									<NumberFormat value={totalExpenditure} displayType={'text'} thousandSeparator={true} />
+								</td>
+							</tr>
+						</tfoot>
+					</table>
 				</div>
-			</Card>
+			</div>
 		</div>
 	)
 }

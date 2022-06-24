@@ -5,72 +5,23 @@
 	position: fixed;
 
 	.card {
-		display: inline-block;
-		width: 80%;
-		min-width: 300px;
-		max-width: 500px;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-
-		#list {
-			display: block;
-			overflow: auto;
-			flex-grow: 1;
-			ol {
-				text-align: left;
-				> li {
-					&:hover {
-						background: #f8f9fa;
-					}
-					> ol {
-						> li {
-							&:hover {
-								background: #e9ecef;
-							}
-						}
-					}
-				}
-
-				div {
-					display: flex;
-					p {
-						margin: 0;
-						&:first-child {
-							flex-grow: 1;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	main {
+		background: white;
+		border-radius: 30px;
 		display: flex;
 		flex-direction: column;
 		width: 80%;
-		height: 100%;
 		min-width: 300px;
 		max-width: 500px;
-		max-height: 80%;
-		min-height: 400px;
+		height: 90vh;
+		padding: 25px;
+		box-sizing: border-box;
 
-		background-color: #ffffff;
-		border-radius: 20px;
-		box-shadow: 0 0 30px -10px;
-
-		& > * {
-			flex-grow: 0;
+		.title {
 		}
 
-		#title {
-			font-size: 1.2rem;
-			font-weight: bolder;
-			margin: 30px 0 10px 0;
-			#name {
-				font-size: 1.7rem;
-				margin-right: 5px;
-			}
+		.table-wrapper {
+			overflow: scroll;
+			margin: 0 20px;
 		}
 	}
 }
