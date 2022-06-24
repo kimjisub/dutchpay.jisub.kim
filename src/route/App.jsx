@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import './Header.scss'
+import { useParams, useLocation, useNavigate, Outlet } from 'react-router-dom'
+import { useNavigateSearch } from '../hooks/useNavigationSearch'
+import './App.scss'
 
 // Backend
 import firebase from 'firebase/app'
@@ -19,6 +21,7 @@ const fs = firestore()
 const fbAuthProvider = new firebase.auth.GoogleAuthProvider()
 
 export default function (props) {
+	const navigateSearch = useNavigateSearch()
 	const [user, setUser] = useState(null)
 	const [openProfile, setOpenProfile] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)
@@ -29,7 +32,7 @@ export default function (props) {
 	}, [])
 
 	return (
-		<header>
+		<div className="App">
 			<Popover
 				open={openProfile !== null}
 				anchorEl={openProfile}
@@ -82,8 +85,7 @@ export default function (props) {
 					{errMsg?.replace('CLOSE', '')}
 				</Alert>
 			</Snackbar>
-
-			<div className="header">
+			<header>
 				<a href="https://dutchpay.jisub.kim" className="brand">
 					dutchpay
 				</a>
@@ -102,7 +104,7 @@ export default function (props) {
 											timestamp: new Date(),
 										})
 										.then((docRef) => {
-											props.history.push({ pathname: `/groups/${docRef.id}`, search: '?edit=true' })
+											navigateSearch(`/groups/${docRef.id}`, { edit: true }) // history.push({ pathname: `/groups/${docRef.id}`, search: '?edit=true' })
 										})
 										.catch((err) => {
 											console.log(err)
@@ -126,7 +128,8 @@ export default function (props) {
 						{user == null ? '로그인' : user.displayName}
 					</Button>
 				</div>
-			</div>
-		</header>
+			</header>
+			<Outlet />
+		</div>
 	)
 }

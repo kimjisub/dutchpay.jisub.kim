@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useLocation, useHistory } from 'react-router-dom'
+import { useParams, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigateSearch } from '../hooks/useNavigationSearch'
 import queryString from 'query-string'
 import './Receipt.scss'
 
@@ -89,9 +90,9 @@ const AntTab = withStyles((theme) => ({
 
 export default function (props) {
 	const params = useParams()
-	const queries = queryString.parse(useLocation().search)
-	const history = useHistory()
-	const editMode = queries.edit === 'true'
+	const navigateSearch = useNavigateSearch()
+	const [searchParams, setSearchParams] = useSearchParams()
+	const editMode = searchParams.get('edit') === 'true'
 
 	const [tab, setTab] = useState(0)
 	const [members, setMembers] = useState(null)
@@ -145,7 +146,8 @@ export default function (props) {
 				})
 				.catch((e) => {
 					setErrMsg('권한이 없습니다.')
-					history.push({ pathname: history.location.pathname })
+					setSearchParams({ edit: false })
+					// history.push({ pathname: history.location.pathname })
 				})
 		else
 			fs.collection('DutchPay')
@@ -157,7 +159,8 @@ export default function (props) {
 				})
 				.catch((e) => {
 					setErrMsg('권한이 없습니다.')
-					history.push({ pathname: history.location.pathname })
+					setSearchParams({ edit: false })
+					// history.push({ pathname: history.location.pathname })
 				})
 	}
 
@@ -173,12 +176,13 @@ export default function (props) {
 				})
 				.catch((e) => {
 					setErrMsg('권한이 없습니다.')
-					history.push({ pathname: history.location.pathname })
+					setSearchParams({ edit: false })
+					// history.push({ pathname: history.location.pathname })
 				})
 	}
 
 	function close() {
-		history.push({ pathname: `/groups/${params.groupId}`, search: editMode ? '?edit=true' : '' })
+		navigateSearch('../', { edit: editMode ? true : undefined }) // history.push({ pathname: `/groups/${params.groupId}`, search: editMode ? '?edit=true' : '' })
 	}
 
 	if (!receipt || !members)

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer } from 'react'
-import { Link, useParams, useLocation, useHistory } from 'react-router-dom'
+import { Link, useParams, useLocation, Outlet } from 'react-router-dom'
+import { useNavigateSearch } from '../hooks/useNavigationSearch'
 import queryString from 'query-string'
 import './Group.scss'
 
@@ -24,7 +25,7 @@ const fs = firestore()
 export default function (props) {
 	const params = useParams()
 	const queries = queryString.parse(useLocation().search)
-	const history = useHistory()
+	const navigateSearch = useNavigateSearch()
 
 	const [groupName, setGroupName] = useState('')
 	const [errMsg, setErrMsg] = useState(null)
@@ -134,8 +135,7 @@ export default function (props) {
 				break
 			default:
 		}
-
-		history.push({ pathname: history.location.pathname, search: editMode ? '?edit=true' : '' })
+		navigateSearch('.', { edit: editMode ? true : undefined }) // history.push({ pathname: history.location.pathname, search: editMode ? '?edit=true' : '' })
 		return editMode
 	}, false)
 
@@ -205,9 +205,8 @@ export default function (props) {
 					setExpanded(expanded !== key ? key : null)
 				}}
 				onClick={() => {
-					history.push({ pathname: '/groups/' + params.groupId + '/receipts/' + key, search: editMode ? '?edit=true' : '' })
+					navigateSearch(`./receipts/${key}`, { edit: editMode ? true : undefined }) // history.push({ pathname: '/groups/' + params.groupId + '/receipts/' + key, search: editMode ? '?edit=true' : '' })
 				}}
-				to={`/groups/${params.groupId}/receipts/${key}${editMode ? '?edit=true' : ''}`}
 				editMode={editMode}
 			/>
 		)
@@ -220,6 +219,7 @@ export default function (props) {
 
 	return (
 		<div className="Group">
+			<Outlet />
 			<Snackbar
 				open={errMsg != null && !errMsg.includes('CLOSE')}
 				autoHideDuration={5000}
@@ -263,7 +263,7 @@ export default function (props) {
 										groupDispatch({ type: 'saveFirebase', data: _group })
 									}}
 									onMemberClick={(id) => {
-										history.push({ pathname: '/groups/' + params.groupId + '/members/' + id, search: editMode ? '?edit=true' : '' })
+										navigateSearch(`./members/${id}`, { edit: editMode ? true : undefined }) // history.push({ pathname: '/groups/' + params.groupId + '/members/' + id, search: editMode ? '?edit=true' : '' })
 									}}
 									editMode={editMode}
 								/>

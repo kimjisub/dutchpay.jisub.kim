@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useLocation, useHistory } from 'react-router-dom'
+import { useParams, useLocation } from 'react-router-dom'
+import { useNavigateSearch } from '../hooks/useNavigationSearch'
 import queryString from 'query-string'
 import './Member.scss'
 
@@ -17,7 +18,7 @@ const fs = firestore()
 export default function (props) {
 	const params = useParams()
 	const queries = queryString.parse(useLocation().search)
-	const history = useHistory()
+	const navigateSearch = useNavigateSearch()
 	const editMode = queries.edit === 'true'
 
 	const [group, setGroup] = useState(null)
@@ -79,7 +80,7 @@ export default function (props) {
 	}, [params.groupId])
 
 	function close() {
-		history.push({ pathname: `/groups/${params.groupId}`, search: editMode ? '?edit=true' : '' })
+		navigateSearch('../', { edit: editMode ? true : undefined }) // history.push({ pathname: `/groups/${params.groupId}`, search: editMode ? '?edit=true' : '' })
 	}
 
 	if (!group)
