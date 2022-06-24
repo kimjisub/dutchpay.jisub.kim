@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useReducer } from 'react'
-import { Link, useParams, useLocation, Outlet } from 'react-router-dom'
+import { Link, useParams, Outlet, useSearchParams } from 'react-router-dom'
 import { useNavigateSearch } from '../hooks/useNavigationSearch'
-import queryString from 'query-string'
 import './Group.scss'
 
 // Backend
@@ -24,8 +23,8 @@ const fs = firestore()
 
 export default function (props) {
 	const params = useParams()
-	const queries = queryString.parse(useLocation().search)
 	const navigateSearch = useNavigateSearch()
+	const [searchParams, setSearchParams] = useSearchParams()
 
 	const [groupName, setGroupName] = useState('')
 	const [errMsg, setErrMsg] = useState(null)
@@ -56,10 +55,10 @@ export default function (props) {
 						.doc(params.groupId)
 						.set(data)
 						.then(() => {
-							editModeDispatch({ type: 'updateApproved' })
+							editModeDispatch({ type: 'doneEditMode' })
 						})
 						.catch((err) => {
-							editModeDispatch({ type: 'updateDenied' })
+							editModeDispatch({ type: 'editModeDenied' })
 						})
 				} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
 				break
@@ -94,16 +93,27 @@ export default function (props) {
 
 	const [editMode, editModeDispatch] = useReducer((state, action) => {
 		let { type } = action
-		let editMode = false
+		let editMode = state
 		console.log(type)
 		switch (type) {
-			case 'initalize':
-				const isEditMode = queries.edit === 'true'
-				console.log('editMode', isEditMode)
-				if (isEditMode) editModeDispatch({ type: 'requestEditMode' })
+			case 'init':
+				const isEditMode = searchParams.get('edit') === 'true'
+				if (isEditMode) {
+					fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
+					fs.collection('DutchPay')
+						.doc(params.groupId)
+						.update({})
+						.then(() => {
+							editModeDispatch({ type: 'editModeApproved' })
+						})
+						.catch((err) => {
+							editModeDispatch({ type: 'editModeDenied' })
+						})
+				} else editMode = false
+
 				break
-			case 'requestEditMode': // 수정모드로 진입하려고 함.
-				editMode = false
+			// 수정모드로 진입하려고 함.
+			case 'requestEditMode':
 				fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
 				fs.collection('DutchPay')
 					.doc(params.groupId)
@@ -115,32 +125,27 @@ export default function (props) {
 						editModeDispatch({ type: 'editModeDenied' })
 					})
 				break
+			case 'doneEditMode':
+				editMode = false
+				break
+			// 수정모드 승인
 			case 'editModeApproved':
 				editMode = true
 				break
+			// 수정모드 거부
 			case 'editModeDenied':
 				editMode = false
 				setErrMsg('권한이 없습니다.')
 				break
-			case 'requestUpdate':
-				editMode = true
-				if (group) groupDispatch({ type: 'saveFirebaseAndDone', data: { ...group }, name: groupName })
-				break
-			case 'updateApproved':
-				editMode = false
-				break
-			case 'updateDenied':
-				editMode = true
-				setErrMsg('권한이 없습니다.')
-				break
 			default:
 		}
-		navigateSearch('.', { edit: editMode ? true : undefined }) // history.push({ pathname: history.location.pathname, search: editMode ? '?edit=true' : '' })
+		if (editMode) setSearchParams({ edit: editMode })
+		else setSearchParams({}) // history.push({ pathname: history.location.pathname, search: editMode ? '?edit=true' : '' })
 		return editMode
 	}, false)
 
 	useEffect(() => {
-		editModeDispatch({ type: 'initalize' })
+		editModeDispatch({ type: 'init' })
 	}, [])
 
 	// Subscribe Firestore
@@ -245,8 +250,9 @@ export default function (props) {
 						/>
 						<IconButton
 							onClick={() => {
-								if (editMode) editModeDispatch({ type: 'requestUpdate' })
-								else editModeDispatch({ type: 'requestEditMode' })
+								if (editMode) {
+									groupDispatch({ type: 'saveFirebaseAndDone', data: { ...group }, name: groupName })
+								} else editModeDispatch({ type: 'requestEditMode' })
 							}}>
 							{editMode ? <Check /> : <Edit />}
 						</IconButton>

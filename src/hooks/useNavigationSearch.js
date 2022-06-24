@@ -1,6 +1,6 @@
 import { useNavigate, createSearchParams } from 'react-router-dom'
 
-export const useNavigateSearch = () => {
+export function useNavigateSearch() {
 	const navigate = useNavigate()
 	return (pathname, params) => {
 		const filterdParams = {}

@@ -13,7 +13,6 @@
 		"firebase-tools": "^7.11.0",
 		"magic-grid": "^3.2.4",
 		"node-sass": "^4.13.1",
-		"query-string": "^6.10.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.1.0",
 		"react-masonry-css": "^1.0.14",

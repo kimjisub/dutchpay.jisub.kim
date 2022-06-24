@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useLocation } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { useNavigateSearch } from '../hooks/useNavigationSearch'
-import queryString from 'query-string'
 import './Member.scss'
 
 // Backend
@@ -17,9 +16,9 @@ const fs = firestore()
 
 export default function (props) {
 	const params = useParams()
-	const queries = queryString.parse(useLocation().search)
+	const [searchParams] = useSearchParams()
 	const navigateSearch = useNavigateSearch()
-	const editMode = queries.edit === 'true'
+	const editMode = searchParams.get('edit') === 'true'
 
 	const [group, setGroup] = useState(null)
 	const [receipts, setReceipts] = useState({})

@@ -28,8 +28,8 @@ code {
 	z-index: 10;
 	top: 0;
 	left: 0;
-
 	display: flex;
+	justify-content: center;
 	align-items: center;
 
 	background-color: #000a;
@@ -43,7 +43,7 @@ code {
 			background-color: #0000;
 		}
 		to {
-			background-color: #0003;
+			background-color: #000a;
 		}
 	}
 }
