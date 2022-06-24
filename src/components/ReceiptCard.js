@@ -4,7 +4,7 @@ import './ReceiptCard.scss'
 // Components
 import NumberFormat from 'react-number-format'
 import { ExpandMore } from '@material-ui/icons'
-import { Typography, Table, TableBody, TableCell, TableHead, TableRow, TableFooter, Accordion, AccordionSummary, CardActionArea } from '@material-ui/core'
+import { Typography, table, tbody, td, thead, tr, tfoot, Accordion, AccordionSummary, CardActionArea } from '@material-ui/core'
 
 export default function (props) {
 	let totalPrice = 0
@@ -13,13 +13,13 @@ export default function (props) {
 	let itemList = props.receipt.items.map((item, i) => {
 		totalPrice += item.price
 		return (
-			<TableRow key={i}>
-				<TableCell>{item.name}</TableCell>
-				<TableCell align="right">{item.buyers.length}명</TableCell>
-				<TableCell align="right">
+			<tr key={i}>
+				<td align="left">{item.name}</td>
+				<td align="center">{item.buyers.length}명</td>
+				<td align="right">
 					<NumberFormat value={parseFloat(item.price.toFixed(2))} displayType={'text'} thousandSeparator={true} />
-				</TableCell>
-			</TableRow>
+				</td>
+			</tr>
 		)
 	})
 
@@ -28,21 +28,39 @@ export default function (props) {
 		let price = props.receipt.payers[id]
 		paiedPrice += price
 		payerList.push(
-			<TableRow key={id}>
-				<TableCell>{props.members[id]}</TableCell>
-				<TableCell align="right">
+			<tr key={id}>
+				<td align="left">결제</td>
+				<td align="center">{props.members[id]}</td>
+				<td align="right">
 					<NumberFormat value={parseFloat(price.toFixed(2))} displayType={'text'} thousandSeparator={true} />
-				</TableCell>
-			</TableRow>
+				</td>
+			</tr>
 		)
 	}
 
-	let diff = totalPrice - paiedPrice
-	let statusMsg
+	const diff = totalPrice - paiedPrice
+	let diffRow = null
 
-	if (diff === 0) statusMsg = '결제 완료'
-	else if (diff > 0) statusMsg = <NumberFormat value={parseFloat(diff.toFixed(2))} displayType={'text'} thousandSeparator={true} suffix="원 미결제" />
-	else if (diff < 0) statusMsg = <NumberFormat value={parseFloat((-diff).toFixed(2))} displayType={'text'} thousandSeparator={true} suffix="원 초과결제" />
+	if (diff > 0)
+		diffRow = (
+			<tr>
+				<td align="left">미결제</td>
+				<td align="center"></td>
+				<td align="right">
+					<NumberFormat value={parseFloat(diff.toFixed(2))} displayType={'text'} thousandSeparator={true} />
+				</td>
+			</tr>
+		)
+	else if (diff < 0)
+		diffRow = (
+			<tr>
+				<td align="left">초과결제</td>
+				<td align="center"></td>
+				<td align="right">
+					<NumberFormat value={parseFloat(diff.toFixed(2))} displayType={'text'} thousandSeparator={true} />
+				</td>
+			</tr>
+		)
 	return (
 		<Accordion variant="outlined" className="ReceiptCard" expanded={props.expanded} onChange={props.onExpanded}>
 			<AccordionSummary expandIcon={<ExpandMore />}>
@@ -61,53 +79,32 @@ export default function (props) {
 				}}>
 				<div className="table-wrapper">
 					{/* <TableContainer component={Paper} variant="outlined"> */}
-					<Table size="small">
-						<TableHead>
-							<TableRow>
-								<TableCell>상품명</TableCell>
-								<TableCell align="right">인원</TableCell>
-								<TableCell align="right">가격</TableCell>
-							</TableRow>
-						</TableHead>
+					<table size="small">
+						<thead>
+							<tr>
+								<td align="left">상품명</td>
+								<td align="center">인원</td>
+								<td align="right">금액</td>
+							</tr>
+						</thead>
 
-						<TableBody>{itemList}</TableBody>
-						<TableFooter>
-							<TableRow>
-								<TableCell>총</TableCell>
-								<TableCell></TableCell>
-								<TableCell align="right">
+						<tbody>
+							{itemList}
+							{payerList}
+							{diffRow}
+						</tbody>
+						<tfoot>
+							<tr>
+								<td align="left"></td>
+								<td align="center"></td>
+								<td align="right">
 									<NumberFormat value={parseFloat(totalPrice.toFixed(2))} displayType={'text'} thousandSeparator={true} />
-								</TableCell>
-							</TableRow>
-						</TableFooter>
-					</Table>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
 					{/* </TableContainer> */}
 				</div>
-
-				<div className="table-wrapper">
-					{/* <TableContainer component={Paper} variant="outlined"> */}
-					<Table size="small">
-						<TableHead>
-							<TableRow>
-								<TableCell>결제자</TableCell>
-								<TableCell align="right">결제</TableCell>
-							</TableRow>
-						</TableHead>
-
-						<TableBody>{payerList}</TableBody>
-
-						<TableFooter>
-							<TableRow>
-								<TableCell>총</TableCell>
-								<TableCell align="right">
-									<NumberFormat value={parseFloat(paiedPrice.toFixed(2))} displayType={'text'} thousandSeparator={true} />
-								</TableCell>
-							</TableRow>
-						</TableFooter>
-					</Table>
-					{/* </TableContainer> */}
-				</div>
-				{statusMsg}
 			</CardActionArea>
 		</Accordion>
 	)
