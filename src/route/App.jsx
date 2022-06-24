@@ -86,39 +86,11 @@ export default function (props) {
 				</Alert>
 			</Snackbar>
 			<header>
-				<a href="https://dutchpay.jisub.kim" className="brand">
+				<a href="/" className="brand">
 					dutchpay
 				</a>
 
-				<div className="center">
-					<ul>
-						<li>
-							<Button
-								onClick={() => {
-									fbLog('Add /DutchPay')
-									fs.collection('DutchPay')
-										.add({
-											name: '',
-											members: [],
-											owner: auth?.currentUser?.uid ?? '',
-											timestamp: new Date(),
-										})
-										.then((docRef) => {
-											navigateSearch(`/groups/${docRef.id}`, { edit: true }) // history.push({ pathname: `/groups/${docRef.id}`, search: '?edit=true' })
-										})
-										.catch((err) => {
-											console.log(err)
-											setErrMsg('로그인이 필요합니다')
-										})
-								}}>
-								새로 만들기
-							</Button>
-						</li>
-						<li>
-							<Button>목록 보기</Button>
-						</li>
-					</ul>
-				</div>
+				<div className="center"></div>
 				<div>
 					<Button
 						className="profileBtn"
@@ -130,6 +102,8 @@ export default function (props) {
 				</div>
 			</header>
 			<Outlet />
+
+			<footer>Copyright 2022. 김지섭, 손채린. all rights reserved.</footer>
 		</div>
 	)
 }

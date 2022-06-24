@@ -291,7 +291,6 @@ export default function (props) {
 					</div>
 				</article>
 			</div>
-			<footer>기획,개발: 김지섭 디자인: 손채린</footer>
 		</div>
 	)
 }
