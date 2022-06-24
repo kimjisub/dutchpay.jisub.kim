@@ -228,11 +228,10 @@ export default function (props) {
 							<td align="right">
 								<EditableNumberView
 									className="item-price"
-									onValueChange={(values) => {
-										const { value } = values
+									onValueChange={(value) => {
 										setReceipt((receipt) => {
 											let _receipt = { ...receipt }
-											_receipt.items[i].price = parseFloat(value) || 0
+											_receipt.items[i].price = value
 											return _receipt
 										})
 									}}
@@ -333,11 +332,10 @@ export default function (props) {
 							<td>{members[id]}</td>
 							<td align="right">
 								<EditableNumberView
-									onValueChange={(values) => {
-										const { value } = values
+									onValueChange={(value) => {
 										setReceipt((receipt) => {
 											let _receipt = { ...receipt }
-											_receipt.payers[id] = parseFloat(value) || 0
+											_receipt.payers[id] = value
 											return _receipt
 										})
 									}}

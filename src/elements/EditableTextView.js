@@ -1,26 +1,20 @@
 import React from 'react'
-import './EditableTextView.scss'
+import './EditableView.scss'
 
 export default function (props) {
-	let view
-
-	if (props.editMode) {
-		view = (
-			<input
-				placeholder={props.label}
-				value={props.text}
-				onChange={(e) => {
-					if (props.onChange) props.onChange(e)
-				}}
-			/>
-		)
-	} else {
-		view = props.text
-	}
-
 	return (
-		<p className={'EditableTextView ' + (props.className || '')} style={props.style}>
-			{view}
+		<p className={'EditableView ' + (props.className || '')} style={props.style}>
+			{props.editMode ? (
+				<input
+					placeholder={props.label}
+					value={props.text}
+					onChange={(e) => {
+						if (props.onChange) props.onChange(e)
+					}}
+				/>
+			) : (
+				props.text
+			)}
 		</p>
 	)
 }
