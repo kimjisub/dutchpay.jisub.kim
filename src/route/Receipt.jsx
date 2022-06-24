@@ -81,7 +81,7 @@ const AntTab = withStyles((theme) => ({
 	selected: {},
 }))((props) => <Tab disableRipple {...props} />)
 
-export default function (props) {
+export default function Receipt(props) {
 	const params = useParams()
 	const navigateSearch = useNavigateSearch()
 	const [searchParams, setSearchParams] = useSearchParams()

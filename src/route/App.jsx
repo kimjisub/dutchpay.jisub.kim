@@ -17,7 +17,7 @@ import GoogleLogo from '../assets/googleLogo.svg'
 const auth = firebaseAuth()
 const fbAuthProvider = new firebase.auth.GoogleAuthProvider()
 
-export default function (props) {
+export default function App(props) {
 	const [user, setUser] = useState(null)
 	const [openProfile, setOpenProfile] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)

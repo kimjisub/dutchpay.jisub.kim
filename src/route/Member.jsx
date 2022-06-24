@@ -14,7 +14,7 @@ import { CircularProgress, Typography } from '@material-ui/core'
 
 const fs = firestore()
 
-export default function (props) {
+export default function Member(props) {
 	const params = useParams()
 	const [searchParams] = useSearchParams()
 	const navigateSearch = useNavigateSearch()

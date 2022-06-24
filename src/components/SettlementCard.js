@@ -5,7 +5,7 @@ import './SettlementCard.scss'
 import NumberFormat from 'react-number-format'
 import { Typography } from '@material-ui/core'
 
-export default function (props) {
+export default function SettlementCard(props) {
 	return (
 		<div className="SettlementCard" variant="outlined">
 			<Typography className="title" variant="h5" component="h2">

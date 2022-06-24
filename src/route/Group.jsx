@@ -21,7 +21,7 @@ import EditableTextView from '../elements/EditableTextView'
 
 const fs = firestore()
 
-export default function (props) {
+export default function Group(props) {
 	const params = useParams()
 	const navigateSearch = useNavigateSearch()
 	const [searchParams, setSearchParams] = useSearchParams()
@@ -138,8 +138,7 @@ export default function (props) {
 				break
 			default:
 		}
-		if (editMode) setSearchParams({ edit: editMode })
-		else setSearchParams({}) // history.push({ pathname: history.location.pathname, search: editMode ? '?edit=true' : '' })
+		setSearchParams({ edit: editMode ? true : undefined })
 		return editMode
 	}, false)
 

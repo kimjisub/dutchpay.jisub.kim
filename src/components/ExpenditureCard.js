@@ -12,7 +12,7 @@ import { Menu, MenuItem, IconButton, Typography } from '@material-ui/core'
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
 
-export default function (props) {
+export default function ExpenditureCard(props) {
 	const [addName, setAddName] = useState('')
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import './EditableView.scss'
 
-export default function (props) {
+export default function EditableTextView(props) {
 	return (
 		<p className={'EditableView ' + (props.className || '')} style={props.style}>
 			{props.editMode ? (

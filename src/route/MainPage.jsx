@@ -14,7 +14,7 @@ import { Alert } from '@material-ui/lab'
 const auth = firebaseAuth()
 const fs = firestore()
 
-export default function (props) {
+export default function MainPage(props) {
 	const navigateSearch = useNavigateSearch()
 	const [errMsg, setErrMsg] = useState(null)
 

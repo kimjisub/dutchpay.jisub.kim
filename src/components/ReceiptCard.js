@@ -7,7 +7,7 @@ import { ExpandMore } from '@material-ui/icons'
 import { Typography, Accordion, AccordionSummary, CardActionArea } from '@material-ui/core'
 import { format } from 'date-fns'
 
-export default function (props) {
+export default function ReceiptCard(props) {
 	let totalPrice = 0
 	let paiedPrice = 0
 

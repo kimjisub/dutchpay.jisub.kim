@@ -4,7 +4,7 @@ import './EditableView.scss'
 // Components
 import NumberFormat from 'react-number-format'
 
-export default function (props) {
+export default function EditableNumberView(props) {
 	const [value, setValue] = useState(props.value)
 
 	return (
