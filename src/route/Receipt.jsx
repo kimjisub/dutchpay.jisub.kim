@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { useNavigateSearch } from '../hooks/useNavigationSearch'
-import queryString from 'query-string'
 import './Receipt.scss'
 
 // Backend

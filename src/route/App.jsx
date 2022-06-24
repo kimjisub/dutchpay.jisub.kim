@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useLocation, useNavigate, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import { useNavigateSearch } from '../hooks/useNavigationSearch'
 import './App.scss'
 
