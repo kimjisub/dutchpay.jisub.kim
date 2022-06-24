@@ -94,7 +94,6 @@ export default function (props) {
 	const [editMode, editModeDispatch] = useReducer((state, action) => {
 		let { type } = action
 		let editMode = state
-		console.log(type)
 		switch (type) {
 			case 'init':
 				const isEditMode = searchParams.get('edit') === 'true'
@@ -157,7 +156,6 @@ export default function (props) {
 			.doc(params.groupId)
 			.onSnapshot((doc) => {
 				let data = (window.$data = doc.data())
-				console.log('Group Data Changed: ', data)
 				data.members = sortObject(data.members)
 
 				groupDispatch({ type: 'fromFirebase', data })
@@ -172,7 +170,6 @@ export default function (props) {
 				querySnapshot.docChanges().forEach((change) => {
 					let id = change.doc.id
 					let data = change.doc.data()
-					//console.log('Receipts', change.type, id)
 
 					actions.push({ type: change.type, id, data })
 				})

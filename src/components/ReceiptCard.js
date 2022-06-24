@@ -4,7 +4,8 @@ import './ReceiptCard.scss'
 // Components
 import NumberFormat from 'react-number-format'
 import { ExpandMore } from '@material-ui/icons'
-import { Typography, table, tbody, td, thead, tr, tfoot, Accordion, AccordionSummary, CardActionArea } from '@material-ui/core'
+import { Typography, Accordion, AccordionSummary, CardActionArea } from '@material-ui/core'
+import { format } from 'date-fns'
 
 export default function (props) {
 	let totalPrice = 0
@@ -69,7 +70,7 @@ export default function (props) {
 						{props.receipt.name}
 					</Typography>
 					<Typography className="date" variant="subtitle1">
-						{new Date(props.receipt.timestamp.seconds * 1000).toLocaleString()}
+						{format(props.receipt.timestamp.toDate(), 'yyyy-MM-dd HH:mm')}
 					</Typography>
 				</div>
 			</AccordionSummary>

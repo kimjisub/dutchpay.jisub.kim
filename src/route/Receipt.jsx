@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { useNavigateSearch } from '../hooks/useNavigationSearch'
+import { format } from 'date-fns'
 import './Receipt.scss'
 
 // Backend
-import firebase from 'firebase'
 import { firestore } from '../firebase'
 import { sortObject } from '../algorithm'
 import { fbLog } from '../logger'
@@ -96,7 +96,6 @@ export default function (props) {
 	const [payerPopoverAction, setPayerPopoverAction] = useState(null)
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
 
-	console.log(receipt)
 	useEffect(() => {
 		fbLog(`Get /DutchPay/{${params.groupId}}`)
 		fs.collection('DutchPay')
@@ -524,7 +523,7 @@ export default function (props) {
 				/>
 				<TextField
 					type="datetime-local"
-					value={receipt.timestamp.toISOString().slice(0, 23)}
+					value={format(receipt.timestamp, "yyyy-MM-dd'T'HH:mm")}
 					disabled={!editMode}
 					onChange={(e) => {
 						setReceipt((receipt) => {

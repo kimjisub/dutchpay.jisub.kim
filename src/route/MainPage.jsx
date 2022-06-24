@@ -45,7 +45,6 @@ export default function (props) {
 							navigateSearch(`/groups/${docRef.id}`, { edit: true }) // history.push({ pathname: `/groups/${docRef.id}`, search: '?edit=true' })
 						})
 						.catch((err) => {
-							console.log(err)
 							setErrMsg('로그인이 필요합니다')
 						})
 				}}>

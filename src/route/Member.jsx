@@ -31,7 +31,6 @@ export default function (props) {
 			.doc(params.groupId)
 			.onSnapshot((doc) => {
 				let data = (window.$data = doc.data())
-				console.log('Group Data Changed: ', data)
 				data.members = sortObject(data.members)
 				setGroup(data)
 			})
@@ -46,7 +45,6 @@ export default function (props) {
 					querySnapshot.docChanges().forEach((change) => {
 						let id = change.doc.id
 						let data = change.doc.data()
-						//console.log('Receipts', change.type, id)
 
 						switch (change.type) {
 							case 'added':
