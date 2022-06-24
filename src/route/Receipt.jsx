@@ -4,6 +4,7 @@ import { useNavigateSearch } from '../hooks/useNavigationSearch'
 import './Receipt.scss'
 
 // Backend
+import firebase from 'firebase'
 import { firestore } from '../firebase'
 import { sortObject } from '../algorithm'
 import { fbLog } from '../logger'
@@ -11,6 +12,8 @@ import { fbLog } from '../logger'
 // Components
 import NumberFormat from 'react-number-format'
 import { withStyles } from '@material-ui/core/styles'
+
+import { TextField } from '@material-ui/core'
 import { Person, Delete, Add } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import {
@@ -93,6 +96,7 @@ export default function (props) {
 	const [payerPopoverAction, setPayerPopoverAction] = useState(null)
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
 
+	console.log(receipt)
 	useEffect(() => {
 		fbLog(`Get /DutchPay/{${params.groupId}}`)
 		fs.collection('DutchPay')
@@ -111,7 +115,8 @@ export default function (props) {
 				.get()
 				.then((doc) => {
 					if (doc.exists) {
-						setReceipt(doc.data())
+						const data = doc.data()
+						setReceipt({ ...data, timestamp: data.timestamp.toDate() })
 					}
 				})
 		} else {
@@ -516,6 +521,16 @@ export default function (props) {
 					label="영수증 이름"
 					editMode={editMode}
 					text={receipt.name}
+				/>
+				<TextField
+					type="datetime-local"
+					value={receipt.timestamp.toISOString().slice(0, 23)}
+					disabled={!editMode}
+					onChange={(e) => {
+						setReceipt((receipt) => {
+							return { ...receipt, timestamp: new Date(e.target.value) }
+						})
+					}}
 				/>
 				<div className="content">
 					<AntTabs centered value={tab} indicatorColor="primary" textColor="primary" onChange={(event, newValue) => setTab(newValue)}>
