@@ -28,7 +28,7 @@ export default function (props) {
 		let price = props.receipt.payers[id]
 		paiedPrice += price
 		payerList.push(
-			<tr key={id}>
+			<tr key={id} className="green">
 				<td align="left">결제</td>
 				<td align="center">{props.members[id]}</td>
 				<td align="right">
@@ -43,7 +43,7 @@ export default function (props) {
 
 	if (diff > 0)
 		diffRow = (
-			<tr>
+			<tr className="red">
 				<td align="left">미결제</td>
 				<td align="center"></td>
 				<td align="right">
@@ -53,7 +53,7 @@ export default function (props) {
 		)
 	else if (diff < 0)
 		diffRow = (
-			<tr>
+			<tr className="red">
 				<td align="left">초과결제</td>
 				<td align="center"></td>
 				<td align="right">

@@ -8,16 +8,16 @@
 	min-height: 100vh;
 	color: black;
 
-	#area {
+	.area {
 		display: flex;
 		width: 100%;
 		margin-bottom: 30px;
 		z-index: 1;
 
-		article {
+		section {
 			width: 700px;
 			margin: 10px auto;
-			padding: 50px 30px 30px 30px;
+			padding: 30px;
 			background-color: #ffffff;
 			box-shadow: 0 0 30px -10px;
 			border-radius: 30px;
@@ -44,7 +44,7 @@
 				font-weight: bolder;
 			}
 
-			& > div {
+			.content {
 				display: flex;
 
 				@media (max-width: 900px) {
@@ -56,14 +56,15 @@
 					flex-direction: column;
 					width: 100%;
 				}
-
-				#dashboard {
+				.dashboard-wrapper {
 					flex-grow: 1;
-					margin-bottom: -10px;
-					& > div {
-						margin: 10px 0;
+					.dashboard {
 						position: sticky;
 						top: 10px;
+
+						> :not(:first-child) {
+							margin-top: 30px;
+						}
 					}
 				}
 

@@ -7,15 +7,11 @@
 		display: flex;
 		width: 100%;
 		box-sizing: border-box;
-		& > * {
-			flex-grow: 0;
-			align-self: center;
-			padding: 10px;
-		}
 
 		.brand {
 			color: #facd60;
 			display: block;
+			margin: 25px;
 			font-size: 1.3rem;
 			font-weight: bolder;
 			text-decoration: none;
@@ -23,9 +19,13 @@
 		.center {
 			flex-grow: 1;
 		}
+		.right {
+			align-self: center;
 
-		.profileBtn {
-			height: 40px;
+			.profileBtn {
+				height: 40px;
+				margin: 15px;
+			}
 		}
 	}
 

@@ -236,8 +236,8 @@ export default function (props) {
 					{errMsg?.replace('CLOSE', '')}
 				</Alert>
 			</Snackbar>
-			<div id="area">
-				<article>
+			<div className="area">
+				<section>
 					<div className="top">
 						<EditableTextView
 							className="group-title"
@@ -251,15 +251,15 @@ export default function (props) {
 						<IconButton
 							onClick={() => {
 								if (editMode) {
-									groupDispatch({ type: 'saveFirebaseAndDone', data: { ...group }, name: groupName })
+									groupDispatch({ type: 'saveFirebaseAndDone', data: { ...group, name: groupName } })
 								} else editModeDispatch({ type: 'requestEditMode' })
 							}}>
 							{editMode ? <Check /> : <Edit />}
 						</IconButton>
 					</div>
-					<div>
-						<aside id="dashboard">
-							<div>
+					<div className="content">
+						<div className="dashboard-wrapper">
+							<div className="dashboard">
 								<ExpenditureCard
 									expenditure={expenditure}
 									members={group.members}
@@ -275,7 +275,7 @@ export default function (props) {
 								/>
 								<SettlementCard members={group.members} settlement={settlement} />
 							</div>
-						</aside>
+						</div>
 						<div id="receipts">
 							{editMode ? (
 								<Link to={`/groups/${params.groupId}/receipts/new?edit=true`}>
@@ -289,7 +289,7 @@ export default function (props) {
 							<div>{receiptCards}</div>
 						</div>
 					</div>
-				</article>
+				</section>
 			</div>
 		</div>
 	)

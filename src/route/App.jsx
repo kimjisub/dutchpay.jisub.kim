@@ -91,7 +91,7 @@ export default function (props) {
 				</a>
 
 				<div className="center"></div>
-				<div>
+				<div className="right">
 					<Button
 						className="profileBtn"
 						onClick={(event) => {
