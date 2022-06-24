@@ -66,12 +66,11 @@ export default function ReceiptCard(props) {
 		<Accordion variant="outlined" className="ReceiptCard" expanded={props.expanded} onChange={props.onExpanded}>
 			<AccordionSummary expandIcon={<ExpandMore />}>
 				<div className="summary">
-					<Typography className="title" variant="h5">
-						{props.receipt.name}
-					</Typography>
-					<Typography className="date" variant="subtitle1">
-						{format(props.receipt.timestamp.toDate(), 'yyyy-MM-dd HH:mm')}
-					</Typography>
+					<div className="left">
+						<p className="title">{props.receipt.name}</p>
+						<p className="date">{format(props.receipt.timestamp.toDate(), 'yyyy-MM-dd HH:mm')}</p>
+					</div>
+					<NumberFormat className="price" value={parseFloat(totalPrice.toFixed(2))} displayType={'text'} thousandSeparator={true} />
 				</div>
 			</AccordionSummary>
 			<CardActionArea

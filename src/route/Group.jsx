@@ -24,7 +24,7 @@ const fs = firestore()
 export default function Group(props) {
 	const params = useParams()
 	const navigateSearch = useNavigateSearch()
-	const [searchParams, setSearchParams] = useSearchParams()
+	const [searchParams] = useSearchParams()
 
 	const [groupName, setGroupName] = useState('')
 	const [errMsg, setErrMsg] = useState(null)
@@ -138,7 +138,7 @@ export default function Group(props) {
 				break
 			default:
 		}
-		setSearchParams({ edit: editMode ? true : undefined })
+		navigateSearch('.', { edit: editMode ? true : undefined })
 		return editMode
 	}, false)
 
