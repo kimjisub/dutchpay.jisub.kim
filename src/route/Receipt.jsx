@@ -172,9 +172,11 @@ export default function Receipt(props) {
 							<td>
 								<EditableTextView
 									onChange={(e) => {
-										let _receipt = { ...receipt }
-										_receipt.items[i].name = e.target.value
-										setReceipt(_receipt)
+										setReceipt((_receipt) => {
+											const receipt = { ..._receipt }
+											receipt.items[i].name = e.target.value
+											return receipt
+										})
 									}}
 									label="상품명"
 									text={item.name}
@@ -199,10 +201,10 @@ export default function Receipt(props) {
 								<EditableNumberView
 									className="item-price"
 									onValueChange={(value) => {
-										setReceipt((receipt) => {
-											let _receipt = { ...receipt }
-											_receipt.items[i].price = value
-											return _receipt
+										setReceipt((_receipt) => {
+											const receipt = { ..._receipt }
+											receipt.items[i].price = value
+											return receipt
 										})
 									}}
 									label="가격"
@@ -219,9 +221,11 @@ export default function Receipt(props) {
 											setDeleteConfirmAction({
 												anchorEl: event.currentTarget,
 												deleteAction: () => {
-													let _receipt = { ...receipt }
-													_receipt.items.splice(i, 1)
-													setReceipt(_receipt)
+													setReceipt((_receipt) => {
+														const receipt = { ..._receipt }
+														receipt.items.splice(i, 1)
+														return receipt
+													})
 												},
 											})
 										}}>
@@ -237,14 +241,16 @@ export default function Receipt(props) {
 						<td colSpan="4">
 							<IconButton
 								onClick={(event) => {
-									let buyers = Object.keys(members)
-									let _receipt = { ...receipt }
-									receipt.items.push({
-										name: '',
-										buyers,
-										price: 0,
+									setReceipt((_receipt) => {
+										const receipt = { ..._receipt }
+										let buyers = Object.keys(members)
+										receipt.items.push({
+											name: '',
+											buyers,
+											price: 0,
+										})
+										return receipt
 									})
-									setReceipt(_receipt)
 								}}>
 								<Add />
 							</IconButton>
@@ -262,10 +268,10 @@ export default function Receipt(props) {
 							<td align="right">
 								<EditableNumberView
 									onValueChange={(value) => {
-										setReceipt((receipt) => {
-											let _receipt = { ...receipt }
-											_receipt.payers[id] = value
-											return _receipt
+										setReceipt((_receipt) => {
+											const receipt = { ..._receipt }
+											receipt.payers[id] = value
+											return receipt
 										})
 									}}
 									label="가격"
@@ -283,9 +289,11 @@ export default function Receipt(props) {
 											setDeleteConfirmAction({
 												anchorEl: event.currentTarget,
 												deleteAction: () => {
-													let _receipt = { ...receipt }
-													delete _receipt.payers[id]
-													setReceipt(_receipt)
+													setReceipt((_receipt) => {
+														const receipt = { ..._receipt }
+														delete receipt.payers[id]
+														return receipt
+													})
 												},
 											})
 										}}>
@@ -363,14 +371,15 @@ export default function Receipt(props) {
 								button
 								onClick={(e) => {
 									if (editMode) {
-										let _receipt = { ...receipt }
-										let buyers = _receipt.items[memberPopoverAction?.index]?.buyers || []
-										let checked = buyers.includes(id)
+										setReceipt((_receipt) => {
+											const receipt = { ..._receipt }
+											let buyers = receipt.items[memberPopoverAction?.index]?.buyers || []
+											let checked = buyers.includes(id)
 
-										if (!checked) buyers.push(id)
-										else buyers.splice(buyers.indexOf(id), 1)
-
-										setReceipt(_receipt)
+											if (!checked) buyers.push(id)
+											else buyers.splice(buyers.indexOf(id), 1)
+											return receipt
+										})
 									}
 								}}>
 								<ListItemIcon>
@@ -399,7 +408,8 @@ export default function Receipt(props) {
 								key={id}
 								button
 								onClick={() => {
-									setReceipt((reciept) => {
+									setReceipt((_receipt) => {
+										const receipt = { ..._receipt }
 										receipt.payers[id] = unpaid
 										return receipt
 									})
@@ -431,9 +441,11 @@ export default function Receipt(props) {
 					<EditableTextView
 						className="title"
 						onChange={(e) => {
-							let _receipt = { ...receipt }
-							_receipt.name = e.target.value
-							setReceipt(_receipt)
+							setReceipt((_receipt) => {
+								const receipt = { ..._receipt }
+								receipt.name = e.target.value
+								return receipt
+							})
 						}}
 						label="영수증 이름"
 						editMode={editMode}
