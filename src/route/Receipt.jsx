@@ -11,7 +11,6 @@ import { fbLog } from '../logger'
 
 // Components
 import NumberFormat from 'react-number-format'
-import { withStyles } from '@material-ui/core/styles'
 
 import { TextField } from '@material-ui/core'
 import { Person, Delete, Add } from '@material-ui/icons'
@@ -319,7 +318,7 @@ export default function Receipt(props) {
 			</tbody>
 			<tfoot>
 				<tr>
-					<td>총</td>
+					<td>합계</td>
 					<td></td>
 					<td align="right">
 						<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />

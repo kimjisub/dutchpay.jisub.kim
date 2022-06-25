@@ -18,50 +18,6 @@ export default function ExpenditureCard(props) {
 
 	let spendSum = 0
 	let paiedSum = 0
-	const tableBody = Object.entries(props.members).map((data) => {
-		let id = data[0]
-		let name = data[1]
-
-		const { spend, paied } = props.expenditure[id]
-		spendSum += spend
-		paiedSum += paied
-		return (
-			<tr
-				key={id}
-				onClick={() => {
-					if (!props.editMode) props.onMemberClick(id)
-				}}>
-				<td>{name}</td>
-				<td align="right">
-					<NumberFormat value={spend} displayType={'text'} thousandSeparator={true} />
-				</td>
-				<td align="right">
-					<NumberFormat value={paied} displayType={'text'} thousandSeparator={true} />
-				</td>
-				{props.editMode ? (
-					<td>
-						<IconButton
-							size="small"
-							disabled={!(spend === 0 && paied === 0)}
-							onClick={(event) => {
-								setDeleteConfirmAction({
-									anchorEl: event.currentTarget,
-									deleteAction: () => {
-										if (spend === 0 && paied === 0) {
-											let members = Object.assign({}, props.members)
-											delete members[id]
-											props.onMembersChange(members)
-										}
-									},
-								})
-							}}>
-							<Delete />
-						</IconButton>
-					</td>
-				) : null}
-			</tr>
-		)
-	})
 
 	return (
 		<div className="ExpenditureCard">
@@ -74,11 +30,54 @@ export default function ExpenditureCard(props) {
 						<td>이름</td>
 						<td align="right">지출</td>
 						<td align="right">결제</td>
-						{props.editMode ? <td>삭제</td> : null}
+						{props.editMode ? <td></td> : null}
 					</tr>
 				</thead>
-				<tbody>{tableBody}</tbody>
-				<tfoot>
+				<tbody>
+					{Object.entries(props.members).map((data) => {
+						let id = data[0]
+						let name = data[1]
+
+						const { spend, paied } = props.expenditure[id]
+						spendSum += spend
+						paiedSum += paied
+						return (
+							<tr
+								key={id}
+								onClick={() => {
+									if (!props.editMode) props.onMemberClick(id)
+								}}>
+								<td>{name}</td>
+								<td align="right">
+									<NumberFormat value={spend} displayType={'text'} thousandSeparator={true} />
+								</td>
+								<td align="right">
+									<NumberFormat value={paied} displayType={'text'} thousandSeparator={true} />
+								</td>
+								{props.editMode ? (
+									<td>
+										<IconButton
+											size="small"
+											disabled={!(spend === 0 && paied === 0)}
+											onClick={(event) => {
+												setDeleteConfirmAction({
+													anchorEl: event.currentTarget,
+													deleteAction: () => {
+														if (spend === 0 && paied === 0) {
+															let members = Object.assign({}, props.members)
+															delete members[id]
+															props.onMembersChange(members)
+														}
+													},
+												})
+											}}>
+											<Delete />
+										</IconButton>
+									</td>
+								) : null}
+							</tr>
+						)
+					})}
 					{props.editMode ? (
 						<tr>
 							<td colSpan="3">
@@ -105,9 +104,10 @@ export default function ExpenditureCard(props) {
 							</td>
 						</tr>
 					) : null}
-
+				</tbody>
+				<tfoot>
 					<tr>
-						<td>총</td>
+						<td>합계</td>
 						<td align="right">
 							<NumberFormat value={parseFloat(spendSum.toFixed(2))} displayType={'text'} thousandSeparator={true} />
 						</td>

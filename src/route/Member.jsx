@@ -138,7 +138,7 @@ export default function Member(props) {
 
 						<tfoot>
 							<tr>
-								<td>총</td>
+								<td>합계</td>
 								<td>
 									<NumberFormat value={totalExpenditure} displayType={'text'} thousandSeparator={true} />
 								</td>
