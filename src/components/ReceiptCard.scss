@@ -1,5 +1,23 @@
 .ReceiptCard {
 	min-width: 300px;
+	border: none !important;
+
+	background-color: #fff;
+
+	transition: 0.3s !important;
+	border-radius: 30px !important;
+
+	&.Mui-expanded {
+		// background-color: #facd60;
+		box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+	}
+	&:before {
+		background-color: transparent !important;
+	}
+
+	.MuiCardActionArea-root {
+		border-radius: 30px;
+	}
 	.summary {
 		width: 100%;
 		display: flex;
