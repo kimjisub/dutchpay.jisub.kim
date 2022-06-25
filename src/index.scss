@@ -62,7 +62,8 @@ table {
 	color: rgb(81, 81, 81);
 
 	td {
-		padding: 6px 10px;
+		padding: 10px;
+		white-space: nowrap;
 	}
 	thead {
 	}
@@ -74,9 +75,22 @@ table {
 		}
 
 		--radius: 12px;
+		--padding: 10px;
 		tr {
+			td {
+				padding: calc(var(--padding) / 2);
+
+				&:first-child {
+					padding-left: calc(var(--padding));
+				}
+
+				&:last-child {
+					padding-right: calc(var(--padding));
+				}
+			}
 			&:first-child {
 				td {
+					padding-top: calc(var(--padding));
 					&:first-child {
 						border-top-left-radius: var(--radius);
 					}
@@ -87,6 +101,7 @@ table {
 			}
 			&:last-child {
 				td {
+					padding-bottom: calc(var(--padding));
 					&:first-child {
 						border-bottom-left-radius: var(--radius);
 					}

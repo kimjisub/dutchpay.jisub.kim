@@ -31,26 +31,27 @@
 			}
 		}
 
-		.receipt-table {
-			width: 100%;
-			th,
+		table {
 			td {
-				.person {
-					padding: 12px 10px 12px 10px;
-					.count {
-						font-size: 0.9rem;
-						font-weight: bold;
-					}
-				}
-				& > p {
-					width: 100%;
-				}
-
 				&:nth-child(1) {
 					text-align: left;
 				}
 				&:nth-child(2) {
+					text-align: center;
+					padding-left: 3px;
+					padding-right: 3px;
+					.count {
+						font-size: 0.9rem;
+						font-weight: bold;
+						color: black;
+					}
+				}
+				&:nth-child(3) {
 					text-align: left;
+				}
+				&:nth-child(4) {
+					text-align: left;
+					padding: 0px;
 				}
 			}
 		}

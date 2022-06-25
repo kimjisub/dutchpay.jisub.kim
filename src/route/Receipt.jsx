@@ -288,12 +288,12 @@ export default function Receipt(props) {
 					/>
 				</div>
 				<div className="content">
-					<table className="receipt-table" size="small">
+					<table>
 						<thead>
 							<tr>
 								<td>상품명</td>
-								<td align="right">인원</td>
-								<td align="right">가격</td>
+								<td>인원</td>
+								<td>가격</td>
 								{editMode ? <td></td> : null}
 							</tr>
 						</thead>
@@ -316,7 +316,7 @@ export default function Receipt(props) {
 												editMode={editMode}
 											/>
 										</td>
-										<td align="right">
+										<td>
 											<IconButton
 												id={'item-delete-' + i}
 												className="person"
@@ -326,11 +326,10 @@ export default function Receipt(props) {
 														index: i,
 													})
 												}}>
-												<Person fontSize="small" />
 												<span className="count">{receipt.items[i].buyers.length}</span>
 											</IconButton>
 										</td>
-										<td align="right">
+										<td>
 											<EditableNumberView
 												className="item-price"
 												onValueChange={(value) => {
@@ -379,7 +378,7 @@ export default function Receipt(props) {
 									<tr key={'payer-' + i} className="green">
 										<td>결제</td>
 										<td>{members[id]}</td>
-										<td align="right">
+										<td>
 											<EditableNumberView
 												onValueChange={(value) => {
 													setReceipt((_receipt) => {
@@ -422,29 +421,32 @@ export default function Receipt(props) {
 								<tr className="red">
 									<td>미결제</td>
 									<td> </td>
-									<td align="right">
+									<td>
 										<EditableNumberView label="가격" value={unpaid} editMode={false} />
 									</td>
-									<td>
-										<IconButton
-											onClick={(event) => {
-												setPayerPopoverAction({
-													anchorEl: event.currentTarget,
-												})
-											}}>
-											<Add fontSize="small" />
-										</IconButton>
-									</td>
+									{editMode ? (
+										<td>
+											<IconButton
+												onClick={(event) => {
+													setPayerPopoverAction({
+														anchorEl: event.currentTarget,
+													})
+												}}>
+												<Add fontSize="small" />
+											</IconButton>
+										</td>
+									) : null}
 								</tr>
 							) : null}
 							{unpaid < 0 ? (
 								<tr className="red">
 									<td>초과 결제</td>
 									<td> </td>
-									<td align="right">
+									<td>
 										<EditableNumberView label="가격" value={unpaid} editMode={false} />
 									</td>
-									<td></td>
+
+									{editMode ? <td></td> : null}
 								</tr>
 							) : null}
 						</tbody>
@@ -452,7 +454,7 @@ export default function Receipt(props) {
 							<tr>
 								<td>합계</td>
 								<td></td>
-								<td align="right">
+								<td>
 									<EditableNumberView value={totalPrice} editMode={false} />
 								</td>
 							</tr>
