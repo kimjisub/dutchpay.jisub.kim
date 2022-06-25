@@ -3,7 +3,7 @@ import './EditableView.scss'
 
 export default function EditableTextView(props) {
 	return (
-		<p className={'EditableView ' + (props.className || '')} style={props.style}>
+		<span className={'EditableView ' + (props.className || '')} style={props.style}>
 			{props.editMode ? (
 				<input
 					placeholder={props.label}
@@ -15,6 +15,6 @@ export default function EditableTextView(props) {
 			) : (
 				props.text
 			)}
-		</p>
+		</span>
 	)
 }

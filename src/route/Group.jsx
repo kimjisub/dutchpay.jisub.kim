@@ -11,7 +11,7 @@ import { fbLog } from '../logger'
 // Components
 import { Add, Check, Edit } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
-import { Snackbar, CircularProgress, IconButton, Button } from '@material-ui/core'
+import { Snackbar, IconButton, Button } from '@material-ui/core'
 
 // Custom Components
 import ExpenditureCard from '../components/ExpenditureCard'
@@ -182,14 +182,7 @@ export default function Group(props) {
 		}
 	}, [params.groupId])
 
-	if (!group)
-		return (
-			<div className="popup">
-				<div>
-					<CircularProgress color="inherit" />
-				</div>
-			</div>
-		)
+	if (!group) return <div className="popup"></div>
 
 	let receiptCards = []
 

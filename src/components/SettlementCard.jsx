@@ -1,9 +1,9 @@
 import React from 'react'
 import './SettlementCard.scss'
 
-// Components
-import NumberFormat from 'react-number-format'
+// Components\
 import { Typography } from '@material-ui/core'
+import EditableNumberView from '../elements/EditableNumberView'
 
 export default function SettlementCard(props) {
 	return (
@@ -24,7 +24,7 @@ export default function SettlementCard(props) {
 							<span className="small">(이)가</span>
 							{props.members[to]}
 							<span className="small">에게</span>
-							<NumberFormat value={value} displayType={'text'} thousandSeparator={true} />
+							<EditableNumberView value={value} editMode={false} />
 							<span className="small">원</span>
 						</p>
 					)

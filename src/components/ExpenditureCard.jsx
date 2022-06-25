@@ -5,12 +5,12 @@ import './ExpenditureCard.scss'
 import { bigNumberToCode } from '../algorithm'
 
 // Components
-import NumberFormat from 'react-number-format'
 import { Add, Delete } from '@material-ui/icons'
 import { Menu, MenuItem, IconButton, Typography } from '@material-ui/core'
 
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
+import EditableNumberView from '../elements/EditableNumberView'
 
 export default function ExpenditureCard(props) {
 	const [addName, setAddName] = useState('')
@@ -49,10 +49,10 @@ export default function ExpenditureCard(props) {
 								}}>
 								<td>{name}</td>
 								<td align="right">
-									<NumberFormat value={spend} displayType={'text'} thousandSeparator={true} />
+									<EditableNumberView value={spend} editMode={false} />
 								</td>
 								<td align="right">
-									<NumberFormat value={paied} displayType={'text'} thousandSeparator={true} />
+									<EditableNumberView value={paied} editMode={false} />
 								</td>
 								{props.editMode ? (
 									<td>
@@ -109,10 +109,10 @@ export default function ExpenditureCard(props) {
 					<tr>
 						<td>합계</td>
 						<td align="right">
-							<NumberFormat value={parseFloat(spendSum.toFixed(2))} displayType={'text'} thousandSeparator={true} />
+							<EditableNumberView value={parseFloat(spendSum.toFixed(2))} editMode={false} />
 						</td>
 						<td align="right">
-							<NumberFormat value={parseFloat(paiedSum.toFixed(2))} displayType={'text'} thousandSeparator={true} />
+							<EditableNumberView value={parseFloat(paiedSum.toFixed(2))} editMode={false} />
 						</td>
 					</tr>
 				</tfoot>

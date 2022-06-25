@@ -1,16 +1,17 @@
 .EditableView {
-	font-size: inherit;
 	margin: 0px;
-	width: inherit;
 
 	input {
+		font-size: inherit;
+		width: inherit;
+		font-weight: inherit;
+
 		outline: none;
 		border: none;
 		background: rgb(215, 215, 215);
 		border-radius: 10px;
 		padding: 10px;
 		transition: 0.3s;
-		font-size: inherit;
 		width: 100%;
 		box-sizing: border-box;
 	}

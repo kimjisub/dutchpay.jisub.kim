@@ -17,21 +17,17 @@
 			width: 100%;
 		}
 		.top {
-			display: flex;
 			.title {
 				font-size: 1.7rem;
 				font-weight: bolder;
-				padding: 10px;
-				flex-grow: 1;
 			}
 			.date {
 				padding: 10px;
 				align-self: center;
-				.MuiInputBase-root {
-					input {
-						font-size: 0.75rem;
-					}
-				}
+				border: none;
+				outline: none;
+				font-family: 'Noto Sans KR', sans-serif;
+				background: none;
 			}
 		}
 
@@ -95,6 +91,9 @@
 
 		.actions {
 			display: flex;
+		}
+		.opacity {
+			opacity: 0.5;
 		}
 	}
 }

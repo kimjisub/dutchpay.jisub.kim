@@ -11,25 +11,9 @@ import { sortObject } from '../algorithm'
 import { fbLog } from '../logger'
 
 // Components
-import NumberFormat from 'react-number-format'
-
-import { TextField } from '@material-ui/core'
 import { Person, Delete, Add } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
-import {
-	Snackbar,
-	Popover,
-	ListItemIcon,
-	ListItemText,
-	Checkbox,
-	List,
-	ListItem,
-	CircularProgress,
-	Menu,
-	MenuItem,
-	Button,
-	IconButton,
-} from '@material-ui/core'
+import { Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, ListItem, Menu, MenuItem, Button, IconButton } from '@material-ui/core'
 
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
@@ -63,7 +47,7 @@ export default function Receipt(props) {
 		},
 		(_receipt) => {
 			const receipt = { ..._receipt }
-			receipt.items = receipt.items.filter((item) => item.name !== '' || item.price !== 0)
+			receipt.items = receipt.items.filter((item) => item.name !== '' || item.price !== 0 || item.buyers.length !== Object.keys(members).length)
 
 			return receipt
 		}
@@ -73,8 +57,6 @@ export default function Receipt(props) {
 	const [memberPopoverAction, setMemberPopoverAction] = useState(null)
 	const [payerPopoverAction, setPayerPopoverAction] = useState(null)
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
-
-	const loaded = receipt != null && members != null
 
 	useEffect(() => {
 		fbLog(`Get /DutchPay/{${params.groupId}}`)
@@ -163,23 +145,7 @@ export default function Receipt(props) {
 		navigateSearch('../', { edit: editMode ? true : undefined }) // history.push({ pathname: `/groups/${params.groupId}`, search: editMode ? '?edit=true' : '' })
 	}
 
-	if (!loaded)
-		return (
-			<div className="popup">
-				<div>
-					<CircularProgress color="inherit" />
-				</div>
-			</div>
-		)
-
-	if (!receipt || !members)
-		return (
-			<div className="popup">
-				<div>
-					<CircularProgress color="inherit" />
-				</div>
-			</div>
-		)
+	if (!receipt || !members) return <div className="popup"></div>
 
 	let totalPrice = 0
 	for (let i in receipt.items) {
@@ -309,7 +275,7 @@ export default function Receipt(props) {
 						editMode={editMode}
 						text={receipt.name}
 					/>
-					<TextField
+					<input
 						className="date"
 						type="datetime-local"
 						value={format(receipt.timestamp, "yyyy-MM-dd'T'HH:mm")}
@@ -333,6 +299,7 @@ export default function Receipt(props) {
 						</thead>
 						<tbody>
 							{receipt.items.map((item, i) => {
+								const isLast = receipt.items.length - 1 <= i
 								return (
 									<tr key={'item-' + i}>
 										<td>
@@ -381,7 +348,7 @@ export default function Receipt(props) {
 
 										{editMode ? (
 											<td>
-												{receipt.items.length - 1 > i ? (
+												{!isLast ? (
 													<IconButton
 														id={'item-delete-' + i}
 														onClick={(event) => {
@@ -486,7 +453,7 @@ export default function Receipt(props) {
 								<td>합계</td>
 								<td></td>
 								<td align="right">
-									<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
+									<EditableNumberView value={totalPrice} editMode={false} />
 								</td>
 							</tr>
 						</tfoot>

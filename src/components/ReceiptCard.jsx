@@ -2,9 +2,10 @@ import React from 'react'
 import './ReceiptCard.scss'
 
 // Components
-import NumberFormat from 'react-number-format'
 import { ExpandMore } from '@material-ui/icons'
 import { Accordion, AccordionSummary, CardActionArea } from '@material-ui/core'
+import EditableNumberView from '../elements/EditableNumberView'
+
 import { format } from 'date-fns'
 
 export default function ReceiptCard(props) {
@@ -18,7 +19,7 @@ export default function ReceiptCard(props) {
 				<td align="left">{item.name}</td>
 				<td align="center">{item.buyers.length}명</td>
 				<td align="right">
-					<NumberFormat value={parseFloat(item.price.toFixed(2))} displayType={'text'} thousandSeparator={true} />
+					<EditableNumberView value={parseFloat(item.price.toFixed(2))} editMode={false} />
 				</td>
 			</tr>
 		)
@@ -33,7 +34,7 @@ export default function ReceiptCard(props) {
 				<td align="left">결제</td>
 				<td align="center">{props.members[id]}</td>
 				<td align="right">
-					<NumberFormat value={parseFloat(price.toFixed(2))} displayType={'text'} thousandSeparator={true} />
+					<EditableNumberView value={parseFloat(price.toFixed(2))} editMode={false} />
 				</td>
 			</tr>
 		)
@@ -48,7 +49,7 @@ export default function ReceiptCard(props) {
 				<td align="left">미결제</td>
 				<td align="center"></td>
 				<td align="right">
-					<NumberFormat value={parseFloat(diff.toFixed(2))} displayType={'text'} thousandSeparator={true} />
+					<EditableNumberView value={parseFloat(diff.toFixed(2))} editMode={false} />
 				</td>
 			</tr>
 		)
@@ -58,7 +59,7 @@ export default function ReceiptCard(props) {
 				<td align="left">초과결제</td>
 				<td align="center"></td>
 				<td align="right">
-					<NumberFormat value={parseFloat(diff.toFixed(2))} displayType={'text'} thousandSeparator={true} />
+					<EditableNumberView value={parseFloat(diff.toFixed(2))} editMode={false} />
 				</td>
 			</tr>
 		)
@@ -68,9 +69,9 @@ export default function ReceiptCard(props) {
 				<div className="summary">
 					<div className="left">
 						<p className="title">{props.receipt.name}</p>
-						<p className="date">{format(props.receipt.timestamp.toDate(), 'yyyy-MM-dd HH:mm')}</p>
+						<p className="date">{format(props.receipt.timestamp.toDate(), 'MM/dd HH:mm')}</p>
 					</div>
-					<NumberFormat className="price" value={parseFloat(totalPrice.toFixed(2))} displayType={'text'} thousandSeparator={true} />
+					<EditableNumberView className="price" value={parseFloat(totalPrice.toFixed(2))} editMode={false} />
 				</div>
 			</AccordionSummary>
 			<CardActionArea
@@ -98,7 +99,7 @@ export default function ReceiptCard(props) {
 								<td align="left"></td>
 								<td align="center"></td>
 								<td align="right">
-									<NumberFormat value={parseFloat(totalPrice.toFixed(2))} displayType={'text'} thousandSeparator={true} />
+									<EditableNumberView value={parseFloat(totalPrice.toFixed(2))} editMode={false} />
 								</td>
 							</tr>
 						</tfoot>

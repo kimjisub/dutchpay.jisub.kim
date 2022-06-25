@@ -7,10 +7,7 @@ import './Member.scss'
 import { firestore } from '../firebase'
 import { calcSingleExpenditure, sortObject } from '../algorithm'
 import { fbLog } from '../logger'
-
-// Components
-import NumberFormat from 'react-number-format'
-import { CircularProgress } from '@material-ui/core'
+import EditableNumberView from '../elements/EditableNumberView'
 
 const fs = firestore()
 
@@ -84,14 +81,7 @@ export default function Member(props) {
 		navigateSearch('../', { edit: editMode ? true : undefined }) // history.push({ pathname: `/groups/${params.groupId}`, search: editMode ? '?edit=true' : '' })
 	}
 
-	if (!group)
-		return (
-			<div className="Member popup">
-				<div>
-					<CircularProgress color="inherit" />
-				</div>
-			</div>
-		)
+	if (!group) return <div className="Member popup"></div>
 
 	const singleExpenditure = calcSingleExpenditure(params.memberId, receipts)
 	const totalExpenditure = Object.values(singleExpenditure).reduce((acc, cur) => acc + cur.totalPrice, 0)
@@ -119,7 +109,7 @@ export default function Member(props) {
 									<tr key={i}>
 										<td>{receipt.name}</td>
 										<td>
-											<NumberFormat value={receipt.totalPrice} displayType={'text'} thousandSeparator={true} />
+											<EditableNumberView value={receipt.totalPrice} editMode={false} />
 										</td>
 										{/* <ol>
 									{receipt.items.map((item, i) => {
@@ -128,7 +118,7 @@ export default function Member(props) {
 												<div>
 													<p>{item.name}</p>
 													<p>
-														<NumberFormat value={item.price} displayType={'text'} thousandSeparator={true} />
+														<EditableNumberView value={item.price} editMode={false} />
 													</p>
 												</div>
 											</li>
@@ -144,7 +134,7 @@ export default function Member(props) {
 							<tr>
 								<td>합계</td>
 								<td>
-									<NumberFormat value={totalExpenditure} displayType={'text'} thousandSeparator={true} />
+									<EditableNumberView value={totalExpenditure} editMode={false} />
 								</td>
 							</tr>
 						</tfoot>

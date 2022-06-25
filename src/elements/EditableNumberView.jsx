@@ -1,8 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
 import './EditableView.scss'
-
-// Components
-import NumberFormat from 'react-number-format'
 
 function format(number) {
 	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -11,11 +8,12 @@ function format(number) {
 export default function EditableNumberView(props) {
 	const value = props.value || 0
 	return (
-		<p className={'EditableView ' + (props.className || '')} style={props.style}>
+		<span className={'EditableView ' + (props.className || '')} style={props.style}>
 			{props.editMode ? (
 				<input
 					placeholder={props.label}
 					value={format(value)}
+					pattern="\d*"
 					onChange={(e) => {
 						if (props.onValueChange) props.onValueChange(parseInt(e.target.value.replaceAll(',', '')) || 0)
 					}}
@@ -23,6 +21,6 @@ export default function EditableNumberView(props) {
 			) : (
 				format(value)
 			)}
-		</p>
+		</span>
 	)
 }
