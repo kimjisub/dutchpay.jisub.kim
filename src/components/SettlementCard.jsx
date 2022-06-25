@@ -2,15 +2,12 @@ import React from 'react'
 import './SettlementCard.scss'
 
 // Components\
-import { Typography } from '@material-ui/core'
 import EditableNumberView from '../elements/EditableNumberView'
 
 export default function SettlementCard(props) {
 	return (
 		<div className="SettlementCard" variant="outlined">
-			<Typography className="title" variant="h5" component="h2">
-				정산
-			</Typography>
+			<h2 className="title">정산</h2>
 
 			<div id="body">
 				{props.settlement.map((data, i) => {

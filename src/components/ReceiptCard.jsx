@@ -1,4 +1,5 @@
 import React from 'react'
+import clsx from 'clsx'
 import './ReceiptCard.scss'
 
 // Components
@@ -71,7 +72,7 @@ export default function ReceiptCard(props) {
 						<p className="title">{props.receipt.name}</p>
 						<p className="date">{format(props.receipt.timestamp.toDate(), 'MM/dd HH:mm')}</p>
 					</div>
-					<EditableNumberView className="price" value={parseFloat(totalPrice.toFixed(2))} editMode={false} />
+					<EditableNumberView className={clsx('price', diff !== 0 ? 'red' : '')} value={parseFloat(totalPrice.toFixed(2))} editMode={false} />
 				</div>
 			</AccordionSummary>
 			<CardActionArea

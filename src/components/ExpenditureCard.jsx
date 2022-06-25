@@ -6,7 +6,7 @@ import { bigNumberToCode } from '../algorithm'
 
 // Components
 import { Add, Delete } from '@material-ui/icons'
-import { Menu, MenuItem, IconButton, Typography } from '@material-ui/core'
+import { Menu, MenuItem, IconButton } from '@material-ui/core'
 
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
@@ -21,9 +21,7 @@ export default function ExpenditureCard(props) {
 
 	return (
 		<div className="ExpenditureCard">
-			<Typography className="title" variant="h5" component="h2">
-				지출 내역
-			</Typography>
+			<h2 className="title">지출 내역</h2>
 			<table>
 				<thead>
 					<tr>
