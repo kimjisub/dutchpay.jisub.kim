@@ -99,7 +99,7 @@ export default function Member(props) {
 				close()
 			}}>
 			<div className="card" onClick={() => {}}>
-				<h1 className="title">{group.members[params.memberId]}</h1>
+				<h2 className="title">{group.members[params.memberId]}</h2>
 
 				<div className="table-wrapper">
 					<table size="small">

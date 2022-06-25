@@ -25,8 +25,6 @@ import {
 	List,
 	ListItem,
 	CircularProgress,
-	Tabs,
-	Tab,
 	Menu,
 	MenuItem,
 	Button,
@@ -39,55 +37,12 @@ import EditableNumberView from '../elements/EditableNumberView'
 
 const fs = firestore()
 
-const AntTabs = withStyles({
-	root: {
-		borderBottom: '1px solid #e8e8e8',
-	},
-	indicator: {
-		backgroundColor: '#1890ff',
-	},
-})(Tabs)
-
-const AntTab = withStyles((theme) => ({
-	root: {
-		textTransform: 'none',
-		minWidth: 72,
-		fontWeight: theme.typography.fontWeightRegular,
-		marginRight: theme.spacing(4),
-		fontFamily: [
-			'-apple-system',
-			'BlinkMacSystemFont',
-			'"Segoe UI"',
-			'Roboto',
-			'"Helvetica Neue"',
-			'Arial',
-			'sans-serif',
-			'"Apple Color Emoji"',
-			'"Segoe UI Emoji"',
-			'"Segoe UI Symbol"',
-		].join(','),
-		'&:hover': {
-			color: '#40a9ff',
-			opacity: 1,
-		},
-		'&$selected': {
-			color: '#1890ff',
-			fontWeight: theme.typography.fontWeightMedium,
-		},
-		'&:focus': {
-			color: '#40a9ff',
-		},
-	},
-	selected: {},
-}))((props) => <Tab disableRipple {...props} />)
-
 export default function Receipt(props) {
 	const params = useParams()
 	const navigateSearch = useNavigateSearch()
 	const [searchParams, setSearchParams] = useSearchParams()
 	const editMode = searchParams.get('edit') === 'true'
 
-	const [tab, setTab] = useState(0)
 	const [members, setMembers] = useState(null)
 	const [receipt, setReceipt] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)
@@ -194,14 +149,21 @@ export default function Receipt(props) {
 		totalPrice += item.price
 	}
 
+	let totalPaid = 0
+	for (let i in receipt.payers) {
+		let item = receipt.payers[i]
+		totalPaid += parseInt(item) || 0
+	}
+	const unpaid = totalPrice - totalPaid
+
 	const tab1 = (
 		<table className="receipt-table" size="small">
 			<thead>
 				<tr>
 					<td>상품명</td>
-					<td align="right">가격</td>
 					<td align="right">인원</td>
-					{editMode ? <td>삭제</td> : null}
+					<td align="right">가격</td>
+					{editMode ? <td></td> : null}
 				</tr>
 			</thead>
 			<tbody>
@@ -221,6 +183,20 @@ export default function Receipt(props) {
 								/>
 							</td>
 							<td align="right">
+								<IconButton
+									id={'item-delete-' + i}
+									className="person"
+									onClick={(event) => {
+										setMemberPopoverAction({
+											anchorEl: event.currentTarget,
+											index: i,
+										})
+									}}>
+									<Person fontSize="small" />
+									<span className="count">{receipt.items[i].buyers.length}</span>
+								</IconButton>
+							</td>
+							<td align="right">
 								<EditableNumberView
 									className="item-price"
 									onValueChange={(value) => {
@@ -234,20 +210,6 @@ export default function Receipt(props) {
 									value={item.price}
 									editMode={editMode}
 								/>
-							</td>
-							<td align="right">
-								<IconButton
-									id={'item-delete-' + i}
-									className="person"
-									onClick={(event) => {
-										setMemberPopoverAction({
-											anchorEl: event.currentTarget,
-											index: i,
-										})
-									}}>
-									<Person fontSize="small" />
-									<span className="count">{receipt.items[i].buyers.length}</span>
-								</IconButton>
 							</td>
 
 							{editMode ? (
@@ -271,8 +233,6 @@ export default function Receipt(props) {
 						</tr>
 					)
 				})}
-			</tbody>
-			<tfoot>
 				{editMode ? (
 					<tr>
 						<td colSpan="4">
@@ -292,38 +252,13 @@ export default function Receipt(props) {
 						</td>
 					</tr>
 				) : null}
-				<tr>
-					<td>총</td>
-					<td align="right">
-						<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
-					</td>
-				</tr>
-			</tfoot>
-		</table>
-	)
-
-	let totalPaied = 0
-	for (let i in receipt.payers) {
-		let item = receipt.payers[i]
-		totalPaied += parseInt(item) || 0
-	}
-
-	const tab2 = (
-		<table className="payer-table">
-			<thead>
-				<tr>
-					<td>결제자</td>
-					<td align="right">결제 금액</td>
-					{editMode ? <td>삭제</td> : null}
-				</tr>
-			</thead>
-			<tbody>
 				{Object.entries(receipt.payers).map((data, i) => {
 					let id = data[0]
 					let price = data[1]
 
 					return (
-						<tr key={'payer-' + i}>
+						<tr key={'payer-' + i} className="green">
+							<td>결제</td>
 							<td>{members[id]}</td>
 							<td align="right">
 								<EditableNumberView
@@ -362,54 +297,37 @@ export default function Receipt(props) {
 						</tr>
 					)
 				})}
-			</tbody>
-			<tfoot>
-				{editMode ? (
-					<tr>
-						<td colSpan="3">
+				{unpaid !== 0 ? (
+					<tr className="red">
+						<td>미결제</td>
+						<td> </td>
+						<td align="right">
+							<EditableNumberView label="가격" value={unpaid} editMode={false} />
+						</td>
+						<td>
 							<IconButton
 								onClick={(event) => {
 									setPayerPopoverAction({
 										anchorEl: event.currentTarget,
 									})
 								}}>
-								<Add />
+								<Add fontSize="small" />
 							</IconButton>
 						</td>
 					</tr>
 				) : null}
+			</tbody>
+			<tfoot>
 				<tr>
 					<td>총</td>
+					<td></td>
 					<td align="right">
-						<NumberFormat value={totalPaied} displayType={'text'} thousandSeparator={true} />
+						<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
 					</td>
 				</tr>
 			</tfoot>
 		</table>
 	)
-
-	let nextStep = null
-
-	if (editMode) {
-		if (tab === 0 && totalPaied === 0) {
-			nextStep = (
-				<Button
-					onClick={() => {
-						setTab(1)
-					}}>
-					다음
-				</Button>
-			)
-		} else
-			nextStep = (
-				<Button
-					onClick={() => {
-						updateToFB(receipt)
-					}}>
-					저장
-				</Button>
-			)
-	}
 
 	return (
 		<div className="Receipt popup">
@@ -482,10 +400,10 @@ export default function Receipt(props) {
 								key={id}
 								button
 								onClick={() => {
-									let _receipt = { ...receipt }
-									_receipt.payers[id] = Object.keys(receipt.payers).length === 0 ? totalPrice : 0
-									setReceipt(_receipt)
-
+									setReceipt((reciept) => {
+										receipt.payers[id] = unpaid
+										return receipt
+									})
 									setPayerPopoverAction(null)
 								}}>
 								{name}
@@ -510,34 +428,31 @@ export default function Receipt(props) {
 				</MenuItem>
 			</Menu>
 			<div className="card">
-				<EditableTextView
-					className="title"
-					onChange={(e) => {
-						let _receipt = { ...receipt }
-						_receipt.name = e.target.value
-						setReceipt(_receipt)
-					}}
-					label="영수증 이름"
-					editMode={editMode}
-					text={receipt.name}
-				/>
-				<TextField
-					type="datetime-local"
-					value={format(receipt.timestamp, "yyyy-MM-dd'T'HH:mm")}
-					disabled={!editMode}
-					onChange={(e) => {
-						setReceipt((receipt) => {
-							return { ...receipt, timestamp: new Date(e.target.value) }
-						})
-					}}
-				/>
-				<div className="content">
-					<AntTabs centered value={tab} indicatorColor="primary" textColor="primary" onChange={(event, newValue) => setTab(newValue)}>
-						<AntTab label="영수증" />
-						<AntTab label="결제" />
-					</AntTabs>
-					<section className="tab-page">{tab === 0 ? tab1 : tab2}</section>
+				<div className="top">
+					<EditableTextView
+						className="title"
+						onChange={(e) => {
+							let _receipt = { ...receipt }
+							_receipt.name = e.target.value
+							setReceipt(_receipt)
+						}}
+						label="영수증 이름"
+						editMode={editMode}
+						text={receipt.name}
+					/>
+					<TextField
+						className="date"
+						type="datetime-local"
+						value={format(receipt.timestamp, "yyyy-MM-dd'T'HH:mm")}
+						disabled={!editMode}
+						onChange={(e) => {
+							setReceipt((receipt) => {
+								return { ...receipt, timestamp: new Date(e.target.value) }
+							})
+						}}
+					/>
 				</div>
+				<div className="content">{tab1}</div>
 				<div className="actions">
 					{editMode && params.receiptId !== 'new' ? (
 						<IconButton
@@ -561,7 +476,15 @@ export default function Receipt(props) {
 						}}>
 						{editMode ? '취소' : '확인'}
 					</Button>
-					{nextStep}
+
+					{editMode ? (
+						<Button
+							onClick={() => {
+								updateToFB(receipt)
+							}}>
+							저장
+						</Button>
+					) : null}
 				</div>
 			</div>
 		</div>

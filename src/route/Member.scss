@@ -12,16 +12,17 @@
 		width: 80%;
 		min-width: 300px;
 		max-width: 500px;
-		height: 90vh;
+		max-height: 90vh;
 		padding: 25px;
 		box-sizing: border-box;
 
 		.title {
+			margin: 0;
 		}
 
 		.table-wrapper {
 			overflow: scroll;
-			margin: 0 20px;
+			margin: 0 10px;
 		}
 	}
 }

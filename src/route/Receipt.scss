@@ -8,14 +8,31 @@
 		width: 80%;
 		min-width: 300px;
 		max-width: 500px;
-		height: 90vh;
+		max-height: 90vh;
 		padding: 25px;
 		box-sizing: border-box;
-		.title {
-			font-size: 1.7rem;
-			font-weight: bolder;
-			width: 70%;
-			padding: 10px;
+
+		@media (max-width: 500px) {
+			padding: 15px;
+			width: 100%;
+		}
+		.top {
+			display: flex;
+			.title {
+				font-size: 1.7rem;
+				font-weight: bolder;
+				padding: 10px;
+				flex-grow: 1;
+			}
+			.date {
+				padding: 10px;
+				align-self: center;
+				.MuiInputBase-root {
+					input {
+						font-size: 0.75rem;
+					}
+				}
+			}
 		}
 
 		.receipt-table {
