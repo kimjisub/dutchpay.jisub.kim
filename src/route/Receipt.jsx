@@ -48,14 +48,15 @@ export default function Receipt(props) {
 		null,
 		(_receipt) => {
 			if (_receipt == null) return null
-			const receiptItems = [
-				..._receipt.items,
-				{
+			const receiptItems = [..._receipt.items]
+
+			if (editMode) {
+				receiptItems.push({
 					name: '',
 					buyers: members ? Object.keys(members) : [],
 					price: 0,
-				},
-			]
+				})
+			}
 
 			const receipt = { ..._receipt, items: receiptItems }
 			return receipt

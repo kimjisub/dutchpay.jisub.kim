@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { useNavigateSearch } from '../hooks/useNavigationSearch'
 import './Member.scss'
@@ -21,7 +21,30 @@ export default function Member(props) {
 	const editMode = searchParams.get('edit') === 'true'
 
 	const [group, setGroup] = useState(null)
-	const [receipts, setReceipts] = useState({})
+
+	const [receipts, receiptsDispatch] = useReducer((state, actions) => {
+		let _state = { ...state }
+		actions.forEach((action) => {
+			const { type, id, data } = action
+			switch (type) {
+				case 'added':
+					_state[id] = data
+					break
+				case 'modified':
+					_state[id] = data
+					break
+				case 'removed':
+					delete _state[id]
+					break
+				default:
+			}
+		})
+		return sortObject(_state, (a, b) => {
+			const Atarget = _state[a].timestamp
+			const Btarget = _state[b].timestamp
+			return Atarget < Btarget ? 1 : -1
+		})
+	}, {})
 
 	useEffect(() => {
 		fbLog(`Subscribe /DutchPay/{${params.groupId}}`)
@@ -38,34 +61,15 @@ export default function Member(props) {
 			.collection('DutchPay')
 			.doc(params.groupId)
 			.collection('Receipts')
-			.orderBy('timestamp', 'asc')
 			.onSnapshot((querySnapshot) => {
-				setReceipts((receipts) => {
-					let _receipts = { ...receipts }
-					querySnapshot.docChanges().forEach((change) => {
-						let id = change.doc.id
-						let data = change.doc.data()
+				let actions = []
+				querySnapshot.docChanges().forEach((change) => {
+					let id = change.doc.id
+					let data = change.doc.data()
 
-						switch (change.type) {
-							case 'added':
-								_receipts[id] = data
-								break
-							case 'modified':
-								_receipts[id] = data
-								break
-							case 'removed':
-								delete _receipts[id]
-								break
-							default:
-						}
-					})
-
-					return sortObject(_receipts, (a, b) => {
-						const Atarget = _receipts[a].timestamp
-						const Btarget = _receipts[b].timestamp
-						return Atarget > Btarget ? 1 : -1
-					})
+					actions.push({ type: change.type, id, data })
 				})
+				receiptsDispatch(actions)
 			})
 
 		return () => {

@@ -7,11 +7,12 @@
 		outline: none;
 		border: none;
 		background: rgb(215, 215, 215);
-		border-radius: 1rem;
+		border-radius: 10px;
 		padding: 10px;
 		transition: 0.3s;
 		font-size: inherit;
 		width: 100%;
+		box-sizing: border-box;
 	}
 	input:focus {
 		background: rgb(179, 179, 179);

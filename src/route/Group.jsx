@@ -87,7 +87,7 @@ export default function Group(props) {
 		return sortObject(_state, (a, b) => {
 			const Atarget = _state[a].timestamp
 			const Btarget = _state[b].timestamp
-			return Atarget > Btarget ? 1 : -1
+			return Atarget < Btarget ? 1 : -1
 		})
 	}, {})
 
@@ -163,7 +163,6 @@ export default function Group(props) {
 			.collection('DutchPay')
 			.doc(params.groupId)
 			.collection('Receipts')
-			.orderBy('timestamp', 'asc')
 			.onSnapshot((querySnapshot) => {
 				let actions = []
 				querySnapshot.docChanges().forEach((change) => {
@@ -212,7 +211,6 @@ export default function Group(props) {
 			/>
 		)
 	}
-	receiptCards.reverse()
 
 	let expenditure = calcExpenditure(group.members, receipts)
 
