@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { useNavigateSearch } from '../hooks/useNavigationSearch'
+import { useGetSetterState } from '../hooks/useGetSetterState'
 import { format } from 'date-fns'
 import './Receipt.scss'
 
@@ -43,12 +44,36 @@ export default function Receipt(props) {
 	const editMode = searchParams.get('edit') === 'true'
 
 	const [members, setMembers] = useState(null)
-	const [receipt, setReceipt] = useState(null)
+	const [receiptRaw, receipt, setReceipt] = useGetSetterState(
+		null,
+		(_receipt) => {
+			if (_receipt == null) return null
+			const receiptItems = [
+				..._receipt.items,
+				{
+					name: '',
+					buyers: members ? Object.keys(members) : [],
+					price: 0,
+				},
+			]
+
+			const receipt = { ..._receipt, items: receiptItems }
+			return receipt
+		},
+		(_receipt) => {
+			const receipt = { ..._receipt }
+			receipt.items = receipt.items.filter((item) => item.name !== '' || item.price !== 0)
+
+			return receipt
+		}
+	)
 	const [errMsg, setErrMsg] = useState(null)
 
 	const [memberPopoverAction, setMemberPopoverAction] = useState(null)
 	const [payerPopoverAction, setPayerPopoverAction] = useState(null)
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
+
+	const loaded = receipt != null && members != null
 
 	useEffect(() => {
 		fbLog(`Get /DutchPay/{${params.groupId}}`)
@@ -69,26 +94,30 @@ export default function Receipt(props) {
 				.then((doc) => {
 					if (doc.exists) {
 						const data = doc.data()
-						setReceipt({ ...data, timestamp: data.timestamp.toDate() })
+						setReceipt(() => {
+							return { ...data, timestamp: data.timestamp.toDate() }
+						})
 					}
 				})
 		} else {
-			setReceipt({
-				name: '',
-				items: [],
-				payers: {},
-				timestamp: new Date(),
+			setReceipt(() => {
+				return {
+					name: '',
+					items: [],
+					payers: {},
+					timestamp: new Date(),
+				}
 			})
 		}
 	}, [params.groupId, params.receiptId])
 
-	function updateToFB(receipt) {
+	function updateToFB(receiptRaw) {
 		if (params.receiptId !== 'new')
 			fs.collection('DutchPay')
 				.doc(params.groupId)
 				.collection('Receipts')
 				.doc(params.receiptId)
-				.set(receipt)
+				.set(receiptRaw)
 				.then(() => {
 					close()
 				})
@@ -101,7 +130,7 @@ export default function Receipt(props) {
 			fs.collection('DutchPay')
 				.doc(params.groupId)
 				.collection('Receipts')
-				.add(receipt)
+				.add(receiptRaw)
 				.then(() => {
 					close()
 				})
@@ -133,6 +162,15 @@ export default function Receipt(props) {
 		navigateSearch('../', { edit: editMode ? true : undefined }) // history.push({ pathname: `/groups/${params.groupId}`, search: editMode ? '?edit=true' : '' })
 	}
 
+	if (!loaded)
+		return (
+			<div className="popup">
+				<div>
+					<CircularProgress color="inherit" />
+				</div>
+			</div>
+		)
+
 	if (!receipt || !members)
 		return (
 			<div className="popup">
@@ -154,187 +192,6 @@ export default function Receipt(props) {
 		totalPaid += parseInt(item) || 0
 	}
 	const unpaid = totalPrice - totalPaid
-
-	const tab1 = (
-		<table className="receipt-table" size="small">
-			<thead>
-				<tr>
-					<td>상품명</td>
-					<td align="right">인원</td>
-					<td align="right">가격</td>
-					{editMode ? <td></td> : null}
-				</tr>
-			</thead>
-			<tbody>
-				{receipt.items.map((item, i) => {
-					return (
-						<tr key={'item-' + i}>
-							<td>
-								<EditableTextView
-									onChange={(e) => {
-										setReceipt((_receipt) => {
-											const receipt = { ..._receipt }
-											receipt.items[i].name = e.target.value
-											return receipt
-										})
-									}}
-									label="상품명"
-									text={item.name}
-									editMode={editMode}
-								/>
-							</td>
-							<td align="right">
-								<IconButton
-									id={'item-delete-' + i}
-									className="person"
-									onClick={(event) => {
-										setMemberPopoverAction({
-											anchorEl: event.currentTarget,
-											index: i,
-										})
-									}}>
-									<Person fontSize="small" />
-									<span className="count">{receipt.items[i].buyers.length}</span>
-								</IconButton>
-							</td>
-							<td align="right">
-								<EditableNumberView
-									className="item-price"
-									onValueChange={(value) => {
-										setReceipt((_receipt) => {
-											const receipt = { ..._receipt }
-											receipt.items[i].price = value
-											return receipt
-										})
-									}}
-									label="가격"
-									value={item.price}
-									editMode={editMode}
-								/>
-							</td>
-
-							{editMode ? (
-								<td>
-									<IconButton
-										id={'item-delete-' + i}
-										onClick={(event) => {
-											setDeleteConfirmAction({
-												anchorEl: event.currentTarget,
-												deleteAction: () => {
-													setReceipt((_receipt) => {
-														const receipt = { ..._receipt }
-														receipt.items.splice(i, 1)
-														return receipt
-													})
-												},
-											})
-										}}>
-										<Delete fontSize="small" />
-									</IconButton>
-								</td>
-							) : null}
-						</tr>
-					)
-				})}
-				{editMode ? (
-					<tr>
-						<td colSpan="4">
-							<IconButton
-								onClick={(event) => {
-									setReceipt((_receipt) => {
-										const receipt = { ..._receipt }
-										let buyers = Object.keys(members)
-										receipt.items.push({
-											name: '',
-											buyers,
-											price: 0,
-										})
-										return receipt
-									})
-								}}>
-								<Add />
-							</IconButton>
-						</td>
-					</tr>
-				) : null}
-				{Object.entries(receipt.payers).map((data, i) => {
-					let id = data[0]
-					let price = data[1]
-
-					return (
-						<tr key={'payer-' + i} className="green">
-							<td>결제</td>
-							<td>{members[id]}</td>
-							<td align="right">
-								<EditableNumberView
-									onValueChange={(value) => {
-										setReceipt((_receipt) => {
-											const receipt = { ..._receipt }
-											receipt.payers[id] = value
-											return receipt
-										})
-									}}
-									label="가격"
-									value={price}
-									editMode={editMode}
-									id={`pay-price-${i}`}
-								/>
-							</td>
-
-							{editMode ? (
-								<td>
-									<IconButton
-										id={'delete-' + i}
-										onClick={(event) => {
-											setDeleteConfirmAction({
-												anchorEl: event.currentTarget,
-												deleteAction: () => {
-													setReceipt((_receipt) => {
-														const receipt = { ..._receipt }
-														delete receipt.payers[id]
-														return receipt
-													})
-												},
-											})
-										}}>
-										<Delete fontSize="small" />
-									</IconButton>
-								</td>
-							) : null}
-						</tr>
-					)
-				})}
-				{unpaid !== 0 ? (
-					<tr className="red">
-						<td>미결제</td>
-						<td> </td>
-						<td align="right">
-							<EditableNumberView label="가격" value={unpaid} editMode={false} />
-						</td>
-						<td>
-							<IconButton
-								onClick={(event) => {
-									setPayerPopoverAction({
-										anchorEl: event.currentTarget,
-									})
-								}}>
-								<Add fontSize="small" />
-							</IconButton>
-						</td>
-					</tr>
-				) : null}
-			</tbody>
-			<tfoot>
-				<tr>
-					<td>합계</td>
-					<td></td>
-					<td align="right">
-						<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
-					</td>
-				</tr>
-			</tfoot>
-		</table>
-	)
 
 	return (
 		<div className="Receipt popup">
@@ -463,7 +320,177 @@ export default function Receipt(props) {
 						}}
 					/>
 				</div>
-				<div className="content">{tab1}</div>
+				<div className="content">
+					<table className="receipt-table" size="small">
+						<thead>
+							<tr>
+								<td>상품명</td>
+								<td align="right">인원</td>
+								<td align="right">가격</td>
+								{editMode ? <td></td> : null}
+							</tr>
+						</thead>
+						<tbody>
+							{receipt.items.map((item, i) => {
+								return (
+									<tr key={'item-' + i}>
+										<td>
+											<EditableTextView
+												onChange={(e) => {
+													setReceipt((_receipt) => {
+														const receipt = { ..._receipt }
+														receipt.items[i].name = e.target.value
+														return receipt
+													})
+												}}
+												label="상품명"
+												text={item.name}
+												editMode={editMode}
+											/>
+										</td>
+										<td align="right">
+											<IconButton
+												id={'item-delete-' + i}
+												className="person"
+												onClick={(event) => {
+													setMemberPopoverAction({
+														anchorEl: event.currentTarget,
+														index: i,
+													})
+												}}>
+												<Person fontSize="small" />
+												<span className="count">{receipt.items[i].buyers.length}</span>
+											</IconButton>
+										</td>
+										<td align="right">
+											<EditableNumberView
+												className="item-price"
+												onValueChange={(value) => {
+													setReceipt((_receipt) => {
+														const receipt = { ..._receipt }
+														receipt.items[i].price = value
+														return receipt
+													})
+												}}
+												label="가격"
+												value={item.price}
+												editMode={editMode}
+											/>
+										</td>
+
+										{editMode ? (
+											<td>
+												{receipt.items.length - 1 > i ? (
+													<IconButton
+														id={'item-delete-' + i}
+														onClick={(event) => {
+															setDeleteConfirmAction({
+																anchorEl: event.currentTarget,
+																deleteAction: () => {
+																	setReceipt((_receipt) => {
+																		const receipt = { ..._receipt }
+																		receipt.items.splice(i, 1)
+																		return receipt
+																	})
+																},
+															})
+														}}>
+														<Delete fontSize="small" />
+													</IconButton>
+												) : null}
+											</td>
+										) : null}
+									</tr>
+								)
+							})}
+							{Object.entries(receipt.payers).map((data, i) => {
+								let id = data[0]
+								let price = data[1]
+
+								return (
+									<tr key={'payer-' + i} className="green">
+										<td>결제</td>
+										<td>{members[id]}</td>
+										<td align="right">
+											<EditableNumberView
+												onValueChange={(value) => {
+													setReceipt((_receipt) => {
+														const receipt = { ..._receipt }
+														receipt.payers[id] = value
+														return receipt
+													})
+												}}
+												label="가격"
+												value={price}
+												editMode={editMode}
+												id={`pay-price-${i}`}
+											/>
+										</td>
+
+										{editMode ? (
+											<td>
+												<IconButton
+													id={'delete-' + i}
+													onClick={(event) => {
+														setDeleteConfirmAction({
+															anchorEl: event.currentTarget,
+															deleteAction: () => {
+																setReceipt((_receipt) => {
+																	const receipt = { ..._receipt }
+																	delete receipt.payers[id]
+																	return receipt
+																})
+															},
+														})
+													}}>
+													<Delete fontSize="small" />
+												</IconButton>
+											</td>
+										) : null}
+									</tr>
+								)
+							})}
+							{unpaid > 0 ? (
+								<tr className="red">
+									<td>미결제</td>
+									<td> </td>
+									<td align="right">
+										<EditableNumberView label="가격" value={unpaid} editMode={false} />
+									</td>
+									<td>
+										<IconButton
+											onClick={(event) => {
+												setPayerPopoverAction({
+													anchorEl: event.currentTarget,
+												})
+											}}>
+											<Add fontSize="small" />
+										</IconButton>
+									</td>
+								</tr>
+							) : null}
+							{unpaid < 0 ? (
+								<tr className="red">
+									<td>초과 결제</td>
+									<td> </td>
+									<td align="right">
+										<EditableNumberView label="가격" value={unpaid} editMode={false} />
+									</td>
+									<td></td>
+								</tr>
+							) : null}
+						</tbody>
+						<tfoot>
+							<tr>
+								<td>합계</td>
+								<td></td>
+								<td align="right">
+									<NumberFormat value={totalPrice} displayType={'text'} thousandSeparator={true} />
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 				<div className="actions">
 					{editMode && params.receiptId !== 'new' ? (
 						<IconButton
@@ -491,7 +518,7 @@ export default function Receipt(props) {
 					{editMode ? (
 						<Button
 							onClick={() => {
-								updateToFB(receipt)
+								updateToFB(receiptRaw)
 							}}>
 							저장
 						</Button>

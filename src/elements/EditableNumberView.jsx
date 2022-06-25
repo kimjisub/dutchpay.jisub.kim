@@ -5,17 +5,14 @@ import './EditableView.scss'
 import NumberFormat from 'react-number-format'
 
 export default function EditableNumberView(props) {
-	const [value, setValue] = useState(props.value)
-
 	return (
 		<p className={'EditableView ' + (props.className || '')} style={props.style}>
 			{props.editMode ? (
 				<NumberFormat
 					thousandSeparator={true}
 					placeholder={props.label}
-					value={value}
+					value={props.value || 0}
 					onValueChange={(values) => {
-						setValue(values.floatValue)
 						if (props.onValueChange) props.onValueChange(values.floatValue)
 					}}
 				/>
