@@ -100,7 +100,7 @@ export default function Member(props) {
 						<thead>
 							<tr>
 								<td>영수증 이름</td>
-								<td>가격</td>
+								<td>금액</td>
 							</tr>
 						</thead>
 						<tbody>

@@ -262,19 +262,21 @@ export default function Receipt(props) {
 			</Menu>
 			<div className="card">
 				<div className="top">
-					<EditableTextView
-						className="title"
-						onChange={(e) => {
-							setReceipt((_receipt) => {
-								const receipt = { ..._receipt }
-								receipt.name = e.target.value
-								return receipt
-							})
-						}}
-						label="영수증 이름"
-						editMode={editMode}
-						text={receipt.name}
-					/>
+					<p>
+						<EditableTextView
+							className="title"
+							onChange={(e) => {
+								setReceipt((_receipt) => {
+									const receipt = { ..._receipt }
+									receipt.name = e.target.value
+									return receipt
+								})
+							}}
+							label="영수증 이름"
+							editMode={editMode}
+							text={receipt.name}
+						/>
+					</p>
 					<input
 						className="date"
 						type="datetime-local"
@@ -291,9 +293,9 @@ export default function Receipt(props) {
 					<table>
 						<thead>
 							<tr>
-								<td>상품명</td>
+								<td>내용</td>
 								<td>인원</td>
-								<td>가격</td>
+								<td>금액</td>
 								{editMode ? <td></td> : null}
 							</tr>
 						</thead>
@@ -311,7 +313,7 @@ export default function Receipt(props) {
 														return receipt
 													})
 												}}
-												label="상품명"
+												label="내용"
 												text={item.name}
 												editMode={editMode}
 											/>
@@ -339,7 +341,7 @@ export default function Receipt(props) {
 														return receipt
 													})
 												}}
-												label="가격"
+												label="금액"
 												value={item.price}
 												editMode={editMode}
 											/>
@@ -387,7 +389,7 @@ export default function Receipt(props) {
 														return receipt
 													})
 												}}
-												label="가격"
+												label="금액"
 												value={price}
 												editMode={editMode}
 												id={`pay-price-${i}`}
@@ -422,7 +424,7 @@ export default function Receipt(props) {
 									<td>미결제</td>
 									<td> </td>
 									<td>
-										<EditableNumberView label="가격" value={unpaid} editMode={false} />
+										<EditableNumberView label="금액" value={unpaid} editMode={false} />
 									</td>
 									{editMode ? (
 										<td>
@@ -443,7 +445,7 @@ export default function Receipt(props) {
 									<td>초과 결제</td>
 									<td> </td>
 									<td>
-										<EditableNumberView label="가격" value={unpaid} editMode={false} />
+										<EditableNumberView label="금액" value={unpaid} editMode={false} />
 									</td>
 
 									{editMode ? <td></td> : null}

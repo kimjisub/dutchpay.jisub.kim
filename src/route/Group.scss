@@ -13,6 +13,9 @@
 		width: 100%;
 		margin-bottom: 30px;
 		z-index: 1;
+		@media (max-width: 500px) {
+			margin-bottom: 0;
+		}
 
 		section {
 			width: 700px;

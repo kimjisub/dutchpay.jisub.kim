@@ -83,7 +83,7 @@ export default function ReceiptCard(props) {
 					<table size="small">
 						<thead>
 							<tr>
-								<td align="left">상품명</td>
+								<td align="left">내용</td>
 								<td align="center">인원</td>
 								<td align="right">금액</td>
 							</tr>

@@ -17,12 +17,14 @@
 			width: 100%;
 		}
 		.top {
+			margin-top: 10px;
+			margin-left: 10px;
+			margin-right: 10px;
 			.title {
 				font-size: 1.7rem;
 				font-weight: bolder;
 			}
 			.date {
-				padding: 10px;
 				align-self: center;
 				border: none;
 				outline: none;
