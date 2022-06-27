@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import { useNavigateSearch } from '../hooks/useNavigationSearch'
+import { format } from 'date-fns'
 import './Groups.scss'
 
 // Backend
@@ -7,12 +8,17 @@ import { firestore, firebaseAuth } from '../firebase'
 import { calcExpenditure, calcSettlement, sortObject } from '../algorithm'
 import { fbLog } from '../logger'
 
+// Components
+import { Button, Snackbar } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
+
 const auth = firebaseAuth()
 const fs = firestore()
 
 export default function Groups(props) {
 	const navigateSearch = useNavigateSearch()
 	const [user, setUser] = useState(null)
+	const [errMsg, setErrMsg] = useState(null)
 
 	useEffect(() => {
 		auth.onAuthStateChanged((user) => {
@@ -37,12 +43,11 @@ export default function Groups(props) {
 				default:
 			}
 		})
-		return _state
-		// return sortObject(_state, (a, b) => {
-		// 	const Atarget = _state[a].timestamp
-		// 	const Btarget = _state[b].timestamp
-		// 	return Atarget < Btarget ? 1 : -1
-		// })
+		return sortObject(_state, (a, b) => {
+			const Atarget = _state[a].timestamp
+			const Btarget = _state[b].timestamp
+			return Atarget < Btarget ? 1 : -1
+		})
 	}, {})
 
 	useEffect(() => {
@@ -53,10 +58,10 @@ export default function Groups(props) {
 			.collection('DutchPay')
 			.where('owner', '==', user.uid)
 			.onSnapshot((querySnapshot) => {
-				let actions = []
+				const actions = []
 				querySnapshot.docChanges().forEach((change) => {
-					let id = change.doc.id
-					let data = change.doc.data()
+					const id = change.doc.id
+					const data = change.doc.data()
 
 					actions.push({ type: change.type, id, data })
 				})
@@ -75,19 +80,59 @@ export default function Groups(props) {
 
 	return (
 		<div className="Groups">
-			{Object.keys(groups).map((key) => {
-				const group = groups[key]
-				return (
-					<p
-						key={key}
-						onClick={() => {
-							navigateSearch(`/groups/${key}`)
-						}}>
-						<span>{key}</span>
-						<span>{group.name}</span>
-					</p>
-				)
-			})}
+			<Snackbar
+				open={errMsg != null && !errMsg.includes('CLOSE')}
+				autoHideDuration={5000}
+				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+				onClose={() => {
+					setErrMsg(errMsg + 'CLOSE')
+				}}>
+				<Alert elevation={6} variant="filled" severity="error">
+					{errMsg?.replace('CLOSE', '')}
+				</Alert>
+			</Snackbar>
+			<Button
+				onClick={() => {
+					fbLog('Add /DutchPay')
+					fs.collection('DutchPay')
+						.add({
+							name: '',
+							members: [],
+							owner: auth?.currentUser?.uid ?? '',
+							timestamp: new Date(),
+						})
+						.then((docRef) => {
+							navigateSearch(`/groups/${docRef.id}`, { edit: true }) // history.push({ pathname: `/groups/${docRef.id}`, search: '?edit=true' })
+						})
+						.catch((err) => {
+							setErrMsg('로그인이 필요합니다')
+						})
+				}}>
+				새로 만들기
+			</Button>
+			<table>
+				<thead>
+					<tr>
+						<td>이름</td>
+						<td>날짜</td>
+					</tr>
+				</thead>
+				<tbody>
+					{Object.keys(groups).map((key) => {
+						const group = groups[key]
+						return (
+							<tr
+								key={key}
+								onClick={() => {
+									navigateSearch(`/groups/${key}`)
+								}}>
+								<td>{group.name}</td>
+								<td>{format(group.timestamp.toDate(), 'yyyy/MM/dd')}</td>
+							</tr>
+						)
+					})}
+				</tbody>
+			</table>
 		</div>
 	)
 }

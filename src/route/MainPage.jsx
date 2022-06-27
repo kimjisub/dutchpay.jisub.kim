@@ -52,20 +52,9 @@ export default function MainPage(props) {
 			</Button>
 			<Button
 				onClick={() => {
-					fbLog('Add /DutchPay')
-					fs.collection('DutchPay')
-						.add({
-							name: '',
-							members: [],
-							owner: auth?.currentUser?.uid ?? '',
-							timestamp: new Date(),
-						})
-						.then((docRef) => {
-							navigateSearch(`/groups`)
-						})
-						.catch((err) => {
-							setErrMsg('로그인이 필요합니다')
-						})
+					if (auth?.currentUser) {
+						navigateSearch(`/groups`)
+					}
 				}}>
 				목록 보기
 			</Button>
