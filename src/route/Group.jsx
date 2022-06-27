@@ -233,12 +233,14 @@ export default function Group(props) {
 							onChange={(e) => {
 								setGroupName(e.target.value)
 							}}
+							onBlur={(e) => {
+								groupDispatch({ type: 'saveFirebase', data: { ...group, name: groupName } })
+							}}
 						/>
 						<IconButton
 							onClick={() => {
-								if (editMode) {
-									groupDispatch({ type: 'saveFirebaseAndDone', data: { ...group, name: groupName } })
-								} else editModeDispatch({ type: 'requestEditMode' })
+								if (editMode) editModeDispatch({ type: 'doneEditMode' })
+								else editModeDispatch({ type: 'requestEditMode' })
 							}}>
 							{editMode ? <Check /> : <Edit />}
 						</IconButton>

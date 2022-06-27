@@ -12,6 +12,9 @@ export default function EditableTextView(props) {
 					onChange={(e) => {
 						if (props.onChange) props.onChange(e)
 					}}
+					onBlur={(e) => {
+						if (props.onBlur) props.onBlur(e)
+					}}
 				/>
 			) : (
 				props.text
