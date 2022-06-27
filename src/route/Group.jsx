@@ -9,9 +9,9 @@ import { calcExpenditure, calcSettlement, sortObject } from '../algorithm'
 import { fbLog } from '../logger'
 
 // Components
-import { Add, Check, Edit } from '@material-ui/icons'
+import { Add, Check, Edit, Delete } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
-import { Snackbar, IconButton, Button } from '@material-ui/core'
+import { Snackbar, IconButton, Button, Menu, MenuItem } from '@material-ui/core'
 
 // Custom Components
 import ExpenditureCard from '../components/ExpenditureCard'
@@ -29,6 +29,8 @@ export default function Group(props) {
 	const [groupName, setGroupName] = useState('')
 	const [errMsg, setErrMsg] = useState(null)
 	const [expanded, setExpanded] = useState(null)
+
+	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
 
 	const [group, groupDispatch] = useReducer((state, action) => {
 		const { type, data } = action
@@ -182,6 +184,20 @@ export default function Group(props) {
 		}
 	}, [params.groupId])
 
+	function deleteFromFB() {
+		fs.collection('DutchPay')
+			.doc(params.groupId)
+			.delete()
+			.then(() => {
+				navigateSearch('../')
+			})
+			.catch((e) => {
+				setErrMsg('권한이 없습니다.')
+				navigateSearch('.', { edit: false })
+				// history.push({ pathname: history.location.pathname })
+			})
+	}
+
 	if (!group) return <div className="popup"></div>
 
 	let receiptCards = []
@@ -222,6 +238,22 @@ export default function Group(props) {
 					{errMsg?.replace('CLOSE', '')}
 				</Alert>
 			</Snackbar>
+
+			<Menu
+				keepMounted
+				anchorEl={deleteConfirmAction?.anchorEl}
+				open={deleteConfirmAction != null}
+				onClose={() => {
+					setDeleteConfirmAction(null)
+				}}>
+				<MenuItem
+					onClick={() => {
+						deleteConfirmAction.deleteAction()
+						setDeleteConfirmAction(null)
+					}}>
+					삭제
+				</MenuItem>
+			</Menu>
 			<div className="area">
 				<section>
 					<div className="top">
@@ -237,6 +269,21 @@ export default function Group(props) {
 								groupDispatch({ type: 'saveFirebase', data: { ...group, name: groupName } })
 							}}
 						/>
+						{editMode ? (
+							<IconButton
+								key="button"
+								name="delete"
+								onClick={(event) => {
+									setDeleteConfirmAction({
+										anchorEl: event.currentTarget,
+										deleteAction: () => {
+											deleteFromFB()
+										},
+									})
+								}}>
+								<Delete />
+							</IconButton>
+						) : null}
 						<IconButton
 							onClick={() => {
 								if (editMode) editModeDispatch({ type: 'doneEditMode' })
