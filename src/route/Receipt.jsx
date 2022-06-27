@@ -13,7 +13,7 @@ import { fbLog } from '../logger'
 // Components
 import { Person, Delete, Add } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
-import { Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, ListItem, Menu, MenuItem, Button, IconButton } from '@material-ui/core'
+import { Badge, Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, ListItem, Menu, MenuItem, Button, IconButton } from '@material-ui/core'
 
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
@@ -322,13 +322,17 @@ export default function Receipt(props) {
 											<IconButton
 												id={'item-delete-' + i}
 												className="person"
+												size="small"
 												onClick={(event) => {
 													setMemberPopoverAction({
 														anchorEl: event.currentTarget,
 														index: i,
 													})
 												}}>
-												<span className="count">{receipt.items[i].buyers.length}</span>
+												<Badge color="primary" badgeContent={receipt.items[i].buyers.length}>
+													<Person />
+												</Badge>
+												{/* <span className="count">{receipt.items[i].buyers.length}</span> */}
 											</IconButton>
 										</td>
 										<td>

@@ -42,10 +42,10 @@
 					text-align: center;
 					padding-left: 3px;
 					padding-right: 3px;
-					.count {
-						font-size: 0.9rem;
-						font-weight: bold;
-						color: black;
+					.person {
+						.MuiBadge-badge {
+							transform: scale(0.8) translate(33%, -17%);
+						}
 					}
 				}
 				&:nth-child(3) {
@@ -64,14 +64,6 @@
 			td {
 				& > p {
 					width: 100%;
-				}
-
-				.person {
-					padding: 12px 10px 12px 10px;
-					.count {
-						font-size: 0.9rem;
-						font-weight: bold;
-					}
 				}
 
 				&:nth-child(1) {
