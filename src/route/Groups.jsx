@@ -115,6 +115,7 @@ export default function Groups(props) {
 					<tr>
 						<td>이름</td>
 						<td>날짜</td>
+						<td>인원</td>
 					</tr>
 				</thead>
 				<tbody>
@@ -128,6 +129,7 @@ export default function Groups(props) {
 								}}>
 								<td>{group.name}</td>
 								<td>{format(group.timestamp.toDate(), 'yyyy/MM/dd')}</td>
+								<td>{Object.values(group.members).join(', ')}</td>
 							</tr>
 						)
 					})}
