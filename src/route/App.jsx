@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigateSearch } from '../hooks/useNavigationSearch'
 import { Outlet } from 'react-router-dom'
 import './App.scss'
 
@@ -18,6 +19,7 @@ const auth = firebaseAuth()
 const fbAuthProvider = new firebase.auth.GoogleAuthProvider()
 
 export default function App(props) {
+	const navigateSearch = useNavigateSearch()
 	const [user, setUser] = useState(null)
 	const [openProfile, setOpenProfile] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)
@@ -42,29 +44,50 @@ export default function App(props) {
 					horizontal: 'right',
 				}}>
 				{user == null ? (
-					<Button
-						onClick={() => {
-							firebase
-								.auth()
-								.signInWithPopup(fbAuthProvider)
-								.then((result) => {
-									setOpenProfile(null)
-								})
-								.catch((error) => {
-									setErrMsg(error.message)
-								})
-						}}>
-						<img src={GoogleLogo} alt="google logo" height="15px" />
-						구글로 로그인
-					</Button>
+					<div className="user-info">
+						<Button
+							onClick={() => {
+								firebase
+									.auth()
+									.signInWithPopup(fbAuthProvider)
+									.then((result) => {
+										setOpenProfile(null)
+									})
+									.catch((error) => {
+										setErrMsg(error.message)
+									})
+							}}>
+							<img src={GoogleLogo} alt="google logo" height="15px" />
+							구글로 로그인
+						</Button>
+					</div>
 				) : (
-					<Button
-						onClick={() => {
-							auth.signOut()
-							setOpenProfile(null)
-						}}>
-						로그아웃
-					</Button>
+					<div className="user-info">
+						<ul>
+							<li>
+								<Button
+									onClick={() => {
+										if (auth?.currentUser) {
+											navigateSearch(`/groups`)
+											setOpenProfile(null)
+										} else {
+											setErrMsg('로그인이 필요합니다.')
+										}
+									}}>
+									목록 보기
+								</Button>
+							</li>
+							<li>
+								<Button
+									onClick={() => {
+										auth.signOut()
+										setOpenProfile(null)
+									}}>
+									로그아웃
+								</Button>
+							</li>
+						</ul>
+					</div>
 				)}
 			</Popover>
 

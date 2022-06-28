@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigateSearch } from '../hooks/useNavigationSearch'
 import './MainPage.scss'
 
@@ -16,6 +16,7 @@ const fs = firestore()
 
 export default function MainPage(props) {
 	const navigateSearch = useNavigateSearch()
+	const [user, setUser] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)
 
 	return (

@@ -16,6 +16,7 @@
 			font-weight: bolder;
 			text-decoration: none;
 		}
+
 		.center {
 			flex-grow: 1;
 		}
@@ -43,4 +44,8 @@
 			display: inline-block;
 		}
 	}
+}
+
+.user-info {
+	padding: 10px;
 }
