@@ -4,15 +4,14 @@ import './MainPage.scss'
 
 // Backend
 import 'firebase/auth'
-import { firestore, firebaseAuth } from '../firebase'
-import { fbLog } from '../logger'
+import { firebaseAuth } from '../firebase'
+import * as db from '../db/firestore'
 
 // Components
 import { Button, Snackbar } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 
 const auth = firebaseAuth()
-const fs = firestore()
 
 export default function MainPage(props) {
 	const navigate = useNavigate()
@@ -33,20 +32,9 @@ export default function MainPage(props) {
 			</Snackbar>
 			<Button
 				onClick={() => {
-					fbLog('Add /DutchPay')
-					fs.collection('DutchPay')
-						.add({
-							name: '',
-							members: [],
-							owner: auth?.currentUser?.uid ?? '',
-							timestamp: new Date(),
-						})
-						.then((docRef) => {
-							navigate(`/groups/${docRef.id}`)
-						})
-						.catch((err) => {
-							setErrMsg('로그인이 필요합니다')
-						})
+					db.createGroup(auth?.currentUser?.uid ?? '')
+						.then((docId) => navigate(`/groups/${docId}`))
+						.catch((err) => setErrMsg(err))
 				}}>
 				새로 만들기
 			</Button>

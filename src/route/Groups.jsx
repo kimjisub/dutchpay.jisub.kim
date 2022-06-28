@@ -1,20 +1,18 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import './Groups.scss'
 
 // Backend
-import { firestore, firebaseAuth } from '../firebase'
+import { firebaseAuth } from '../firebase'
 import * as db from '../db/firestore'
-import { sortObject } from '../algorithm'
-import { fbLog } from '../logger'
+import { sortObject } from '../algorithm2'
 
 // Components
 import { Button, Snackbar } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 
 const auth = firebaseAuth()
-const fs = firestore()
 
 export default function Groups(props) {
 	const navigate = useNavigate()
@@ -29,56 +27,19 @@ export default function Groups(props) {
 		})
 	}, [])
 
-	// const [groups, groupsDispatch] = useReducer((state, actions) => {
-	// 	let _state = { ...state }
-	// 	actions.forEach((action) => {
-	// 		const { type, id, data } = action
-	// 		switch (type) {
-	// 			case 'set':
-	// 				_state = data
-	// 				break
-	// 			case 'added':
-	// 				_state[id] = data
-	// 				break
-	// 			case 'modified':
-	// 				_state[id] = data
-	// 				break
-	// 			case 'removed':
-	// 				delete _state[id]
-	// 				break
-	// 			default:
-	// 		}
-	// 	})
-	// 	return sortObject(_state, (a, b) => {
-	// 		const Atarget = _state[a].timestamp
-	// 		const Btarget = _state[b].timestamp
-	// 		return Atarget < Btarget ? 1 : -1
-	// 	})
-	// }, {})
-
 	useEffect(() => {
 		if (!user) return () => {}
 
 		const unsubscribeGroups = db.subscribeGroups(user.uid, (groups) => {
-			setGroups(groups)
+			setGroups(
+				sortObject(groups, (a, b) => {
+					const Atarget = groups[a].timestamp
+					const Btarget = groups[b].timestamp
+					return Atarget < Btarget ? 1 : -1
+				})
+			)
 		})
-
-		// const unsubscribeGroups = fs
-		// 	.collection('DutchPay')
-		// 	.where('owner', '==', user.uid)
-		// 	.onSnapshot((querySnapshot) => {
-		// 		const actions = []
-		// 		querySnapshot.docChanges().forEach((change) => {
-		// 			const id = change.doc.id
-		// 			const data = change.doc.data()
-
-		// 			actions.push({ type: change.type, id, data })
-		// 		})
-		// 		groupsDispatch(actions)
-		// 	})
-
 		return () => {
-			fbLog(`Unsubscribe /DutchPay`)
 			unsubscribeGroups()
 		}
 	}, [user])
@@ -102,20 +63,9 @@ export default function Groups(props) {
 			</Snackbar>
 			<Button
 				onClick={() => {
-					fbLog('Add /DutchPay')
-					fs.collection('DutchPay')
-						.add({
-							name: '',
-							members: [],
-							owner: auth?.currentUser?.uid ?? '',
-							timestamp: new Date(),
-						})
-						.then((docRef) => {
-							navigate(`/groups/${docRef.id}`)
-						})
-						.catch((err) => {
-							setErrMsg('로그인이 필요합니다')
-						})
+					db.createGroup(auth?.currentUser?.uid ?? '')
+						.then((docId) => navigate(`/groups/${docId}`))
+						.catch((err) => setErrMsg(err))
 				}}>
 				새로 만들기
 			</Button>

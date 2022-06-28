@@ -3,9 +3,8 @@ import { useParams, Outlet, useNavigate } from 'react-router-dom'
 import './Group.scss'
 
 // Backend
-import { firestore } from '../firebase'
-import { calcExpenditure, calcSettlement, sortObject } from '../algorithm'
-import { fbLog } from '../logger'
+import * as db from '../db/firestore'
+import { calcExpenditure, calcSettlement } from '../algorithm'
 
 // Components
 import { Add, Edit, Delete, Save } from '@material-ui/icons'
@@ -18,8 +17,6 @@ import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
 import EditableTextView from '../elements/EditableTextView'
 import EditableDateView from '../elements/EditableDateView'
-
-const fs = firestore()
 
 export default function Group(props) {
 	const params = useParams()
@@ -40,26 +37,19 @@ export default function Group(props) {
 				break
 			case 'saveFirebase':
 				if (data) {
-					fbLog(`Set /DutchPay/{${params.groupId}}`)
-					fs.collection('DutchPay')
-						.doc(params.groupId)
-						.set(data)
+					db.setGroup(params.groupId, data)
 						.then(() => {})
-						.catch((err) => {
-							setErrMsg('권한이 없습니다.')
-						})
+						.catch((err) => setErrMsg(err))
 				} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
 				break
 			case 'saveFirebaseAndDone':
 				if (data) {
-					fbLog(`Set /DutchPay/{${params.groupId}}`)
-					fs.collection('DutchPay')
-						.doc(params.groupId)
-						.set(data)
+					db.setGroup(params.groupId, data)
 						.then(() => {
 							editModeDispatch({ type: 'doneEditMode' })
 						})
 						.catch((err) => {
+							setErrMsg(err)
 							editModeDispatch({ type: 'editModeDenied' })
 						})
 				} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
@@ -69,29 +59,7 @@ export default function Group(props) {
 		return data
 	}, null)
 
-	const [receipts, receiptsDispatch] = useReducer((state, actions) => {
-		let _state = { ...state }
-		actions.forEach((action) => {
-			const { type, id, data } = action
-			switch (type) {
-				case 'added':
-					_state[id] = data
-					break
-				case 'modified':
-					_state[id] = data
-					break
-				case 'removed':
-					delete _state[id]
-					break
-				default:
-			}
-		})
-		return sortObject(_state, (a, b) => {
-			const Atarget = _state[a].timestamp
-			const Btarget = _state[b].timestamp
-			return Atarget < Btarget ? 1 : -1
-		})
-	}, {})
+	const [receipts, setReceipts] = useState([])
 
 	const [editMode, editModeDispatch] = useReducer((state, action) => {
 		let { type } = action
@@ -99,16 +67,10 @@ export default function Group(props) {
 		switch (type) {
 			// 수정모드로 진입하려고 함.
 			case 'requestEditMode':
-				fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
-				fs.collection('DutchPay')
-					.doc(params.groupId)
-					.update({})
-					.then(() => {
-						editModeDispatch({ type: 'editModeApproved' })
-					})
-					.catch((err) => {
-						editModeDispatch({ type: 'editModeDenied' })
-					})
+				db.checkPermission(params.groupId).then((havePermmision) => {
+					if (havePermmision) editModeDispatch({ type: 'editModeApproved' })
+					else editModeDispatch({ type: 'editModeDenied' })
+				})
 				break
 			case 'doneEditMode':
 				editMode = false
@@ -129,64 +91,32 @@ export default function Group(props) {
 
 	// Subscribe Firestore
 	useEffect(() => {
-		fbLog(`Subscribe /DutchPay/{${params.groupId}}`)
-		fbLog(`Subscribe /DutchPay/{${params.groupId}}/Receipts`)
-		const unsubscribeGroup = fs
-			.collection('DutchPay')
-			.doc(params.groupId)
-			.onSnapshot((doc) => {
-				let data = (window.$data = doc.data())
-				data.members = sortObject(data.members)
-				data.timestamp = data.timestamp.toDate()
+		const unsubscribeGroup = db.subscribeGroup(params.groupId, (group) => {
+			groupDispatch({ type: 'fromFirebase', data: group })
+		})
 
-				groupDispatch({ type: 'fromFirebase', data })
-			})
-		const unsubscribeReceipts = fs
-			.collection('DutchPay')
-			.doc(params.groupId)
-			.collection('Receipts')
-			.onSnapshot((querySnapshot) => {
-				let actions = []
-				querySnapshot.docChanges().forEach((change) => {
-					let id = change.doc.id
-					let data = change.doc.data()
-
-					actions.push({ type: change.type, id, data })
-				})
-				receiptsDispatch(actions)
-			})
+		const unsubscribeReceipts = db.subscribeReceipts(params.groupId, (receipts) => {
+			setReceipts(receipts)
+		})
 
 		return () => {
-			fbLog(`Unsubscribe /DutchPay/{${params.groupId}}`)
-			fbLog(`Unsubscribe /DutchPay/{${params.groupId}}/Receipts`)
 			unsubscribeGroup()
 			unsubscribeReceipts()
 		}
 	}, [params.groupId])
 
 	useEffect(() => {
-		fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
-		fs.collection('DutchPay')
-			.doc(params.groupId)
-			.update({})
-			.then(() => {
-				setHavePermmision(true)
-			})
-			.catch((err) => {
-				setHavePermmision(false)
-			})
+		db.checkPermission(params.groupId).then((havePermmision) => {
+			setHavePermmision(havePermmision)
+		})
 	}, [])
 
 	function deleteFromFB() {
-		fs.collection('DutchPay')
-			.doc(params.groupId)
-			.delete()
+		db.deleteGroup(params.groupId)
 			.then(() => {
 				navigate(-1)
 			})
-			.catch((e) => {
-				setErrMsg('권한이 없습니다.')
-			})
+			.catch((err) => setErrMsg(err))
 	}
 
 	if (!group) return <div className="popup"></div>

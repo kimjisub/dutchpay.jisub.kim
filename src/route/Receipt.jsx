@@ -5,7 +5,7 @@ import './Receipt.scss'
 
 // Backend
 import { firestore } from '../firebase'
-import { sortObject } from '../algorithm'
+import { sortObject } from '../algorithm2'
 import * as db from '../db/firestore'
 
 // Components

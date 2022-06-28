@@ -70,7 +70,7 @@ export default function ReceiptCard(props) {
 				<div className="summary">
 					<div className="left">
 						<p className="title">{props.receipt.name}</p>
-						<p className="date">{format(props.receipt.timestamp.toDate(), 'MM/dd HH:mm')}</p>
+						<p className="date">{format(props.receipt.timestamp, 'MM/dd HH:mm')}</p>
 					</div>
 					<EditableNumberView className={clsx('price', diff !== 0 ? 'red' : '')} value={parseFloat(totalPrice.toFixed(2))} editMode={false} />
 				</div>

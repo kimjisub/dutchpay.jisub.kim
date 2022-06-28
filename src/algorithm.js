@@ -111,16 +111,3 @@ export function bigNumberToCode(num) {
 	if (num !== 0) ret = digit[num] + ret
 	return ret
 }
-
-export function sortObject(o, fn) {
-	fn = fn || ((a, b) => (a > b ? 1 : -1))
-	var sorted = {},
-		key,
-		a = []
-	for (key in o) if (o.hasOwnProperty(key)) a.push(key)
-	a.sort(fn)
-
-	for (key = 0; key < a.length; key++) sorted[a[key]] = o[a[key]]
-
-	return sorted
-}

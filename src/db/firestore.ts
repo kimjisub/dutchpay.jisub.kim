@@ -1,5 +1,6 @@
 // Backend
 import { firestore } from '../firebase'
+import { sortObject } from '../algorithm2'
 const fs = firestore()
 
 function fbLog(msg: string) {
@@ -48,24 +49,26 @@ export const getGroup = (groupId: string) =>
 			.then((doc) => {
 				const data = doc.data()
 				if (doc.exists && data) {
-					resolve({ name: data.name, owner: data.owner, timestamp: data.timestamp.toDate(), members: data.members })
+					resolve({ name: data.name, owner: data.owner, timestamp: data.timestamp?.toDate(), members: data.members })
 				} else reject('Group not found')
 			})
 	})
 
-export const getReceipt = (groupId: string, receiptId: string) =>
-	new Promise<ReceiptType>((resolve, reject) => {
-		fbLog(`Get /DutchPay/{${groupId}}/Receipt/{${receiptId}}`)
+export const createGroup = (ownerUid: string) =>
+	new Promise<string>((resolve, reject) => {
+		fbLog('Add /DutchPay')
 		fs.collection('DutchPay')
-			.doc(groupId)
-			.collection('Receipts')
-			.doc(receiptId)
-			.get()
-			.then((doc) => {
-				const data = doc.data()
-				if (doc.exists && data) {
-					resolve({ name: data.name, items: data.items, payers: data.payers, timestamp: data.timestamp.toDate() })
-				}
+			.add({
+				name: '',
+				members: [],
+				owner: ownerUid,
+				timestamp: new Date(),
+			})
+			.then((docRef) => {
+				resolve(docRef.id)
+			})
+			.catch((err) => {
+				reject('로그인이 필요합니다.')
 			})
 	})
 
@@ -85,3 +88,84 @@ export const subscribeGroups = (uid: string, onChange: (groups: { [key in string
 			onChange(groups)
 		})
 }
+
+export const subscribeGroup = (groupId: string, onChange: (group: GroupType) => void) => {
+	fbLog(`Subscribe /DutchPay/{${groupId}}`)
+	return fs
+		.collection('DutchPay')
+		.doc(groupId)
+		.onSnapshot((doc) => {
+			const data = doc.data()
+			if (doc.exists && data) {
+				onChange({ name: data.name, owner: data.owner, timestamp: data.timestamp.toDate(), members: data.members })
+			}
+		})
+}
+
+export const getReceipt = (groupId: string, receiptId: string) =>
+	new Promise<ReceiptType>((resolve, reject) => {
+		fbLog(`Get /DutchPay/{${groupId}}/Receipt/{${receiptId}}`)
+		fs.collection('DutchPay')
+			.doc(groupId)
+			.collection('Receipts')
+			.doc(receiptId)
+			.get()
+			.then((doc) => {
+				const data = doc.data()
+				if (doc.exists && data) {
+					resolve({ name: data.name, items: data.items, payers: data.payers, timestamp: data.timestamp?.toDate() })
+				}
+			})
+	})
+
+export const subscribeReceipts = (groupId: string, onChange: (receipts: { [key in string]: ReceiptType }) => void) => {
+	fbLog(`Subscribe /DutchPay/{${groupId}}/Receipt`)
+	return fs
+		.collection('DutchPay')
+		.doc(groupId)
+		.collection('Receipts')
+		.onSnapshot((snapshot) => {
+			const receipts: { [key in string]: ReceiptType } = {}
+			snapshot.forEach((doc) => {
+				const data = doc.data()
+				if (data) {
+					receipts[doc.id] = { name: data.name, items: data.items, payers: data.payers, timestamp: data.timestamp?.toDate() }
+				}
+			})
+			onChange(
+				sortObject(receipts, (a, b) => {
+					const Atarget = receipts[a].timestamp
+					const Btarget = receipts[b].timestamp
+					return Atarget < Btarget ? 1 : -1
+				})
+			)
+		})
+}
+
+export const setGroup = (groupId: string, group: GroupType) =>
+	new Promise<void>((resolve, reject) => {
+		fbLog(`Set /DutchPay/{${groupId}}`)
+		fs.collection('DutchPay')
+			.doc(groupId)
+			.set(group)
+			.then(() => {
+				resolve()
+			})
+			.catch((err) => {
+				reject('권한이 없습니다.')
+			})
+	})
+
+export const deleteGroup = (groupId: string) =>
+	new Promise<void>((resolve, reject) => {
+		fbLog(`Delete /DutchPay/{${groupId}}`)
+		fs.collection('DutchPay')
+			.doc(groupId)
+			.delete()
+			.then(() => {
+				resolve()
+			})
+			.catch((err) => {
+				reject('권한이 없습니다.')
+			})
+	})
