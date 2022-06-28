@@ -32,7 +32,7 @@ export default function MainPage(props) {
 			</Snackbar>
 			<Button
 				onClick={() => {
-					db.createGroup(auth?.currentUser?.uid ?? '')
+					db.addGroup(auth?.currentUser?.uid ?? '')
 						.then((docId) => navigate(`/groups/${docId}`))
 						.catch((err) => setErrMsg(err))
 				}}>

@@ -114,7 +114,7 @@ export default function Group(props) {
 	function deleteFromFB() {
 		db.deleteGroup(params.groupId)
 			.then(() => {
-				navigate(-1)
+				navigate('../')
 			})
 			.catch((err) => setErrMsg(err))
 	}

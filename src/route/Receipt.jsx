@@ -59,6 +59,7 @@ export default function Receipt(props) {
 	)
 
 	useEffect(() => {
+		// 멤버 정보 가져오기
 		db.getGroup(params.groupId)
 			.then((group) => {
 				setMembers(group.members)
@@ -67,6 +68,7 @@ export default function Receipt(props) {
 				errMsg(err)
 			})
 
+		// 영수증 정보 가져오기
 		if (params.receiptId !== 'new') {
 			db.getReceipt(params.groupId, params.receiptId)
 				.then((receipt) => {
@@ -76,6 +78,7 @@ export default function Receipt(props) {
 					errMsg(err)
 				})
 		} else {
+			// 새로 만드는 경우 초기값 설정
 			setReceipt(() => {
 				return {
 					name: '',
@@ -85,7 +88,7 @@ export default function Receipt(props) {
 				}
 			})
 		}
-	}, [params.groupId, params.receiptId, errMsg])
+	}, [params.groupId, params.receiptId])
 
 	useEffect(() => {
 		db.checkPermission(params.groupId).then((havePermmision) => {
@@ -93,23 +96,15 @@ export default function Receipt(props) {
 		})
 	}, [params.groupId])
 
-	function updateToFB(receiptRaw) {
-		if (params.receiptId !== 'new')
-			db.setReceipt(params.groupId, params.receiptId, receiptRaw)
-				.then(() => {
-					close()
-				})
-				.catch((e) => {
-					setErrMsg(e)
-				})
-		else
-			db.addReceipt(params.groupId, receiptRaw)
-				.then(() => {
-					close()
-				})
-				.catch((e) => {
-					setErrMsg(e)
-				})
+	function updateToFB(receipt) {
+		const action = params.receiptId !== 'new' ? db.setReceipt(params.groupId, params.receiptId, receipt) : db.addReceipt(params.groupId, receipt)
+		action
+			.then(() => {
+				close()
+			})
+			.catch((e) => {
+				setErrMsg(e)
+			})
 	}
 
 	function deleteFromFB() {

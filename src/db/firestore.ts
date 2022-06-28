@@ -40,21 +40,7 @@ export const checkPermission = (groupId: string) =>
 			})
 	})
 
-export const getGroup = (groupId: string) =>
-	new Promise<GroupType>((resolve, reject) => {
-		fbLog(`Get /DutchPay/{${groupId}}`)
-		fs.collection('DutchPay')
-			.doc(groupId)
-			.get()
-			.then((doc) => {
-				const data = doc.data()
-				if (doc.exists && data) {
-					resolve({ name: data.name, owner: data.owner, timestamp: data.timestamp?.toDate(), members: data.members })
-				} else reject('Group not found')
-			})
-	})
-
-export const createGroup = (ownerUid: string) =>
+export const addGroup = (ownerUid: string) =>
 	new Promise<string>((resolve, reject) => {
 		fbLog('Add /DutchPay')
 		fs.collection('DutchPay')
@@ -69,6 +55,48 @@ export const createGroup = (ownerUid: string) =>
 			})
 			.catch((err) => {
 				reject('로그인이 필요합니다.')
+			})
+	})
+
+export const getGroup = (groupId: string) =>
+	new Promise<GroupType>((resolve, reject) => {
+		fbLog(`Get /DutchPay/{${groupId}}`)
+		fs.collection('DutchPay')
+			.doc(groupId)
+			.get()
+			.then((doc) => {
+				const data = doc.data()
+				if (doc.exists && data) {
+					resolve({ name: data.name, owner: data.owner, timestamp: data.timestamp?.toDate(), members: data.members })
+				} else reject('Group not found')
+			})
+	})
+
+export const setGroup = (groupId: string, group: GroupType) =>
+	new Promise<void>((resolve, reject) => {
+		fbLog(`Set /DutchPay/{${groupId}}`)
+		fs.collection('DutchPay')
+			.doc(groupId)
+			.set(group)
+			.then(() => {
+				resolve()
+			})
+			.catch((err) => {
+				reject('권한이 없습니다.')
+			})
+	})
+
+export const deleteGroup = (groupId: string) =>
+	new Promise<void>((resolve, reject) => {
+		fbLog(`Delete /DutchPay/{${groupId}}`)
+		fs.collection('DutchPay')
+			.doc(groupId)
+			.delete()
+			.then(() => {
+				resolve()
+			})
+			.catch((err) => {
+				reject('권한이 없습니다.')
 			})
 	})
 
@@ -111,6 +139,20 @@ export const subscribeGroup = (groupId: string, onChange: (group: GroupType) => 
 	}
 }
 
+export const addReceipt = (groupId: string, receipt: ReceiptType) =>
+	new Promise<string>((resolve, reject) => {
+		fs.collection('DutchPay')
+			.doc(groupId)
+			.collection('Receipts')
+			.add(receipt)
+			.then((docRef) => {
+				resolve(docRef.id)
+			})
+			.catch((e) => {
+				reject('권한이 없습니다.')
+			})
+	})
+
 export const getReceipt = (groupId: string, receiptId: string) =>
 	new Promise<ReceiptType>((resolve, reject) => {
 		fbLog(`Get /DutchPay/{${groupId}}/Receipt/{${receiptId}}`)
@@ -127,19 +169,6 @@ export const getReceipt = (groupId: string, receiptId: string) =>
 			})
 	})
 
-export const addReceipt = (groupId: string, receipt: ReceiptType) =>
-	new Promise<string>((resolve, reject) => {
-		fs.collection('DutchPay')
-			.doc(groupId)
-			.collection('Receipts')
-			.add(receipt)
-			.then((docRef) => {
-				resolve(docRef.id)
-			})
-			.catch((e) => {
-				reject('권한이 없습니다.')
-			})
-	})
 export const setReceipt = (groupId: string, receiptId: string, receipt: ReceiptType) =>
 	new Promise<void>((resolve, reject) => {
 		fbLog(`Set /DutchPay/{${groupId}}/Receipt/{${receiptId}}`)
@@ -155,6 +184,7 @@ export const setReceipt = (groupId: string, receiptId: string, receipt: ReceiptT
 				reject('권한이 없습니다.')
 			})
 	})
+
 export const deleteReceipt = (groupId: string, receiptId: string) =>
 	new Promise<void>((resolve, reject) => {
 		fbLog(`Delete /DutchPay/{${groupId}}/Receipt/{${receiptId}}`)
@@ -198,31 +228,3 @@ export const subscribeReceipts = (groupId: string, onChange: (receipts: { [key i
 		unsubscribe()
 	}
 }
-
-export const setGroup = (groupId: string, group: GroupType) =>
-	new Promise<void>((resolve, reject) => {
-		fbLog(`Set /DutchPay/{${groupId}}`)
-		fs.collection('DutchPay')
-			.doc(groupId)
-			.set(group)
-			.then(() => {
-				resolve()
-			})
-			.catch((err) => {
-				reject('권한이 없습니다.')
-			})
-	})
-
-export const deleteGroup = (groupId: string) =>
-	new Promise<void>((resolve, reject) => {
-		fbLog(`Delete /DutchPay/{${groupId}}`)
-		fs.collection('DutchPay')
-			.doc(groupId)
-			.delete()
-			.then(() => {
-				resolve()
-			})
-			.catch((err) => {
-				reject('권한이 없습니다.')
-			})
-	})
