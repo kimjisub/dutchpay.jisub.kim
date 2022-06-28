@@ -14,6 +14,7 @@ import { fbLog } from '../logger'
 import { Person, Delete, Add } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import { Badge, Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, ListItem, Menu, MenuItem, Button, IconButton } from '@material-ui/core'
+import EditableDateView from '../elements/EditableDateView'
 
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
@@ -277,14 +278,14 @@ export default function Receipt(props) {
 							text={receipt.name}
 						/>
 					</p>
-					<input
+					<EditableDateView
 						className="date"
-						type="datetime-local"
-						value={format(receipt.timestamp, "yyyy-MM-dd'T'HH:mm")}
-						disabled={!editMode}
-						onChange={(e) => {
+						date={receipt.timestamp}
+						editMode={editMode}
+						format="yyyy-MM-dd HH:mm"
+						onValueChange={(date) => {
 							setReceipt((receipt) => {
-								return { ...receipt, timestamp: new Date(e.target.value) }
+								return { ...receipt, timestamp: date }
 							})
 						}}
 					/>

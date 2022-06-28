@@ -1,5 +1,6 @@
 .EditableView {
 	margin: 0px;
+	padding: 0px;
 
 	input {
 		font-size: inherit;
@@ -11,7 +12,7 @@
 		border: none;
 		background: rgb(215, 215, 215);
 		border-radius: 10px;
-		padding: 10px;
+		padding: 3px 3px 3px 10px;
 		transition: 0.3s;
 		width: 100%;
 		box-sizing: border-box;

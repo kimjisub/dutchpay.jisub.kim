@@ -16,7 +16,7 @@ export default function EditableDateView(props) {
 					}}
 				/>
 			) : (
-				format(props.date, 'yyyy-MM-dd')
+				format(props.date, props.format || "yyyy-MM-dd'T'HH:mm")
 			)}
 		</span>
 	)
