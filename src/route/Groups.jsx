@@ -5,6 +5,7 @@ import './Groups.scss'
 
 // Backend
 import { firestore, firebaseAuth } from '../firebase'
+import * as db from '../db/firestore'
 import { sortObject } from '../algorithm'
 import { fbLog } from '../logger'
 
@@ -20,53 +21,61 @@ export default function Groups(props) {
 	const [user, setUser] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)
 
+	const [groups, setGroups] = useState({})
+
 	useEffect(() => {
 		auth.onAuthStateChanged((user) => {
 			setUser(user)
 		})
 	}, [])
 
-	const [groups, groupsDispatch] = useReducer((state, actions) => {
-		let _state = { ...state }
-		actions.forEach((action) => {
-			const { type, id, data } = action
-			switch (type) {
-				case 'added':
-					_state[id] = data
-					break
-				case 'modified':
-					_state[id] = data
-					break
-				case 'removed':
-					delete _state[id]
-					break
-				default:
-			}
-		})
-		return sortObject(_state, (a, b) => {
-			const Atarget = _state[a].timestamp
-			const Btarget = _state[b].timestamp
-			return Atarget < Btarget ? 1 : -1
-		})
-	}, {})
+	// const [groups, groupsDispatch] = useReducer((state, actions) => {
+	// 	let _state = { ...state }
+	// 	actions.forEach((action) => {
+	// 		const { type, id, data } = action
+	// 		switch (type) {
+	// 			case 'set':
+	// 				_state = data
+	// 				break
+	// 			case 'added':
+	// 				_state[id] = data
+	// 				break
+	// 			case 'modified':
+	// 				_state[id] = data
+	// 				break
+	// 			case 'removed':
+	// 				delete _state[id]
+	// 				break
+	// 			default:
+	// 		}
+	// 	})
+	// 	return sortObject(_state, (a, b) => {
+	// 		const Atarget = _state[a].timestamp
+	// 		const Btarget = _state[b].timestamp
+	// 		return Atarget < Btarget ? 1 : -1
+	// 	})
+	// }, {})
 
 	useEffect(() => {
-		fbLog(`Subscribe /DutchPay/`)
 		if (!user) return () => {}
 
-		const unsubscribeGroups = fs
-			.collection('DutchPay')
-			.where('owner', '==', user.uid)
-			.onSnapshot((querySnapshot) => {
-				const actions = []
-				querySnapshot.docChanges().forEach((change) => {
-					const id = change.doc.id
-					const data = change.doc.data()
+		const unsubscribeGroups = db.subscribeGroups(user.uid, (groups) => {
+			setGroups(groups)
+		})
 
-					actions.push({ type: change.type, id, data })
-				})
-				groupsDispatch(actions)
-			})
+		// const unsubscribeGroups = fs
+		// 	.collection('DutchPay')
+		// 	.where('owner', '==', user.uid)
+		// 	.onSnapshot((querySnapshot) => {
+		// 		const actions = []
+		// 		querySnapshot.docChanges().forEach((change) => {
+		// 			const id = change.doc.id
+		// 			const data = change.doc.data()
+
+		// 			actions.push({ type: change.type, id, data })
+		// 		})
+		// 		groupsDispatch(actions)
+		// 	})
 
 		return () => {
 			fbLog(`Unsubscribe /DutchPay`)
@@ -129,7 +138,7 @@ export default function Groups(props) {
 										navigate(`/groups/${key}`)
 									}}>
 									<td>{group.name}</td>
-									<td>{format(group.timestamp.toDate(), 'yyyy/MM/dd')}</td>
+									<td>{format(group.timestamp, 'yyyy/MM/dd')}</td>
 									<td>{Object.values(group.members).join(', ')}</td>
 								</tr>
 							)

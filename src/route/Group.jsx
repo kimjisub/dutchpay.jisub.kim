@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer } from 'react'
-import { Link, useParams, Outlet, useNavigate } from 'react-router-dom'
+import { useParams, Outlet, useNavigate } from 'react-router-dom'
 import './Group.scss'
 
 // Backend

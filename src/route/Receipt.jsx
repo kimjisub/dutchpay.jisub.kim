@@ -6,26 +6,35 @@ import './Receipt.scss'
 // Backend
 import { firestore } from '../firebase'
 import { sortObject } from '../algorithm'
-import { fbLog } from '../logger'
+import * as db from '../db/firestore'
 
 // Components
 import { Person, Delete, Add, Edit, Close, Check, Save } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
-import { Badge, Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, ListItem, Menu, MenuItem, Button, IconButton } from '@material-ui/core'
-import EditableDateView from '../elements/EditableDateView'
+import { Badge, Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, ListItem, Menu, MenuItem, IconButton } from '@material-ui/core'
 
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
 import EditableNumberView from '../elements/EditableNumberView'
+import EditableDateView from '../elements/EditableDateView'
 
 const fs = firestore()
 
 export default function Receipt(props) {
 	const params = useParams()
 	const navigate = useNavigate()
+
+	// Status
 	const [editMode, setEditMode] = useState(params.receiptId === 'new')
 	const [havePermmision, setHavePermmision] = useState(false)
 
+	// UI
+	const [errMsg, setErrMsg] = useState(null)
+	const [memberPopoverAction, setMemberPopoverAction] = useState(null)
+	const [payerPopoverAction, setPayerPopoverAction] = useState(null)
+	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
+
+	// Data
 	const [members, setMembers] = useState(null)
 	const [receiptRaw, receipt, setReceipt] = useGetSetterState(
 		null,
@@ -51,35 +60,23 @@ export default function Receipt(props) {
 			return receipt
 		}
 	)
-	const [errMsg, setErrMsg] = useState(null)
-
-	const [memberPopoverAction, setMemberPopoverAction] = useState(null)
-	const [payerPopoverAction, setPayerPopoverAction] = useState(null)
-	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
 
 	useEffect(() => {
-		fbLog(`Get /DutchPay/{${params.groupId}}`)
-		fs.collection('DutchPay')
-			.doc(params.groupId)
-			.get()
-			.then((doc) => {
-				if (doc.exists) setMembers(doc.data().members)
+		db.getGroup(params.groupId)
+			.then((group) => {
+				setMembers(group.members)
+			})
+			.catch((err) => {
+				errMsg(err)
 			})
 
 		if (params.receiptId !== 'new') {
-			fbLog(`Get /DutchPay/{${params.groupId}}/Receipt/{${params.receiptId}}`)
-			fs.collection('DutchPay')
-				.doc(params.groupId)
-				.collection('Receipts')
-				.doc(params.receiptId)
-				.get()
-				.then((doc) => {
-					if (doc.exists) {
-						const data = doc.data()
-						setReceipt(() => {
-							return { ...data, timestamp: data.timestamp.toDate() }
-						})
-					}
+			db.getReceipt(params.groupId, params.receiptId)
+				.then((receipt) => {
+					setReceipt(() => receipt)
+				})
+				.catch((err) => {
+					errMsg(err)
 				})
 		} else {
 			setReceipt(() => {
@@ -91,20 +88,13 @@ export default function Receipt(props) {
 				}
 			})
 		}
-	}, [params.groupId, params.receiptId])
+	}, [params.groupId, params.receiptId, errMsg])
 
 	useEffect(() => {
-		fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
-		fs.collection('DutchPay')
-			.doc(params.groupId)
-			.update({})
-			.then(() => {
-				setHavePermmision(true)
-			})
-			.catch((err) => {
-				setHavePermmision(false)
-			})
-	}, [])
+		db.checkPermission(params.groupId).then((havePermmision) => {
+			setHavePermmision(havePermmision)
+		})
+	}, [params.groupId])
 
 	function updateToFB(receiptRaw) {
 		if (params.receiptId !== 'new')
