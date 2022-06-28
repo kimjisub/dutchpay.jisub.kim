@@ -8,7 +8,7 @@ import { calcExpenditure, calcSettlement, sortObject } from '../algorithm'
 import { fbLog } from '../logger'
 
 // Components
-import { Add, Check, Edit, Delete } from '@material-ui/icons'
+import { Add, Edit, Delete, Save } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import { Snackbar, IconButton, Menu, MenuItem } from '@material-ui/core'
 
@@ -282,7 +282,7 @@ export default function Group(props) {
 										if (editMode) editModeDispatch({ type: 'doneEditMode' })
 										else editModeDispatch({ type: 'requestEditMode' })
 									}}>
-									{editMode ? <Check /> : <Edit />}
+									{editMode ? <Save /> : <Edit />}
 								</IconButton>
 							) : null}
 						</div>

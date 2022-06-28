@@ -69,7 +69,7 @@ export default function ExpenditureCard(props) {
 													},
 												})
 											}}>
-											<Delete />
+											<Delete fontSize="inherit" />
 										</IconButton>
 									</td>
 								) : null}
@@ -97,7 +97,7 @@ export default function ExpenditureCard(props) {
 										props.onMembersChange(members)
 										setAddName('')
 									}}>
-									<Add />
+									<Add fontSize="inherit" />
 								</IconButton>
 							</td>
 						</tr>
