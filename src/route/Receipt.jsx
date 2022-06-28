@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
-import { useNavigateSearch } from '../hooks/useNavigationSearch'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useGetSetterState } from '../hooks/useGetSetterState'
-import { format } from 'date-fns'
 import './Receipt.scss'
 
 // Backend
@@ -11,7 +9,7 @@ import { sortObject } from '../algorithm'
 import { fbLog } from '../logger'
 
 // Components
-import { Person, Delete, Add } from '@material-ui/icons'
+import { Person, Delete, Add, Edit } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import { Badge, Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, ListItem, Menu, MenuItem, Button, IconButton } from '@material-ui/core'
 import EditableDateView from '../elements/EditableDateView'
@@ -24,9 +22,9 @@ const fs = firestore()
 
 export default function Receipt(props) {
 	const params = useParams()
-	const navigateSearch = useNavigateSearch()
-	const [searchParams, setSearchParams] = useSearchParams()
-	const editMode = searchParams.get('edit') === 'true'
+	const navigate = useNavigate()
+	const [editMode, setEditMode] = useState(params.receiptId === 'new')
+	const [havePermmision, setHavePermmision] = useState(false)
 
 	const [members, setMembers] = useState(null)
 	const [receiptRaw, receipt, setReceipt] = useGetSetterState(
@@ -95,6 +93,19 @@ export default function Receipt(props) {
 		}
 	}, [params.groupId, params.receiptId])
 
+	useEffect(() => {
+		fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
+		fs.collection('DutchPay')
+			.doc(params.groupId)
+			.update({})
+			.then(() => {
+				setHavePermmision(true)
+			})
+			.catch((err) => {
+				setHavePermmision(false)
+			})
+	}, [])
+
 	function updateToFB(receiptRaw) {
 		if (params.receiptId !== 'new')
 			fs.collection('DutchPay')
@@ -107,8 +118,6 @@ export default function Receipt(props) {
 				})
 				.catch((e) => {
 					setErrMsg('권한이 없습니다.')
-					setSearchParams({ edit: false })
-					// history.push({ pathname: history.location.pathname })
 				})
 		else
 			fs.collection('DutchPay')
@@ -120,8 +129,6 @@ export default function Receipt(props) {
 				})
 				.catch((e) => {
 					setErrMsg('권한이 없습니다.')
-					setSearchParams({ edit: false })
-					// history.push({ pathname: history.location.pathname })
 				})
 	}
 
@@ -137,13 +144,11 @@ export default function Receipt(props) {
 				})
 				.catch((e) => {
 					setErrMsg('권한이 없습니다.')
-					setSearchParams({ edit: false })
-					// history.push({ pathname: history.location.pathname })
 				})
 	}
 
 	function close() {
-		navigateSearch('../', { edit: editMode ? true : undefined }) // history.push({ pathname: `/groups/${params.groupId}`, search: editMode ? '?edit=true' : '' })
+		navigate(-1)
 	}
 
 	if (!receipt || !members) return <div className="popup"></div>
@@ -482,6 +487,17 @@ export default function Receipt(props) {
 								})
 							}}>
 							<Delete />
+						</IconButton>
+					) : null}
+
+					{havePermmision && !editMode ? (
+						<IconButton
+							className="addButton"
+							onClick={() => {
+								if (havePermmision) setEditMode(true)
+								else setErrMsg('수정 권한이 없습니다.')
+							}}>
+							<Edit />
 						</IconButton>
 					) : null}
 					<div className="space"></div>

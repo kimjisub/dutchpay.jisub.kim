@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigateSearch } from '../hooks/useNavigationSearch'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import './App.scss'
 
 // Backend
@@ -19,7 +18,7 @@ const auth = firebaseAuth()
 const fbAuthProvider = new firebase.auth.GoogleAuthProvider()
 
 export default function App(props) {
-	const navigateSearch = useNavigateSearch()
+	const navigate = useNavigate()
 	const [user, setUser] = useState(null)
 	const [openProfile, setOpenProfile] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)
@@ -68,7 +67,7 @@ export default function App(props) {
 								<Button
 									onClick={() => {
 										if (auth?.currentUser) {
-											navigateSearch(`/groups`)
+											navigate('/groups')
 											setOpenProfile(null)
 										} else {
 											setErrMsg('로그인이 필요합니다.')
@@ -108,7 +107,7 @@ export default function App(props) {
 				<p
 					className="brand"
 					onClick={() => {
-						navigateSearch(`/`)
+						navigate('/')
 					}}>
 					dutchpay
 				</p>

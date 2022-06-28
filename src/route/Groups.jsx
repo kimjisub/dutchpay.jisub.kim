@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useReducer } from 'react'
-import { useNavigateSearch } from '../hooks/useNavigationSearch'
+import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import './Groups.scss'
 
 // Backend
 import { firestore, firebaseAuth } from '../firebase'
-import { calcExpenditure, calcSettlement, sortObject } from '../algorithm'
+import { sortObject } from '../algorithm'
 import { fbLog } from '../logger'
 
 // Components
@@ -16,7 +16,7 @@ const auth = firebaseAuth()
 const fs = firestore()
 
 export default function Groups(props) {
-	const navigateSearch = useNavigateSearch()
+	const navigate = useNavigate()
 	const [user, setUser] = useState(null)
 	const [errMsg, setErrMsg] = useState(null)
 
@@ -102,7 +102,7 @@ export default function Groups(props) {
 							timestamp: new Date(),
 						})
 						.then((docRef) => {
-							navigateSearch(`/groups/${docRef.id}`, { edit: true }) // history.push({ pathname: `/groups/${docRef.id}`, search: '?edit=true' })
+							navigate(`/groups/${docRef.id}`)
 						})
 						.catch((err) => {
 							setErrMsg('로그인이 필요합니다')
@@ -126,7 +126,7 @@ export default function Groups(props) {
 								<tr
 									key={key}
 									onClick={() => {
-										navigateSearch(`/groups/${key}`)
+										navigate(`/groups/${key}`)
 									}}>
 									<td>{group.name}</td>
 									<td>{format(group.timestamp.toDate(), 'yyyy/MM/dd')}</td>

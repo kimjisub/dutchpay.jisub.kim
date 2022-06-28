@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigateSearch } from '../hooks/useNavigationSearch'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './MainPage.scss'
 
 // Backend
@@ -15,8 +15,7 @@ const auth = firebaseAuth()
 const fs = firestore()
 
 export default function MainPage(props) {
-	const navigateSearch = useNavigateSearch()
-	const [user, setUser] = useState(null)
+	const navigate = useNavigate()
 	const [errMsg, setErrMsg] = useState(null)
 
 	return (
@@ -43,7 +42,7 @@ export default function MainPage(props) {
 							timestamp: new Date(),
 						})
 						.then((docRef) => {
-							navigateSearch(`/groups/${docRef.id}`, { edit: true }) // history.push({ pathname: `/groups/${docRef.id}`, search: '?edit=true' })
+							navigate(`/groups/${docRef.id}`)
 						})
 						.catch((err) => {
 							setErrMsg('로그인이 필요합니다')
@@ -54,7 +53,7 @@ export default function MainPage(props) {
 			<Button
 				onClick={() => {
 					if (auth?.currentUser) {
-						navigateSearch(`/groups`)
+						navigate(`/groups`)
 					}
 				}}>
 				목록 보기

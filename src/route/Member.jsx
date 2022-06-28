@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useReducer } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
-import { useNavigateSearch } from '../hooks/useNavigationSearch'
+import { useParams, useNavigate } from 'react-router-dom'
 import './Member.scss'
 
 // Backend
@@ -13,9 +12,7 @@ const fs = firestore()
 
 export default function Member(props) {
 	const params = useParams()
-	const [searchParams] = useSearchParams()
-	const navigateSearch = useNavigateSearch()
-	const editMode = searchParams.get('edit') === 'true'
+	const navigate = useNavigate()
 
 	const [group, setGroup] = useState(null)
 
@@ -78,7 +75,7 @@ export default function Member(props) {
 	}, [params.groupId])
 
 	function close() {
-		navigateSearch('../', { edit: editMode ? true : undefined }) // history.push({ pathname: `/groups/${params.groupId}`, search: editMode ? '?edit=true' : '' })
+		navigate(-1)
 	}
 
 	if (!group) return <div className="Member popup"></div>

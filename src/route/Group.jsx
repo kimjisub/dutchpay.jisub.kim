@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useReducer } from 'react'
-import { Link, useParams, Outlet, useSearchParams } from 'react-router-dom'
-import { useNavigateSearch } from '../hooks/useNavigationSearch'
+import { Link, useParams, Outlet, useNavigate } from 'react-router-dom'
 import './Group.scss'
 
 // Backend
@@ -11,7 +10,7 @@ import { fbLog } from '../logger'
 // Components
 import { Add, Check, Edit, Delete } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
-import { Snackbar, IconButton, Button, Menu, MenuItem } from '@material-ui/core'
+import { Snackbar, IconButton, Menu, MenuItem } from '@material-ui/core'
 
 // Custom Components
 import ExpenditureCard from '../components/ExpenditureCard'
@@ -24,14 +23,14 @@ const fs = firestore()
 
 export default function Group(props) {
 	const params = useParams()
-	const navigateSearch = useNavigateSearch()
-	const [searchParams] = useSearchParams()
+	const navigate = useNavigate()
 
 	const [groupName, setGroupName] = useState('')
 	const [errMsg, setErrMsg] = useState(null)
 	const [expanded, setExpanded] = useState(null)
 
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
+	const [havePermmision, setHavePermmision] = useState(false)
 
 	const [group, groupDispatch] = useReducer((state, action) => {
 		const { type, data } = action
@@ -98,22 +97,6 @@ export default function Group(props) {
 		let { type } = action
 		let editMode = state
 		switch (type) {
-			case 'init':
-				const isEditMode = searchParams.get('edit') === 'true'
-				if (isEditMode) {
-					fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
-					fs.collection('DutchPay')
-						.doc(params.groupId)
-						.update({})
-						.then(() => {
-							editModeDispatch({ type: 'editModeApproved' })
-						})
-						.catch((err) => {
-							editModeDispatch({ type: 'editModeDenied' })
-						})
-				} else editMode = false
-
-				break
 			// 수정모드로 진입하려고 함.
 			case 'requestEditMode':
 				fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
@@ -141,13 +124,8 @@ export default function Group(props) {
 				break
 			default:
 		}
-		navigateSearch('.', { edit: editMode ? true : undefined })
 		return editMode
 	}, false)
-
-	useEffect(() => {
-		editModeDispatch({ type: 'init' })
-	}, [])
 
 	// Subscribe Firestore
 	useEffect(() => {
@@ -186,17 +164,28 @@ export default function Group(props) {
 		}
 	}, [params.groupId])
 
+	useEffect(() => {
+		fbLog(`Permission Test /DutchPay/{${params.groupId}}`)
+		fs.collection('DutchPay')
+			.doc(params.groupId)
+			.update({})
+			.then(() => {
+				setHavePermmision(true)
+			})
+			.catch((err) => {
+				setHavePermmision(false)
+			})
+	}, [])
+
 	function deleteFromFB() {
 		fs.collection('DutchPay')
 			.doc(params.groupId)
 			.delete()
 			.then(() => {
-				navigateSearch('../')
+				navigate(-1)
 			})
 			.catch((e) => {
 				setErrMsg('권한이 없습니다.')
-				navigateSearch('.', { edit: false })
-				// history.push({ pathname: history.location.pathname })
 			})
 	}
 
@@ -216,7 +205,7 @@ export default function Group(props) {
 					setExpanded(expanded !== key ? key : null)
 				}}
 				onClick={() => {
-					navigateSearch(`./receipts/${key}`, { edit: editMode ? true : undefined }) // history.push({ pathname: '/groups/' + params.groupId + '/receipts/' + key, search: editMode ? '?edit=true' : '' })
+					navigate(`./receipts/${key}`)
 				}}
 				editMode={editMode}
 			/>
@@ -287,13 +276,15 @@ export default function Group(props) {
 									<Delete />
 								</IconButton>
 							) : null}
-							<IconButton
-								onClick={() => {
-									if (editMode) editModeDispatch({ type: 'doneEditMode' })
-									else editModeDispatch({ type: 'requestEditMode' })
-								}}>
-								{editMode ? <Check /> : <Edit />}
-							</IconButton>
+							{havePermmision ? (
+								<IconButton
+									onClick={() => {
+										if (editMode) editModeDispatch({ type: 'doneEditMode' })
+										else editModeDispatch({ type: 'requestEditMode' })
+									}}>
+									{editMode ? <Check /> : <Edit />}
+								</IconButton>
+							) : null}
 						</div>
 
 						<EditableDateView
@@ -318,7 +309,7 @@ export default function Group(props) {
 										groupDispatch({ type: 'saveFirebase', data: _group })
 									}}
 									onMemberClick={(id) => {
-										navigateSearch(`./members/${id}`, { edit: editMode ? true : undefined }) // history.push({ pathname: '/groups/' + params.groupId + '/members/' + id, search: editMode ? '?edit=true' : '' })
+										navigate(`./members/${id}`)
 									}}
 									editMode={editMode}
 								/>
@@ -326,14 +317,14 @@ export default function Group(props) {
 							</div>
 						</div>
 						<div id="receipts">
-							{editMode ? (
-								<Link to={`/groups/${params.groupId}/receipts/new?edit=true`}>
-									<div>
-										<Button className="addButton">
-											<Add />
-										</Button>
-									</div>
-								</Link>
+							{havePermmision ? (
+								<IconButton
+									className="addButton"
+									onClick={() => {
+										navigate('./receipts/new')
+									}}>
+									<Add />
+								</IconButton>
 							) : null}
 							<div>{receiptCards}</div>
 						</div>
