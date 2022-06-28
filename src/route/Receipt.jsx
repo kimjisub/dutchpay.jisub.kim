@@ -9,7 +9,7 @@ import { sortObject } from '../algorithm'
 import { fbLog } from '../logger'
 
 // Components
-import { Person, Delete, Add, Edit } from '@material-ui/icons'
+import { Person, Delete, Add, Edit, Close, Check, Save } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import { Badge, Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, ListItem, Menu, MenuItem, Button, IconButton } from '@material-ui/core'
 import EditableDateView from '../elements/EditableDateView'
@@ -336,9 +336,8 @@ export default function Receipt(props) {
 													})
 												}}>
 												<Badge color="primary" badgeContent={receipt.items[i].buyers.length}>
-													<Person />
+													<Person fontSize="inherit" />
 												</Badge>
-												{/* <span className="count">{receipt.items[i].buyers.length}</span> */}
 											</IconButton>
 										</td>
 										<td>
@@ -362,6 +361,7 @@ export default function Receipt(props) {
 												{!isLast ? (
 													<IconButton
 														id={'item-delete-' + i}
+														size="small"
 														onClick={(event) => {
 															setDeleteConfirmAction({
 																anchorEl: event.currentTarget,
@@ -374,7 +374,7 @@ export default function Receipt(props) {
 																},
 															})
 														}}>
-														<Delete fontSize="small" />
+														<Delete fontSize="inherit" />
 													</IconButton>
 												) : null}
 											</td>
@@ -410,6 +410,7 @@ export default function Receipt(props) {
 											<td>
 												<IconButton
 													id={'delete-' + i}
+													size="small"
 													onClick={(event) => {
 														setDeleteConfirmAction({
 															anchorEl: event.currentTarget,
@@ -422,7 +423,7 @@ export default function Receipt(props) {
 															},
 														})
 													}}>
-													<Delete fontSize="small" />
+													<Delete fontSize="inherit" />
 												</IconButton>
 											</td>
 										) : null}
@@ -439,12 +440,13 @@ export default function Receipt(props) {
 									{editMode ? (
 										<td>
 											<IconButton
+												size="small"
 												onClick={(event) => {
 													setPayerPopoverAction({
 														anchorEl: event.currentTarget,
 													})
 												}}>
-												<Add fontSize="small" />
+												<Add fontSize="inherit" />
 											</IconButton>
 										</td>
 									) : null}
@@ -476,7 +478,6 @@ export default function Receipt(props) {
 				<div className="actions">
 					{editMode && params.receiptId !== 'new' ? (
 						<IconButton
-							key="button"
 							name="delete"
 							onClick={(event) => {
 								setDeleteConfirmAction({
@@ -486,7 +487,7 @@ export default function Receipt(props) {
 									},
 								})
 							}}>
-							<Delete />
+							<Delete fontSize="inherit" />
 						</IconButton>
 					) : null}
 
@@ -497,24 +498,24 @@ export default function Receipt(props) {
 								if (havePermmision) setEditMode(true)
 								else setErrMsg('수정 권한이 없습니다.')
 							}}>
-							<Edit />
+							<Edit fontSize="inherit" />
 						</IconButton>
 					) : null}
 					<div className="space"></div>
-					<Button
+					<IconButton
 						onClick={() => {
 							close()
 						}}>
-						{editMode ? '취소' : '확인'}
-					</Button>
+						{editMode ? <Close /> : <Check />}
+					</IconButton>
 
 					{editMode ? (
-						<Button
+						<IconButton
 							onClick={() => {
 								updateToFB(receiptRaw)
 							}}>
-							저장
-						</Button>
+							<Save />
+						</IconButton>
 					) : null}
 				</div>
 			</div>
