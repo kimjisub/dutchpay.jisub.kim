@@ -74,7 +74,7 @@ export const createGroup = (ownerUid: string) =>
 
 export const subscribeGroups = (uid: string, onChange: (groups: { [key in string]: GroupType }) => void) => {
 	fbLog(`Subscribe /DutchPay by uid: ${uid}`)
-	return fs
+	const unsubscribe = fs
 		.collection('DutchPay')
 		.where('owner', '==', uid)
 		.onSnapshot((snapshot) => {
@@ -87,11 +87,16 @@ export const subscribeGroups = (uid: string, onChange: (groups: { [key in string
 			})
 			onChange(groups)
 		})
+
+	return () => {
+		fbLog(`Unsubscribe /DutchPay by uid: ${uid}`)
+		unsubscribe()
+	}
 }
 
 export const subscribeGroup = (groupId: string, onChange: (group: GroupType) => void) => {
 	fbLog(`Subscribe /DutchPay/{${groupId}}`)
-	return fs
+	const unsubscribe = fs
 		.collection('DutchPay')
 		.doc(groupId)
 		.onSnapshot((doc) => {
@@ -100,6 +105,10 @@ export const subscribeGroup = (groupId: string, onChange: (group: GroupType) => 
 				onChange({ name: data.name, owner: data.owner, timestamp: data.timestamp.toDate(), members: data.members })
 			}
 		})
+	return () => {
+		fbLog(`Unsubscribe /DutchPay/{${groupId}}`)
+		unsubscribe()
+	}
 }
 
 export const getReceipt = (groupId: string, receiptId: string) =>
@@ -120,7 +129,7 @@ export const getReceipt = (groupId: string, receiptId: string) =>
 
 export const subscribeReceipts = (groupId: string, onChange: (receipts: { [key in string]: ReceiptType }) => void) => {
 	fbLog(`Subscribe /DutchPay/{${groupId}}/Receipt`)
-	return fs
+	const unsubscribe = fs
 		.collection('DutchPay')
 		.doc(groupId)
 		.collection('Receipts')
@@ -140,6 +149,10 @@ export const subscribeReceipts = (groupId: string, onChange: (receipts: { [key i
 				})
 			)
 		})
+	return () => {
+		fbLog(`Unsubscribe /DutchPay/{${groupId}}/Receipt`)
+		unsubscribe()
+	}
 }
 
 export const setGroup = (groupId: string, group: GroupType) =>
