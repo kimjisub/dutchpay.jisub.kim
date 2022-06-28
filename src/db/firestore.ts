@@ -127,6 +127,50 @@ export const getReceipt = (groupId: string, receiptId: string) =>
 			})
 	})
 
+export const addReceipt = (groupId: string, receipt: ReceiptType) =>
+	new Promise<string>((resolve, reject) => {
+		fs.collection('DutchPay')
+			.doc(groupId)
+			.collection('Receipts')
+			.add(receipt)
+			.then((docRef) => {
+				resolve(docRef.id)
+			})
+			.catch((e) => {
+				reject('권한이 없습니다.')
+			})
+	})
+export const setReceipt = (groupId: string, receiptId: string, receipt: ReceiptType) =>
+	new Promise<void>((resolve, reject) => {
+		fbLog(`Set /DutchPay/{${groupId}}/Receipt/{${receiptId}}`)
+		fs.collection('DutchPay')
+			.doc(groupId)
+			.collection('Receipts')
+			.doc(receiptId)
+			.set(receipt)
+			.then(() => {
+				resolve()
+			})
+			.catch((e) => {
+				reject('권한이 없습니다.')
+			})
+	})
+export const deleteReceipt = (groupId: string, receiptId: string) =>
+	new Promise<void>((resolve, reject) => {
+		fbLog(`Delete /DutchPay/{${groupId}}/Receipt/{${receiptId}}`)
+		fs.collection('DutchPay')
+			.doc(groupId)
+			.collection('Receipts')
+			.doc(receiptId)
+			.delete()
+			.then(() => {
+				resolve()
+			})
+			.catch((e) => {
+				reject('권한이 없습니다.')
+			})
+	})
+
 export const subscribeReceipts = (groupId: string, onChange: (receipts: { [key in string]: ReceiptType }) => void) => {
 	fbLog(`Subscribe /DutchPay/{${groupId}}/Receipt`)
 	const unsubscribe = fs

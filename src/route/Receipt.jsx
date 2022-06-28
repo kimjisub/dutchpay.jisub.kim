@@ -4,7 +4,6 @@ import { useGetSetterState } from '../hooks/useGetSetterState'
 import './Receipt.scss'
 
 // Backend
-import { firestore } from '../firebase'
 import { sortObject } from '../algorithm2'
 import * as db from '../db/firestore'
 
@@ -17,8 +16,6 @@ import { Badge, Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, L
 import EditableTextView from '../elements/EditableTextView'
 import EditableNumberView from '../elements/EditableNumberView'
 import EditableDateView from '../elements/EditableDateView'
-
-const fs = firestore()
 
 export default function Receipt(props) {
 	const params = useParams()
@@ -98,42 +95,31 @@ export default function Receipt(props) {
 
 	function updateToFB(receiptRaw) {
 		if (params.receiptId !== 'new')
-			fs.collection('DutchPay')
-				.doc(params.groupId)
-				.collection('Receipts')
-				.doc(params.receiptId)
-				.set(receiptRaw)
+			db.setReceipt(params.groupId, params.receiptId, receiptRaw)
 				.then(() => {
 					close()
 				})
 				.catch((e) => {
-					setErrMsg('권한이 없습니다.')
+					setErrMsg(e)
 				})
 		else
-			fs.collection('DutchPay')
-				.doc(params.groupId)
-				.collection('Receipts')
-				.add(receiptRaw)
+			db.addReceipt(params.groupId, receiptRaw)
 				.then(() => {
 					close()
 				})
 				.catch((e) => {
-					setErrMsg('권한이 없습니다.')
+					setErrMsg(e)
 				})
 	}
 
 	function deleteFromFB() {
 		if (params.receiptId !== 'new')
-			fs.collection('DutchPay')
-				.doc(params.groupId)
-				.collection('Receipts')
-				.doc(params.receiptId)
-				.delete()
+			db.deleteReceipt(params.groupId, params.receiptId)
 				.then(() => {
 					close()
 				})
 				.catch((e) => {
-					setErrMsg('권한이 없습니다.')
+					setErrMsg(e)
 				})
 	}
 
