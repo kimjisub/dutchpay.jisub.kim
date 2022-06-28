@@ -105,9 +105,13 @@ export default function App(props) {
 				</Alert>
 			</Snackbar>
 			<header>
-				<a href="/" className="brand">
+				<p
+					className="brand"
+					onClick={() => {
+						navigateSearch(`/`)
+					}}>
 					dutchpay
-				</a>
+				</p>
 
 				<div className="center"></div>
 				<div className="right">
