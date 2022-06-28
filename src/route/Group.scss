@@ -74,6 +74,7 @@
 				}
 				.dashboard-wrapper {
 					flex-grow: 1;
+					flex-basis: 0;
 					.dashboard {
 						position: sticky;
 						top: 10px;
@@ -87,6 +88,7 @@
 				#receipts {
 					flex-grow: 1;
 					margin: 10px;
+					flex-basis: 0;
 
 					@media (max-width: 900px) {
 						margin: 30px 10px 10px 10px;
