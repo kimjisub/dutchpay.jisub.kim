@@ -110,31 +110,33 @@ export default function Groups(props) {
 				}}>
 				새로 만들기
 			</Button>
-			<table>
-				<thead>
-					<tr>
-						<td>이름</td>
-						<td>날짜</td>
-						<td>인원</td>
-					</tr>
-				</thead>
-				<tbody>
-					{Object.keys(groups).map((key) => {
-						const group = groups[key]
-						return (
-							<tr
-								key={key}
-								onClick={() => {
-									navigateSearch(`/groups/${key}`)
-								}}>
-								<td>{group.name}</td>
-								<td>{format(group.timestamp.toDate(), 'yyyy/MM/dd')}</td>
-								<td>{Object.values(group.members).join(', ')}</td>
-							</tr>
-						)
-					})}
-				</tbody>
-			</table>
+			<div className="table-wrapper">
+				<table>
+					<thead>
+						<tr>
+							<td>이름</td>
+							<td>날짜</td>
+							<td>인원</td>
+						</tr>
+					</thead>
+					<tbody>
+						{Object.keys(groups).map((key) => {
+							const group = groups[key]
+							return (
+								<tr
+									key={key}
+									onClick={() => {
+										navigateSearch(`/groups/${key}`)
+									}}>
+									<td>{group.name}</td>
+									<td>{format(group.timestamp.toDate(), 'yyyy/MM/dd')}</td>
+									<td>{Object.values(group.members).join(', ')}</td>
+								</tr>
+							)
+						})}
+					</tbody>
+				</table>
+			</div>
 		</div>
 	)
 }

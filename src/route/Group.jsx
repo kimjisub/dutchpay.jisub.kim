@@ -18,6 +18,7 @@ import ExpenditureCard from '../components/ExpenditureCard'
 import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
 import EditableTextView from '../elements/EditableTextView'
+import EditableDateView from '../elements/EditableDateView'
 
 const fs = firestore()
 
@@ -158,6 +159,7 @@ export default function Group(props) {
 			.onSnapshot((doc) => {
 				let data = (window.$data = doc.data())
 				data.members = sortObject(data.members)
+				data.timestamp = data.timestamp.toDate()
 
 				groupDispatch({ type: 'fromFirebase', data })
 			})
@@ -257,40 +259,51 @@ export default function Group(props) {
 			<div className="area">
 				<section>
 					<div className="top">
-						<EditableTextView
-							className="group-title"
-							label="모임 이름"
-							text={groupName}
+						<div className="row">
+							<EditableTextView
+								className="group-title"
+								label="모임 이름"
+								text={groupName}
+								editMode={editMode}
+								onChange={(e) => {
+									setGroupName(e.target.value)
+								}}
+								onBlur={(e) => {
+									groupDispatch({ type: 'saveFirebase', data: { ...group, name: groupName } })
+								}}
+							/>
+							{editMode ? (
+								<IconButton
+									key="button"
+									name="delete"
+									onClick={(event) => {
+										setDeleteConfirmAction({
+											anchorEl: event.currentTarget,
+											deleteAction: () => {
+												deleteFromFB()
+											},
+										})
+									}}>
+									<Delete />
+								</IconButton>
+							) : null}
+							<IconButton
+								onClick={() => {
+									if (editMode) editModeDispatch({ type: 'doneEditMode' })
+									else editModeDispatch({ type: 'requestEditMode' })
+								}}>
+								{editMode ? <Check /> : <Edit />}
+							</IconButton>
+						</div>
+
+						<EditableDateView
+							className="date"
+							date={group.timestamp}
 							editMode={editMode}
-							onChange={(e) => {
-								setGroupName(e.target.value)
-							}}
-							onBlur={(e) => {
-								groupDispatch({ type: 'saveFirebase', data: { ...group, name: groupName } })
+							onValueChange={(date) => {
+								groupDispatch({ type: 'saveFirebase', data: { ...group, timestamp: date } })
 							}}
 						/>
-						{editMode ? (
-							<IconButton
-								key="button"
-								name="delete"
-								onClick={(event) => {
-									setDeleteConfirmAction({
-										anchorEl: event.currentTarget,
-										deleteAction: () => {
-											deleteFromFB()
-										},
-									})
-								}}>
-								<Delete />
-							</IconButton>
-						) : null}
-						<IconButton
-							onClick={() => {
-								if (editMode) editModeDispatch({ type: 'doneEditMode' })
-								else editModeDispatch({ type: 'requestEditMode' })
-							}}>
-							{editMode ? <Check /> : <Edit />}
-						</IconButton>
 					</div>
 					<div className="content">
 						<div className="dashboard-wrapper">
