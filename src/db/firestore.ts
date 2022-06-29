@@ -4,7 +4,7 @@ import { sortObject } from '../algorithm2'
 const fs = firestore()
 
 function fbLog(msg: string) {
-	console.log('[Firebase]', msg)
+	console.debug('[Firebase]', msg)
 }
 
 export type GroupType = {
