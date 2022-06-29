@@ -119,7 +119,7 @@ export default function Receipt(props) {
 	}
 
 	function close() {
-		navigate(-1)
+		navigate('../')
 	}
 
 	if (!receipt || !members) return <div className="popup"></div>

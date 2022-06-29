@@ -1,8 +1,8 @@
 .Groups {
 	padding: 20px;
-	overflow: scroll;
+	overflow-y: auto;
 	.table-wrapper {
-		overflow: scroll;
+		overflow-y: auto;
 		table {
 			tbody {
 				tr {

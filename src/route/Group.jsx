@@ -248,13 +248,14 @@ export default function Group(props) {
 						</div>
 						<div id="receipts">
 							{havePermmision ? (
-								<IconButton
-									className="addButton"
-									onClick={() => {
-										navigate('./receipts/new')
-									}}>
-									<Add />
-								</IconButton>
+								<div className="addButton">
+									<IconButton
+										onClick={() => {
+											navigate('./receipts/new')
+										}}>
+										<Add />
+									</IconButton>
+								</div>
 							) : null}
 							<div>{receiptCards}</div>
 						</div>

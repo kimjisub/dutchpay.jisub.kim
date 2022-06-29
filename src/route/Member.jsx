@@ -30,7 +30,7 @@ export default function Member(props) {
 	}, [params.groupId])
 
 	function close() {
-		navigate(-1)
+		navigate('../')
 	}
 
 	if (!group) return <div className="Member popup"></div>
