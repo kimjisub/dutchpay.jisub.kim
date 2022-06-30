@@ -8,8 +8,21 @@ import { Accordion, AccordionSummary, CardActionArea } from '@mui/material'
 import EditableNumberView from '../elements/EditableNumberView'
 
 import { format } from 'date-fns'
+import { ReceiptType } from '../types/ReceiptType'
+import { MembersType } from '../types/MembersType'
 
-export default function ReceiptCard(props) {
+export interface ReceiptCardProps {
+	className?: string
+
+	editMode: boolean
+	receipt: ReceiptType
+	members: MembersType
+	expanded: boolean
+	onExpanded?: () => void
+	onClick?: () => void
+}
+
+const ReceiptCard = React.forwardRef<HTMLDivElement, ReceiptCardProps>((props, ref) => {
 	let totalPrice = 0
 	let paidPrice = 0
 
@@ -77,11 +90,10 @@ export default function ReceiptCard(props) {
 			</AccordionSummary>
 			<CardActionArea
 				onClick={() => {
-					props.onClick()
+					if (props.onClick) props.onClick()
 				}}>
 				<div className="table-wrapper">
-					{/* <TableContainer component={Paper} variant="outlined"> */}
-					<table size="small">
+					<table>
 						<thead>
 							<tr>
 								<td align="left">내용</td>
@@ -105,9 +117,10 @@ export default function ReceiptCard(props) {
 							</tr>
 						</tfoot>
 					</table>
-					{/* </TableContainer> */}
 				</div>
 			</CardActionArea>
 		</Accordion>
 	)
-}
+})
+
+export default ReceiptCard

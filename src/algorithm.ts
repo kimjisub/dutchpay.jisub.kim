@@ -33,7 +33,6 @@ export function calcExpenditure(members: MembersType, receipts: ReceiptType[]): 
 		}
 	}
 
-	console.log('calcExpenditure', ret)
 	return ret
 }
 
