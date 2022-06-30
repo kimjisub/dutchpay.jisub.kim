@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import './App.scss'
 
@@ -16,11 +16,13 @@ import GoogleLogo from '../assets/googleLogo.svg'
 const auth = firebaseAuth()
 const fbAuthProvider = new firebase.auth.GoogleAuthProvider()
 
-export default function App(props) {
+export type AppProps = {}
+
+const App: FC<AppProps> = () => {
 	const navigate = useNavigate()
-	const [user, setUser] = useState(null)
-	const [openProfile, setOpenProfile] = useState(null)
-	const [errMsg, setErrMsg] = useState(null)
+	const [user, setUser] = useState<firebase.User | null>(null)
+	const [openProfile, setOpenProfile] = useState<Element | null>(null)
+	const [errMsg, setErrMsg] = useState<string | null>(null)
 	useEffect(() => {
 		auth.onAuthStateChanged((user) => {
 			setUser(user)
@@ -128,3 +130,5 @@ export default function App(props) {
 		</div>
 	)
 }
+
+export default App
