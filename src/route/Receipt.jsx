@@ -8,9 +8,8 @@ import { sortObject } from '../algorithm2'
 import * as db from '../db/firestore'
 
 // Components
-import { Person, Delete, Add, Edit, Close, Check, Save } from '@material-ui/icons'
-import { Alert } from '@material-ui/lab'
-import { Badge, Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, ListItem, Menu, MenuItem, IconButton } from '@material-ui/core'
+import { Person, Delete, Add, Edit, Close, Check, Save } from '@mui/icons-material'
+import { Alert, Badge, Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, ListItem, Menu, MenuItem, IconButton } from '@mui/material'
 
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'

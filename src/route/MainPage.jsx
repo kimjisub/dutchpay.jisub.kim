@@ -8,8 +8,7 @@ import { firebaseAuth } from '../firebase'
 import * as db from '../db/firestore'
 
 // Components
-import { Button, Snackbar } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+import { Button, Snackbar, Alert } from '@mui/material'
 
 const auth = firebaseAuth()
 

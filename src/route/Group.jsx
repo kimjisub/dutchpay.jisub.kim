@@ -7,9 +7,8 @@ import * as db from '../db/firestore'
 import { calcExpenditure, calcSettlement } from '../algorithm'
 
 // Components
-import { Add, Edit, Delete, Save } from '@material-ui/icons'
-import { Alert } from '@material-ui/lab'
-import { Snackbar, IconButton, Menu, MenuItem } from '@material-ui/core'
+import { Add, Edit, Delete, Save } from '@mui/icons-material'
+import { Snackbar, IconButton, Menu, MenuItem, Alert } from '@mui/material'
 
 // Custom Components
 import ExpenditureCard from '../components/ExpenditureCard'

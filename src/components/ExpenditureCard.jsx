@@ -5,8 +5,8 @@ import './ExpenditureCard.scss'
 import { bigNumberToCode } from '../algorithm'
 
 // Components
-import { Add, Delete } from '@material-ui/icons'
-import { Menu, MenuItem, IconButton } from '@material-ui/core'
+import { Add, Delete } from '@mui/icons-material'
+import { Menu, MenuItem, IconButton } from '@mui/material'
 
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'

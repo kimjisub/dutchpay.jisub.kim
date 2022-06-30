@@ -3,8 +3,8 @@ import clsx from 'clsx'
 import './ReceiptCard.scss'
 
 // Components
-import { ExpandMore } from '@material-ui/icons'
-import { Accordion, AccordionSummary, CardActionArea } from '@material-ui/core'
+import { ExpandMore } from '@mui/icons-material'
+import { Accordion, AccordionSummary, CardActionArea } from '@mui/material'
 import EditableNumberView from '../elements/EditableNumberView'
 
 import { format } from 'date-fns'

@@ -8,8 +8,7 @@ import 'firebase/auth'
 import { firebaseAuth } from '../firebase'
 
 // Components
-import { Button, Popover, Snackbar } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+import { Button, Popover, Snackbar, Alert } from '@mui/material'
 
 // Assets
 import GoogleLogo from '../assets/googleLogo.svg'

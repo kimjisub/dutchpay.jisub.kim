@@ -9,8 +9,7 @@ import * as db from '../db/firestore'
 import { sortObject } from '../algorithm2'
 
 // Components
-import { Button, Snackbar } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+import { Button, Snackbar, Alert } from '@mui/material'
 
 const auth = firebaseAuth()
 
