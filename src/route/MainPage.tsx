@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { FC, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './MainPage.scss'
 
@@ -12,9 +12,11 @@ import { Button, Snackbar, Alert } from '@mui/material'
 
 const auth = firebaseAuth()
 
-export default function MainPage(props) {
+export type MainPageProps = {}
+
+const MainPage: FC<MainPageProps> = () => {
 	const navigate = useNavigate()
-	const [errMsg, setErrMsg] = useState(null)
+	const [errMsg, setErrMsg] = useState<string | null>(null)
 
 	return (
 		<div className="MainPage">
@@ -48,3 +50,5 @@ export default function MainPage(props) {
 		</div>
 	)
 }
+
+export default MainPage

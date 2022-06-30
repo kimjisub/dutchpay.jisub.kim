@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import './Member.scss'
 
@@ -6,26 +6,32 @@ import './Member.scss'
 import * as db from '../db/firestore'
 import { calcSingleExpenditure } from '../algorithm'
 import EditableNumberView from '../elements/EditableNumberView'
+import { GroupType } from '../types/GroupType'
+import { ReceiptType } from '../types/ReceiptType'
 
-export default function Member(props) {
+export type MemberProps = {}
+
+const Member: FC<MemberProps> = (props) => {
 	const params = useParams()
 	const navigate = useNavigate()
 
-	const [group, setGroup] = useState(null)
-	const [receipts, setReceipts] = useState([])
+	const [group, setGroup] = useState<GroupType | null>(null)
+	const [receipts, setReceipts] = useState<ReceiptType[]>([])
 
 	useEffect(() => {
-		const unsubscribeGroup = db.subscribeGroup(params.groupId, (group) => {
-			setGroup(group)
-		})
+		if (params.groupId) {
+			const unsubscribeGroup = db.subscribeGroup(params.groupId, (group) => {
+				setGroup(group)
+			})
 
-		const unsubscribeReceipts = db.subscribeReceipts(params.groupId, (receipts) => {
-			setReceipts(receipts)
-		})
+			const unsubscribeReceipts = db.subscribeReceipts(params.groupId, (receipts) => {
+				setReceipts(Object.values(receipts))
+			})
 
-		return () => {
-			unsubscribeGroup()
-			unsubscribeReceipts()
+			return () => {
+				unsubscribeGroup()
+				unsubscribeReceipts()
+			}
 		}
 	}, [params.groupId])
 
@@ -33,7 +39,7 @@ export default function Member(props) {
 		navigate('../')
 	}
 
-	if (!group) return <div className="Member popup"></div>
+	if (!group || !params.groupId || !params.memberId) return <div className="Member popup"></div>
 
 	const singleExpenditure = calcSingleExpenditure(params.memberId, receipts)
 	const totalExpenditure = Object.values(singleExpenditure).reduce((acc, cur) => acc + cur.totalPrice, 0)
@@ -48,7 +54,7 @@ export default function Member(props) {
 				<h2 className="title">{group.members[params.memberId]}</h2>
 
 				<div className="table-wrapper">
-					<table size="small">
+					<table>
 						<thead>
 							<tr>
 								<td>영수증 이름</td>
@@ -96,3 +102,5 @@ export default function Member(props) {
 		</div>
 	)
 }
+
+export default Member

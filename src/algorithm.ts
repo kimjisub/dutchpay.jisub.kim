@@ -119,8 +119,7 @@ export function bigNumberToCode(num: number) {
 	return ret
 }
 
-export function sortObject<T>(objects: { [key in string]: T }, sort: (a: string, b: string) => number): { [key in string]: T } {
-	sort = sort || ((a, b) => (a > b ? 1 : -1))
+export function sortObject<T>(objects: { [key in string]: T }, sort: (a: string, b: string) => number = (a, b) => (a > b ? 1 : -1)): { [key in string]: T } {
 	const sorted: { [key in string]: T } = {}
 	const keys = []
 	for (let key in objects) if (objects.hasOwnProperty(key)) keys.push(key)

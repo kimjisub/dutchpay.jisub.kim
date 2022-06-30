@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useGetSetterState } from '../hooks/useGetSetterState'
 import './Receipt.scss'
@@ -15,24 +15,28 @@ import { Alert, Badge, Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, 
 import EditableTextView from '../elements/EditableTextView'
 import EditableNumberView from '../elements/EditableNumberView'
 import EditableDateView from '../elements/EditableDateView'
+import { MembersType } from '../types/MembersType'
+import { ReceiptType } from '../types/ReceiptType'
 
-export default function Receipt(props) {
+export type ReceiptProps = {}
+
+const Receipt: FC<ReceiptProps> = () => {
 	const params = useParams()
 	const navigate = useNavigate()
 
 	// Status
-	const [editMode, setEditMode] = useState(params.receiptId === 'new')
-	const [havePermmision, setHavePermmision] = useState(false)
+	const [editMode, setEditMode] = useState<boolean>(params.receiptId === 'new')
+	const [havePermmision, setHavePermmision] = useState<boolean>(false)
 
 	// UI
-	const [errMsg, setErrMsg] = useState(null)
-	const [memberPopoverAction, setMemberPopoverAction] = useState(null)
-	const [payerPopoverAction, setPayerPopoverAction] = useState(null)
-	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
+	const [errMsg, setErrMsg] = useState<string | null>(null)
+	const [memberPopoverAction, setMemberPopoverAction] = useState<{ anchorEl: Element; index: number } | null>(null)
+	const [payerPopoverAction, setPayerPopoverAction] = useState<{ anchorEl: Element } | null>(null)
+	const [deleteConfirmAction, setDeleteConfirmAction] = useState<{ anchorEl: Element; deleteAction: () => void } | null>(null)
 
 	// Data
-	const [members, setMembers] = useState(null)
-	const [receiptRaw, receipt, setReceipt] = useGetSetterState(
+	const [members, setMembers] = useState<MembersType>({})
+	const [receiptRaw, receipt, setReceipt] = useGetSetterState<ReceiptType | null>(
 		null,
 		(_receipt) => {
 			if (_receipt == null) return null
@@ -50,6 +54,7 @@ export default function Receipt(props) {
 			return receipt
 		},
 		(_receipt) => {
+			if (!_receipt) return null
 			const receipt = { ..._receipt }
 			receipt.items = receipt.items.filter((item) => item.name !== '' || item.price !== 0 || item.buyers.length !== Object.keys(members).length)
 
@@ -58,13 +63,14 @@ export default function Receipt(props) {
 	)
 
 	useEffect(() => {
+		if (!params.groupId || !params.receiptId) return
 		// 멤버 정보 가져오기
 		db.getGroup(params.groupId)
 			.then((group) => {
 				setMembers(group.members)
 			})
 			.catch((err) => {
-				errMsg(err)
+				setErrMsg(err)
 			})
 
 		// 영수증 정보 가져오기
@@ -74,7 +80,7 @@ export default function Receipt(props) {
 					setReceipt(() => receipt)
 				})
 				.catch((err) => {
-					errMsg(err)
+					setErrMsg(err)
 				})
 		} else {
 			// 새로 만드는 경우 초기값 설정
@@ -90,12 +96,14 @@ export default function Receipt(props) {
 	}, [params.groupId, params.receiptId])
 
 	useEffect(() => {
+		if (!params.groupId) return
 		db.checkPermission(params.groupId).then((havePermmision) => {
 			setHavePermmision(havePermmision)
 		})
 	}, [params.groupId])
 
-	function updateToFB(receipt) {
+	function updateToFB(receipt: ReceiptType) {
+		if (!params.groupId || !params.receiptId) return
 		const action = params.receiptId !== 'new' ? db.setReceipt(params.groupId, params.receiptId, receipt) : db.addReceipt(params.groupId, receipt)
 		action
 			.then(() => {
@@ -107,6 +115,8 @@ export default function Receipt(props) {
 	}
 
 	function deleteFromFB() {
+		if (!params.groupId || !params.receiptId) return
+
 		if (params.receiptId !== 'new')
 			db.deleteReceipt(params.groupId, params.receiptId)
 				.then(() => {
@@ -121,7 +131,7 @@ export default function Receipt(props) {
 		navigate('../')
 	}
 
-	if (!receipt || !members) return <div className="popup"></div>
+	if (!receipt || !members || !params.groupId || !params.receiptId) return <div className="popup"></div>
 
 	let totalPrice = 0
 	for (let i in receipt.items) {
@@ -132,7 +142,7 @@ export default function Receipt(props) {
 	let totalPaid = 0
 	for (let i in receipt.payers) {
 		let item = receipt.payers[i]
-		totalPaid += parseInt(item) || 0
+		totalPaid += item
 	}
 	const unpaid = totalPrice - totalPaid
 
@@ -161,7 +171,7 @@ export default function Receipt(props) {
 						let id = data[0]
 						let name = data[1]
 
-						let buyers = receipt.items[memberPopoverAction?.index]?.buyers || []
+						let buyers = receipt.items[memberPopoverAction?.index ?? 0]?.buyers || []
 						let checked = buyers.includes(id)
 						return (
 							<ListItem
@@ -171,14 +181,15 @@ export default function Receipt(props) {
 								button
 								onClick={(e) => {
 									if (editMode) {
-										setReceipt((_receipt) => {
-											const receipt = { ..._receipt }
-											let buyers = receipt.items[memberPopoverAction?.index]?.buyers || []
+										setReceipt((receipt) => {
+											if (!receipt) return null
+											const _receipt = { ...receipt }
+											let buyers = _receipt.items[memberPopoverAction?.index ?? 0]?.buyers || []
 											let checked = buyers.includes(id)
 
 											if (!checked) buyers.push(id)
 											else buyers.splice(buyers.indexOf(id), 1)
-											return receipt
+											return _receipt
 										})
 									}
 								}}>
@@ -208,10 +219,11 @@ export default function Receipt(props) {
 								key={id}
 								button
 								onClick={() => {
-									setReceipt((_receipt) => {
-										const receipt = { ..._receipt }
-										receipt.payers[id] = unpaid
-										return receipt
+									setReceipt((receipt) => {
+										if (!receipt) return null
+										const _receipt = { ...receipt }
+										_receipt.payers[id] = unpaid
+										return _receipt
 									})
 									setPayerPopoverAction(null)
 								}}>
@@ -230,7 +242,7 @@ export default function Receipt(props) {
 				}}>
 				<MenuItem
 					onClick={() => {
-						deleteConfirmAction.deleteAction()
+						deleteConfirmAction?.deleteAction()
 						setDeleteConfirmAction(null)
 					}}>
 					삭제
@@ -243,6 +255,7 @@ export default function Receipt(props) {
 							className="title"
 							onChange={(text) => {
 								setReceipt((_receipt) => {
+									if (!_receipt) return null
 									const receipt = { ..._receipt }
 									receipt.name = text
 									return receipt
@@ -260,6 +273,7 @@ export default function Receipt(props) {
 						formatPattern="yyyy-MM-dd HH:mm"
 						onValueChange={(date) => {
 							setReceipt((receipt) => {
+								if (!receipt) return null
 								return { ...receipt, timestamp: date }
 							})
 						}}
@@ -284,6 +298,7 @@ export default function Receipt(props) {
 											<EditableTextView
 												onChange={(text) => {
 													setReceipt((_receipt) => {
+														if (!_receipt) return null
 														const receipt = { ..._receipt }
 														receipt.items[i].name = text
 														return receipt
@@ -315,6 +330,7 @@ export default function Receipt(props) {
 												className="item-price"
 												onValueChange={(value) => {
 													setReceipt((_receipt) => {
+														if (!_receipt) return null
 														const receipt = { ..._receipt }
 														receipt.items[i].price = value
 														return receipt
@@ -337,6 +353,7 @@ export default function Receipt(props) {
 																anchorEl: event.currentTarget,
 																deleteAction: () => {
 																	setReceipt((_receipt) => {
+																		if (!_receipt) return null
 																		const receipt = { ..._receipt }
 																		receipt.items.splice(i, 1)
 																		return receipt
@@ -364,6 +381,7 @@ export default function Receipt(props) {
 											<EditableNumberView
 												onValueChange={(value) => {
 													setReceipt((_receipt) => {
+														if (!_receipt) return null
 														const receipt = { ..._receipt }
 														receipt.payers[id] = value
 														return receipt
@@ -372,7 +390,6 @@ export default function Receipt(props) {
 												label="금액"
 												value={price}
 												editMode={editMode}
-												id={`pay-price-${i}`}
 											/>
 										</td>
 
@@ -386,6 +403,7 @@ export default function Receipt(props) {
 															anchorEl: event.currentTarget,
 															deleteAction: () => {
 																setReceipt((_receipt) => {
+																	if (!_receipt) return null
 																	const receipt = { ..._receipt }
 																	delete receipt.payers[id]
 																	return receipt
@@ -482,7 +500,7 @@ export default function Receipt(props) {
 					{editMode ? (
 						<IconButton
 							onClick={() => {
-								updateToFB(receiptRaw)
+								if (receiptRaw) updateToFB(receiptRaw)
 							}}>
 							<Save />
 						</IconButton>
@@ -492,3 +510,4 @@ export default function Receipt(props) {
 		</div>
 	)
 }
+export default Receipt

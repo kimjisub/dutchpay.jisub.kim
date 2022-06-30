@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export function useGetSetterState<T>(defaultValue: T, getter: (value: T) => T, setter: (value: T) => T) {
+export function useGetSetterState<T>(defaultValue: T, getter: (value: T) => T, setter: (value: T) => T): [T, T, (callback: (prev: T) => T) => void] {
 	const [value, setValue] = useState(defaultValue)
 
 	// 변환된 변수
