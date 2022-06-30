@@ -1,6 +1,6 @@
 // Backend
 import { firestore } from '../firebase'
-import { sortObject } from '../algorithm2'
+import { sortObject } from '../algorithm'
 
 import { GroupType } from '../types/GroupType'
 import { ReceiptItemType, ReceiptType } from '../types/ReceiptType'

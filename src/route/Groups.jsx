@@ -6,7 +6,7 @@ import './Groups.scss'
 // Backend
 import { firebaseAuth } from '../firebase'
 import * as db from '../db/firestore'
-import { sortObject } from '../algorithm2'
+import { sortObject } from '../algorithm'
 
 // Components
 import { Button, Snackbar, Alert } from '@mui/material'

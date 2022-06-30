@@ -4,7 +4,7 @@ import { useGetSetterState } from '../hooks/useGetSetterState'
 import './Receipt.scss'
 
 // Backend
-import { sortObject } from '../algorithm2'
+import { sortObject } from '../algorithm'
 import * as db from '../db/firestore'
 
 // Components

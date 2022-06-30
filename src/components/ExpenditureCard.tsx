@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import './ExpenditureCard.scss'
 
 // Backend
-import { bigNumberToCode } from '../algorithm'
+import { bigNumberToCode, CalcExpenditureResultType } from '../algorithm'
 import { MembersType } from '../types/MembersType'
 
 // Components
@@ -18,16 +18,13 @@ export interface ExpenditureCardProps {
 
 	editMode: boolean
 	members: MembersType
-	expenditure: any
+	expenditure: CalcExpenditureResultType
 	onMembersChange: (members: MembersType) => void
 	onMemberClick: (id: string) => void
 }
 const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((props, ref) => {
 	const [addName, setAddName] = useState('')
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState<null | { anchorEl: EventTarget & HTMLButtonElement; deleteAction: () => void }>(null)
-
-	let spendSum = 0
-	let paiedSum = 0
 
 	return (
 		<div className="ExpenditureCard">
@@ -43,12 +40,9 @@ const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((
 				</thead>
 				<tbody>
 					{Object.entries(props.members).map((data) => {
-						let id = data[0]
-						let name = data[1]
+						const [id, name] = data
 
-						const { spend, paied } = props.expenditure[id]
-						spendSum += spend
-						paiedSum += paied
+						const { spend, paied } = props.expenditure.eachMembers[id]
 						return (
 							<tr
 								key={id}
@@ -57,10 +51,10 @@ const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((
 								}}>
 								<td>{name}</td>
 								<td align="right">
-									<EditableNumberView value={spend} editMode={false} />
+									<EditableNumberView value={parseFloat(spend.toFixed(2))} editMode={false} />
 								</td>
 								<td align="right">
-									<EditableNumberView value={paied} editMode={false} />
+									<EditableNumberView value={parseFloat(paied.toFixed(2))} editMode={false} />
 								</td>
 								{props.editMode ? (
 									<td>
@@ -103,7 +97,7 @@ const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((
 									size="small"
 									onClick={() => {
 										let members = Object.assign({}, props.members)
-										members[bigNumberToCode(new Date())] = addName
+										members[bigNumberToCode(new Date().getTime())] = addName
 										props.onMembersChange(members)
 										setAddName('')
 									}}>
@@ -117,10 +111,10 @@ const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((
 					<tr>
 						<td>합계</td>
 						<td align="right">
-							<EditableNumberView value={parseFloat(spendSum.toFixed(2))} editMode={false} />
+							<EditableNumberView value={parseFloat(props.expenditure.totalSpend.toFixed(2))} editMode={false} />
 						</td>
 						<td align="right">
-							<EditableNumberView value={parseFloat(paiedSum.toFixed(2))} editMode={false} />
+							<EditableNumberView value={parseFloat(props.expenditure.totalPaied.toFixed(2))} editMode={false} />
 						</td>
 					</tr>
 				</tfoot>
