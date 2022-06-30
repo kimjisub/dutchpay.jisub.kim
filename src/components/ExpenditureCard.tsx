@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, FC } from 'react'
 import './ExpenditureCard.scss'
 
 // Backend
@@ -12,6 +12,7 @@ import { Menu, MenuItem, IconButton } from '@mui/material'
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
 import EditableNumberView from '../elements/EditableNumberView'
+import clsx from 'clsx'
 
 export interface ExpenditureCardProps {
 	className?: string
@@ -22,12 +23,12 @@ export interface ExpenditureCardProps {
 	onMembersChange: (members: MembersType) => void
 	onMemberClick: (id: string) => void
 }
-const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((props, ref) => {
+const ExpenditureCard: FC<ExpenditureCardProps> = ({ className, editMode, members, expenditure, onMembersChange, onMemberClick }) => {
 	const [addName, setAddName] = useState('')
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState<null | { anchorEl: EventTarget & HTMLButtonElement; deleteAction: () => void }>(null)
 
 	return (
-		<div className="ExpenditureCard">
+		<div className={clsx('ExpenditureCard', className)}>
 			<h2 className="title">지출 내역</h2>
 			<table>
 				<thead>
@@ -35,19 +36,19 @@ const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((
 						<td>이름</td>
 						<td align="right">지출</td>
 						<td align="right">결제</td>
-						{props.editMode ? <td></td> : null}
+						{editMode ? <td></td> : null}
 					</tr>
 				</thead>
 				<tbody>
-					{Object.entries(props.members).map((data) => {
+					{Object.entries(members).map((data) => {
 						const [id, name] = data
 
-						const { spend, paid } = props.expenditure.eachMembers[id]
+						const { spend, paid } = expenditure.eachMembers[id]
 						return (
 							<tr
 								key={id}
 								onClick={() => {
-									if (!props.editMode) props.onMemberClick(id)
+									if (!editMode) onMemberClick(id)
 								}}>
 								<td>{name}</td>
 								<td align="right">
@@ -56,7 +57,7 @@ const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((
 								<td align="right">
 									<EditableNumberView value={parseFloat(paid.toFixed(2))} editMode={false} />
 								</td>
-								{props.editMode ? (
+								{editMode ? (
 									<td>
 										<IconButton
 											size="small"
@@ -66,9 +67,9 @@ const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((
 													anchorEl: event.currentTarget,
 													deleteAction: () => {
 														if (spend === 0 && paid === 0) {
-															let members = Object.assign({}, props.members)
-															delete members[id]
-															props.onMembersChange(members)
+															let _members = { ...members }
+															delete _members[id]
+															onMembersChange(_members)
 														}
 													},
 												})
@@ -80,7 +81,7 @@ const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((
 							</tr>
 						)
 					})}
-					{props.editMode ? (
+					{editMode ? (
 						<tr>
 							<td colSpan={3}>
 								<EditableTextView
@@ -96,9 +97,9 @@ const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((
 								<IconButton
 									size="small"
 									onClick={() => {
-										let members = Object.assign({}, props.members)
-										members[bigNumberToCode(new Date().getTime())] = addName
-										props.onMembersChange(members)
+										let _members = { ...members }
+										_members[bigNumberToCode(new Date().getTime())] = addName
+										onMembersChange(_members)
 										setAddName('')
 									}}>
 									<Add fontSize="inherit" />
@@ -111,10 +112,10 @@ const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((
 					<tr>
 						<td>합계</td>
 						<td align="right">
-							<EditableNumberView value={parseFloat(props.expenditure.totalSpend.toFixed(2))} editMode={false} />
+							<EditableNumberView value={parseFloat(expenditure.totalSpend.toFixed(2))} editMode={false} />
 						</td>
 						<td align="right">
-							<EditableNumberView value={parseFloat(props.expenditure.totalPaid.toFixed(2))} editMode={false} />
+							<EditableNumberView value={parseFloat(expenditure.totalPaid.toFixed(2))} editMode={false} />
 						</td>
 					</tr>
 				</tfoot>
@@ -136,6 +137,6 @@ const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((
 			</Menu>
 		</div>
 	)
-})
+}
 
 export default ExpenditureCard

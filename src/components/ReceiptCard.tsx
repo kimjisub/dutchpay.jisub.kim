@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import clsx from 'clsx'
 import './ReceiptCard.scss'
 
@@ -14,7 +14,6 @@ import { MembersType } from '../types/MembersType'
 export interface ReceiptCardProps {
 	className?: string
 
-	editMode: boolean
 	receipt: ReceiptType
 	members: MembersType
 	expanded: boolean
@@ -22,11 +21,11 @@ export interface ReceiptCardProps {
 	onClick?: () => void
 }
 
-const ReceiptCard = React.forwardRef<HTMLDivElement, ReceiptCardProps>((props, ref) => {
+const ReceiptCard: FC<ReceiptCardProps> = ({ className, receipt, members, expanded, onExpanded, onClick }) => {
 	let totalPrice = 0
 	let paidPrice = 0
 
-	let itemList = props.receipt.items.map((item, i) => {
+	let itemList = receipt.items.map((item, i) => {
 		totalPrice += item.price
 		return (
 			<tr key={i}>
@@ -40,13 +39,13 @@ const ReceiptCard = React.forwardRef<HTMLDivElement, ReceiptCardProps>((props, r
 	})
 
 	let payerList = []
-	for (let id in props.receipt.payers) {
-		let price = props.receipt.payers[id]
+	for (let id in receipt.payers) {
+		let price = receipt.payers[id]
 		paidPrice += price
 		payerList.push(
 			<tr key={id} className="green">
 				<td align="left">결제</td>
-				<td align="center">{props.members[id]}</td>
+				<td align="center">{members[id]}</td>
 				<td align="right">
 					<EditableNumberView value={parseFloat(price.toFixed(2))} editMode={false} />
 				</td>
@@ -78,19 +77,19 @@ const ReceiptCard = React.forwardRef<HTMLDivElement, ReceiptCardProps>((props, r
 			</tr>
 		)
 	return (
-		<Accordion variant="outlined" className="ReceiptCard" expanded={props.expanded} onChange={props.onExpanded}>
+		<Accordion variant="outlined" className={clsx('ReceiptCard', className)} expanded={expanded} onChange={onExpanded}>
 			<AccordionSummary expandIcon={<ExpandMore />}>
 				<div className="summary">
 					<div className="left">
-						<p className="title">{props.receipt.name}</p>
-						<p className="date">{format(props.receipt.timestamp, 'MM/dd HH:mm')}</p>
+						<p className="title">{receipt.name}</p>
+						<p className="date">{format(receipt.timestamp, 'MM/dd HH:mm')}</p>
 					</div>
 					<EditableNumberView className={clsx('price', diff !== 0 ? 'red' : '')} value={parseFloat(totalPrice.toFixed(2))} editMode={false} />
 				</div>
 			</AccordionSummary>
 			<CardActionArea
 				onClick={() => {
-					if (props.onClick) props.onClick()
+					if (onClick) onClick()
 				}}>
 				<div className="table-wrapper">
 					<table>
@@ -121,6 +120,6 @@ const ReceiptCard = React.forwardRef<HTMLDivElement, ReceiptCardProps>((props, r
 			</CardActionArea>
 		</Accordion>
 	)
-})
+}
 
 export default ReceiptCard

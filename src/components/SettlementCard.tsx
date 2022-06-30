@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { FC } from 'react'
+import clsx from 'clsx'
 import './SettlementCard.scss'
 
 // Components
@@ -13,22 +14,22 @@ export interface SettlementCardProps {
 	members: MembersType
 }
 
-const SettlementCard = React.forwardRef<HTMLDivElement, SettlementCardProps>((props, ref) => {
+const SettlementCard: FC<SettlementCardProps> = ({ className, settlement, members }) => {
 	return (
-		<div className="SettlementCard">
+		<div className={clsx('SettlementCard', className)}>
 			<h2 className="title">정산</h2>
 
 			<div id="body">
-				{props.settlement.map((data, i) => {
+				{settlement.map((data, i) => {
 					let from = data.from
 					let to = data.to
 					let value = data.value
 
 					return (
 						<p key={i}>
-							{props.members[from]}
+							{members[from]}
 							<span className="small">(이)가</span>
-							{props.members[to]}
+							{members[to]}
 							<span className="small">에게</span>
 							<EditableNumberView value={value} editMode={false} />
 							<span className="small">원</span>
@@ -38,6 +39,6 @@ const SettlementCard = React.forwardRef<HTMLDivElement, SettlementCardProps>((pr
 			</div>
 		</div>
 	)
-})
+}
 
 export default SettlementCard

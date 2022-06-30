@@ -220,7 +220,7 @@ export default function Group(props) {
 							className="date"
 							date={group.timestamp}
 							editMode={editMode}
-							format="yyyy-MM-dd"
+							formatPattern="yyyy-MM-dd"
 							onValueChange={(date) => {
 								groupDispatch({ type: 'saveFirebase', data: { ...group, timestamp: date } })
 							}}

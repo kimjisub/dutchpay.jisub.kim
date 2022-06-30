@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import clsx from 'clsx'
 import './EditableView.scss'
 
@@ -16,20 +16,27 @@ export interface EditableNumberViewProps {
 	onBlur?: (value: number) => void
 }
 
-const EditableNumberView = React.forwardRef<HTMLDivElement, EditableNumberViewProps>((props, ref) => {
-	const value = props.value || 0
+const EditableNumberView: FC<EditableNumberViewProps> = ({
+	className,
+
+	editMode,
+	label,
+	value = 0,
+	onValueChange,
+	onBlur,
+}) => {
 	return (
-		<span className={clsx('EditableView', props.className)}>
-			{props.editMode ? (
+		<span className={clsx('EditableView', className)}>
+			{editMode ? (
 				<input
-					placeholder={props.label}
+					placeholder={label}
 					value={format(value)}
 					pattern="\d*"
 					onChange={(e) => {
-						if (props.onValueChange) props.onValueChange(parseInt(e.target.value.replaceAll(',', '')) || 0)
+						if (onValueChange) onValueChange(parseInt(e.target.value.replaceAll(',', '')) || 0)
 					}}
 					onBlur={(e) => {
-						if (props.onBlur) props.onBlur(parseInt(e.target.value.replaceAll(',', '')) || 0)
+						if (onBlur) onBlur(parseInt(e.target.value.replaceAll(',', '')) || 0)
 					}}
 				/>
 			) : (
@@ -37,5 +44,5 @@ const EditableNumberView = React.forwardRef<HTMLDivElement, EditableNumberViewPr
 			)}
 		</span>
 	)
-})
+}
 export default EditableNumberView

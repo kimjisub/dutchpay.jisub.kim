@@ -257,7 +257,7 @@ export default function Receipt(props) {
 						className="date"
 						date={receipt.timestamp}
 						editMode={editMode}
-						format="yyyy-MM-dd HH:mm"
+						formatPattern="yyyy-MM-dd HH:mm"
 						onValueChange={(date) => {
 							setReceipt((receipt) => {
 								return { ...receipt, timestamp: date }

@@ -3,7 +3,7 @@ import { firestore } from '../firebase'
 import { sortObject } from '../algorithm'
 
 import { GroupType } from '../types/GroupType'
-import { ReceiptItemType, ReceiptType } from '../types/ReceiptType'
+import { ReceiptType } from '../types/ReceiptType'
 const fs = firestore()
 
 function fbLog(msg: string) {

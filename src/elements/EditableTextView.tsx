@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import clsx from 'clsx'
 import './EditableView.scss'
 
@@ -12,25 +12,25 @@ export interface EditableTextViewProps {
 	onBlur?: (text: string) => void
 }
 
-const EditableTextView = React.forwardRef<HTMLDivElement, EditableTextViewProps>((props, ref) => {
+const EditableTextView: FC<EditableTextViewProps> = ({ className, editMode, label, text, onChange, onBlur }) => {
 	return (
-		<span className={clsx('EditableView', props.className)} ref={ref}>
-			{props.editMode ? (
+		<span className={clsx('EditableView', className)}>
+			{editMode ? (
 				<input
-					placeholder={props.label}
-					value={props.text}
+					placeholder={label}
+					value={text}
 					onChange={(e) => {
-						if (props.onChange) props.onChange(e.target.value)
+						if (onChange) onChange(e.target.value)
 					}}
 					onBlur={(e) => {
-						if (props.onBlur) props.onBlur(e.target.value)
+						if (onBlur) onBlur(e.target.value)
 					}}
 				/>
 			) : (
-				props.text
+				text
 			)}
 		</span>
 	)
-})
+}
 
 export default EditableTextView
