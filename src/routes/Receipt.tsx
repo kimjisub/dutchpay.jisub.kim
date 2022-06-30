@@ -93,6 +93,7 @@ const Receipt: FC<ReceiptProps> = () => {
 				}
 			})
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [params.groupId, params.receiptId])
 
 	useEffect(() => {

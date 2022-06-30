@@ -7,7 +7,7 @@ export type CalcExpenditureResultType = {
 	totalPaid: number
 }
 
-export function calcExpenditure(members: MembersType, receipts: ReceiptType[]): CalcExpenditureResultType {
+export function calcExpenditure(members: MembersType, receipts: { [name in string]: ReceiptType }): CalcExpenditureResultType {
 	const ret: CalcExpenditureResultType = { totalSpend: 0, totalPaid: 0, eachMembers: {} }
 
 	for (let id in members) ret.eachMembers[id] = { spend: 0, paid: 0 }

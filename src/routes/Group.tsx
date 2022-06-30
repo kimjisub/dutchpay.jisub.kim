@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { FC, useState, useEffect, useReducer } from 'react'
 import { useParams, Outlet, useNavigate } from 'react-router-dom'
 import './Group.scss'
 
@@ -16,86 +16,102 @@ import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
 import EditableTextView from '../elements/EditableTextView'
 import EditableDateView from '../elements/EditableDateView'
+import { ReceiptType } from '../types/ReceiptType'
+import { GroupType } from '../types/GroupType'
 
-export default function Group(props) {
+export type GroupProps = {}
+
+const Group: FC<GroupProps> = () => {
 	const params = useParams()
 	const navigate = useNavigate()
 
-	const [groupName, setGroupName] = useState('')
-	const [errMsg, setErrMsg] = useState(null)
-	const [expanded, setExpanded] = useState(null)
+	const [groupName, setGroupName] = useState<string>('')
+	const [errMsg, setErrMsg] = useState<string | null>(null)
+	const [expanded, setExpanded] = useState<string | null>(null)
 
-	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
+	const [deleteConfirmAction, setDeleteConfirmAction] = useState<{ anchorEl: Element; deleteAction: () => void } | null>(null)
+
+	const [editMode, setEditMode] = useState<boolean>(false)
 	const [havePermmision, setHavePermmision] = useState(false)
 
-	const [group, groupDispatch] = useReducer((state, action) => {
-		const { type, data } = action
-		switch (type) {
-			case 'fromFirebase':
-				setGroupName(data.name)
-				break
-			case 'saveFirebase':
-				if (data) {
-					db.setGroup(params.groupId, data)
-						.then(() => {})
-						.catch((err) => setErrMsg(err))
-				} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
-				break
-			case 'saveFirebaseAndDone':
-				if (data) {
-					db.setGroup(params.groupId, data)
-						.then(() => {
-							editModeDispatch({ type: 'doneEditMode' })
-						})
-						.catch((err) => {
-							setErrMsg(err)
-							editModeDispatch({ type: 'editModeDenied' })
-						})
-				} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
-				break
-			default:
-		}
-		return data
-	}, null)
+	// const [group, groupDispatch] = useReducer((_state, action: {type:string; data:GroupType}) => {
+	// 	if (!params.groupId) return null
+	// 	const { type, data } = action
+	// 	switch (type) {
+	// 		case 'fromFirebase':
+	// 			setGroupName(data.name)
+	// 			break
+	// 		case 'saveFirebase':
+	// 			if (data) {
+	// 				db.setGroup(params.groupId, data)
+	// 					.then(() => {})
+	// 					.catch((err) => setErrMsg(err))
+	// 			} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
+	// 			break
+	// 		case 'saveFirebaseAndDone':
+	// 			if (data) {
+	// 				db.setGroup(params.groupId, data)
+	// 					.then(() => {
+	// 						editModeDispatch({ type: 'doneEditMode' })
+	// 					})
+	// 					.catch((err) => {
+	// 						setErrMsg(err)
+	// 						editModeDispatch({ type: 'editModeDenied' })
+	// 					})
+	// 			} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
+	// 			break
+	// 		default:
+	// 	}
+	// 	return data
+	// }, null)
 
-	const [receipts, setReceipts] = useState([])
+	const [group, setGroup] = useState<GroupType | null>()
+	const [receipts, setReceipts] = useState<{ [name in string]: ReceiptType }>({})
 
-	const [editMode, editModeDispatch] = useReducer((state, action) => {
-		let { type } = action
-		let editMode = state
-		switch (type) {
-			// 수정모드로 진입하려고 함.
-			case 'requestEditMode':
-				db.checkPermission(params.groupId).then((havePermmision) => {
-					if (havePermmision) editModeDispatch({ type: 'editModeApproved' })
-					else editModeDispatch({ type: 'editModeDenied' })
-				})
-				break
-			case 'doneEditMode':
-				editMode = false
-				break
-			// 수정모드 승인
-			case 'editModeApproved':
-				editMode = true
-				break
-			// 수정모드 거부
-			case 'editModeDenied':
-				editMode = false
-				setErrMsg('권한이 없습니다.')
-				break
-			default:
-		}
-		return editMode
-	}, false)
+	// const [editMode, editModeDispatch] = useReducer((state, action) => {
+	// 	if (!params.groupId) return null
+
+	// 	let { type } = action
+	// 	let editMode = state
+	// 	switch (type) {
+	// 		// 수정모드로 진입하려고 함.
+	// 		case 'requestEditMode':
+	// 			db.checkPermission(params.groupId).then((havePermmision) => {
+	// 				if (havePermmision) editModeDispatch({ type: 'editModeApproved' })
+	// 				else editModeDispatch({ type: 'editModeDenied' })
+	// 			})
+	// 			break
+	// 		case 'doneEditMode':
+	// 			editMode = false
+	// 			break
+	// 		// 수정모드 승인
+	// 		case 'editModeApproved':
+	// 			editMode = true
+	// 			break
+	// 		// 수정모드 거부
+	// 		case 'editModeDenied':
+	// 			editMode = false
+	// 			setErrMsg('권한이 없습니다.')
+	// 			break
+	// 		default:
+	// 	}
+	// 	return editMode
+	// }, false)
 
 	// Subscribe Firestore
 	useEffect(() => {
+		if (!params.groupId) return
 		const unsubscribeGroup = db.subscribeGroup(params.groupId, (group) => {
-			groupDispatch({ type: 'fromFirebase', data: group })
+			setGroup(group)
+			setGroupName(group.name)
 		})
 
 		const unsubscribeReceipts = db.subscribeReceipts(params.groupId, (receipts) => {
 			setReceipts(receipts)
+		})
+
+		db.checkPermission(params.groupId).then((havePermmision) => {
+			setHavePermmision(havePermmision)
 		})
 
 		return () => {
@@ -104,21 +120,29 @@ export default function Group(props) {
 		}
 	}, [params.groupId])
 
-	useEffect(() => {
-		db.checkPermission(params.groupId).then((havePermmision) => {
-			setHavePermmision(havePermmision)
+	if (!params.groupId || !group) return <div className="popup"></div>
+	const groupId = params.groupId
+
+	function requestEditMode() {
+		db.checkPermission(groupId).then((havePermmision) => {
+			if (havePermmision) setEditMode(true)
+			else setErrMsg('권한이 없습니다.')
 		})
-	}, [])
+	}
+	function saveToFB(group: GroupType) {
+		db.setGroup(groupId, group)
+			.then(() => {})
+			.catch((err) => setErrMsg(err))
+	}
 
 	function deleteFromFB() {
+		if (!params.groupId) return
 		db.deleteGroup(params.groupId)
 			.then(() => {
 				navigate('../')
 			})
 			.catch((err) => setErrMsg(err))
 	}
-
-	if (!group) return <div className="popup"></div>
 
 	let receiptCards = []
 
@@ -136,7 +160,6 @@ export default function Group(props) {
 				onClick={() => {
 					navigate(`./receipts/${key}`)
 				}}
-				editMode={editMode}
 			/>
 		)
 	}
@@ -168,7 +191,7 @@ export default function Group(props) {
 				}}>
 				<MenuItem
 					onClick={() => {
-						deleteConfirmAction.deleteAction()
+						deleteConfirmAction?.deleteAction()
 						setDeleteConfirmAction(null)
 					}}>
 					삭제
@@ -187,7 +210,7 @@ export default function Group(props) {
 									setGroupName(text)
 								}}
 								onBlur={(text) => {
-									groupDispatch({ type: 'saveFirebase', data: { ...group, name: groupName } })
+									saveToFB({ ...group, name: groupName })
 								}}
 							/>
 							{editMode ? (
@@ -208,8 +231,8 @@ export default function Group(props) {
 							{havePermmision ? (
 								<IconButton
 									onClick={() => {
-										if (editMode) editModeDispatch({ type: 'doneEditMode' })
-										else editModeDispatch({ type: 'requestEditMode' })
+										if (editMode) setEditMode(false)
+										else requestEditMode()
 									}}>
 									{editMode ? <Save /> : <Edit />}
 								</IconButton>
@@ -222,7 +245,7 @@ export default function Group(props) {
 							editMode={editMode}
 							formatPattern="yyyy-MM-dd"
 							onValueChange={(date) => {
-								groupDispatch({ type: 'saveFirebase', data: { ...group, timestamp: date } })
+								saveToFB({ ...group, timestamp: date })
 							}}
 						/>
 					</div>
@@ -235,7 +258,7 @@ export default function Group(props) {
 									onMembersChange={(members) => {
 										let _group = { ...group }
 										_group.members = members
-										groupDispatch({ type: 'saveFirebase', data: _group })
+										saveToFB(_group)
 									}}
 									onMemberClick={(id) => {
 										navigate(`./members/${id}`)
@@ -265,3 +288,5 @@ export default function Group(props) {
 		</div>
 	)
 }
+
+export default Group
