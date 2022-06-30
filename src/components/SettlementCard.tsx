@@ -1,12 +1,21 @@
 import React from 'react'
 import './SettlementCard.scss'
 
-// Components\
+// Components
 import EditableNumberView from '../elements/EditableNumberView'
+import { CalcSettlementResultType } from '../algorithm'
+import { MembersType } from '../types/MembersType'
 
-export default function SettlementCard(props) {
+export interface SettlementCardProps {
+	className?: string
+
+	settlement: CalcSettlementResultType
+	members: MembersType
+}
+
+const SettlementCard = React.forwardRef<HTMLDivElement, SettlementCardProps>((props, ref) => {
 	return (
-		<div className="SettlementCard" variant="outlined">
+		<div className="SettlementCard">
 			<h2 className="title">정산</h2>
 
 			<div id="body">
@@ -29,4 +38,6 @@ export default function SettlementCard(props) {
 			</div>
 		</div>
 	)
-}
+})
+
+export default SettlementCard
