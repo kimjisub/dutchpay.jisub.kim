@@ -2,15 +2,15 @@ import { MembersType } from './types/MembersType'
 import { ReceiptType } from './types/ReceiptType'
 
 export type CalcExpenditureResultType = {
-	eachMembers: { [key in string]: { spend: number; paied: number } }
+	eachMembers: { [key in string]: { spend: number; paid: number } }
 	totalSpend: number
-	totalPaied: number
+	totalPaid: number
 }
 
 export function calcExpenditure(members: MembersType, receipts: ReceiptType[]): CalcExpenditureResultType {
-	const ret: CalcExpenditureResultType = { totalSpend: 0, totalPaied: 0, eachMembers: {} }
+	const ret: CalcExpenditureResultType = { totalSpend: 0, totalPaid: 0, eachMembers: {} }
 
-	for (let id in members) ret.eachMembers[id] = { spend: 0, paied: 0 }
+	for (let id in members) ret.eachMembers[id] = { spend: 0, paid: 0 }
 
 	for (let i in receipts) {
 		const receipt = receipts[i]
@@ -28,8 +28,8 @@ export function calcExpenditure(members: MembersType, receipts: ReceiptType[]): 
 
 		for (let id in receipt.payers) {
 			const price = receipt.payers[id]
-			ret.totalPaied += price
-			ret.eachMembers[id].paied += price
+			ret.totalPaid += price
+			ret.eachMembers[id].paid += price
 		}
 	}
 
@@ -43,8 +43,8 @@ export function calcSettlement(expenditure: CalcExpenditureResultType): CalcSett
 	const data: { [key in string]: number } = {}
 	for (let id in expenditure.eachMembers) {
 		const spend = expenditure.eachMembers[id].spend
-		const paied = expenditure.eachMembers[id].paied
-		data[id] = spend - paied
+		const paid = expenditure.eachMembers[id].paid
+		data[id] = spend - paid
 	}
 
 	const ret = []

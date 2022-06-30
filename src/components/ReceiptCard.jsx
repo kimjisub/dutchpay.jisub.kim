@@ -11,7 +11,7 @@ import { format } from 'date-fns'
 
 export default function ReceiptCard(props) {
 	let totalPrice = 0
-	let paiedPrice = 0
+	let paidPrice = 0
 
 	let itemList = props.receipt.items.map((item, i) => {
 		totalPrice += item.price
@@ -29,7 +29,7 @@ export default function ReceiptCard(props) {
 	let payerList = []
 	for (let id in props.receipt.payers) {
 		let price = props.receipt.payers[id]
-		paiedPrice += price
+		paidPrice += price
 		payerList.push(
 			<tr key={id} className="green">
 				<td align="left">결제</td>
@@ -41,7 +41,7 @@ export default function ReceiptCard(props) {
 		)
 	}
 
-	const diff = totalPrice - paiedPrice
+	const diff = totalPrice - paidPrice
 	let diffRow = null
 
 	if (diff > 0)
