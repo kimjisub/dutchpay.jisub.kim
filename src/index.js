@@ -5,12 +5,12 @@ import * as serviceWorker from './serviceWorker'
 import './firebase'
 
 import './index.scss'
-import App from './route/App'
-import MainPage from './route/MainPage'
-import Groups from './route/Groups'
-import Group from './route/Group'
-import Receipt from './route/Receipt'
-import Member from './route/Member'
+import App from './routes/App'
+import MainPage from './routes/MainPage'
+import Groups from './routes/Groups'
+import Group from './routes/Group'
+import Receipt from './routes/Receipt'
+import Member from './routes/Member'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
