@@ -1,24 +1,28 @@
-import React, { useState, useEffect } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import './Groups.scss'
 
 // Backend
+import firebase from 'firebase/app'
 import { firebaseAuth } from '../firebase'
 import * as db from '../db/firestore'
 import { sortObject } from '../algorithm'
 
 // Components
 import { Button, Snackbar, Alert } from '@mui/material'
+import { GroupType } from '../types/GroupType'
 
 const auth = firebaseAuth()
 
-export default function Groups(props) {
-	const navigate = useNavigate()
-	const [user, setUser] = useState(null)
-	const [errMsg, setErrMsg] = useState(null)
+export type GroupsProps = {}
 
-	const [groups, setGroups] = useState({})
+const Groups: FC<GroupsProps> = () => {
+	const navigate = useNavigate()
+	const [user, setUser] = useState<firebase.User | null>(null)
+	const [errMsg, setErrMsg] = useState<string | null>(null)
+
+	const [groups, setGroups] = useState<{ [name in string]: GroupType }>({})
 
 	useEffect(() => {
 		auth.onAuthStateChanged((user) => {
@@ -98,3 +102,5 @@ export default function Groups(props) {
 		</div>
 	)
 }
+
+export default Groups
