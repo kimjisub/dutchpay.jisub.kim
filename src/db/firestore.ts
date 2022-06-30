@@ -1,29 +1,13 @@
 // Backend
 import { firestore } from '../firebase'
 import { sortObject } from '../algorithm2'
+
+import { GroupType } from '../types/GroupType'
+import { ReceiptItemType, ReceiptType } from '../types/ReceiptType'
 const fs = firestore()
 
 function fbLog(msg: string) {
 	console.debug('[Firebase]', msg)
-}
-
-export type GroupType = {
-	name: string
-	owner: string
-	timestamp?: Date
-	members: { [key in string]: string }
-}
-
-export type ReceiptItemType = {
-	buyers: string[]
-	name: string
-	price: number
-}
-export type ReceiptType = {
-	name: string
-	items: ReceiptItemType[]
-	payers: { [key in string]: number }
-	timestamp: Date
 }
 
 export const checkPermission = (groupId: string) =>

@@ -3,6 +3,7 @@ import './ExpenditureCard.scss'
 
 // Backend
 import { bigNumberToCode } from '../algorithm'
+import { MembersType } from '../types/MembersType'
 
 // Components
 import { Add, Delete } from '@mui/icons-material'
@@ -12,9 +13,18 @@ import { Menu, MenuItem, IconButton } from '@mui/material'
 import EditableTextView from '../elements/EditableTextView'
 import EditableNumberView from '../elements/EditableNumberView'
 
-export default function ExpenditureCard(props) {
+export interface ExpenditureCardProps {
+	className?: string
+
+	editMode: boolean
+	members: MembersType
+	expenditure: any
+	onMembersChange: (members: MembersType) => void
+	onMemberClick: (id: string) => void
+}
+const ExpenditureCard = React.forwardRef<HTMLDivElement, ExpenditureCardProps>((props, ref) => {
 	const [addName, setAddName] = useState('')
-	const [deleteConfirmAction, setDeleteConfirmAction] = useState(null)
+	const [deleteConfirmAction, setDeleteConfirmAction] = useState<null | { anchorEl: EventTarget & HTMLButtonElement; deleteAction: () => void }>(null)
 
 	let spendSum = 0
 	let paiedSum = 0
@@ -124,7 +134,7 @@ export default function ExpenditureCard(props) {
 				}}>
 				<MenuItem
 					onClick={() => {
-						deleteConfirmAction.deleteAction()
+						deleteConfirmAction?.deleteAction()
 						setDeleteConfirmAction(null)
 					}}>
 					삭제
@@ -132,4 +142,6 @@ export default function ExpenditureCard(props) {
 			</Menu>
 		</div>
 	)
-}
+})
+
+export default ExpenditureCard

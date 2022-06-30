@@ -7,7 +7,7 @@ export interface EditableDateViewProps {
 	className?: string
 
 	editMode: boolean
-	label: string
+	label?: string
 	date: Date
 	format: string
 	onValueChange?: (date: Date) => void

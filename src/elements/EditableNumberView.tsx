@@ -10,7 +10,7 @@ export interface EditableNumberViewProps {
 	className?: string
 
 	editMode: boolean
-	label: string
+	label?: string
 	value: number
 	onValueChange?: (value: number) => void
 	onBlur?: (value: number) => void

@@ -6,7 +6,7 @@ export interface EditableTextViewProps {
 	className?: string
 
 	editMode: boolean
-	label: string
+	label?: string
 	text: string
 	onChange?: (text: string) => void
 	onBlur?: (text: string) => void

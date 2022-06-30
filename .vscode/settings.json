@@ -6,5 +6,6 @@
     "editor.formatOnSave": true,
     "editor.tabSize": 2,
     "prettier.printWidth": 160,
-    "eslint.enable": true
+    "eslint.enable": true,
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }
