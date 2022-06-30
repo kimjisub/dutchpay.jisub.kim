@@ -78,13 +78,13 @@ export default function ExpenditureCard(props) {
 					})}
 					{props.editMode ? (
 						<tr>
-							<td colSpan="3">
+							<td colSpan={3}>
 								<EditableTextView
 									label="이름"
 									text={addName}
 									editMode={true}
-									onChange={(e) => {
-										setAddName(e.target.value)
+									onChange={(text) => {
+										setAddName(text)
 									}}
 								/>
 							</td>

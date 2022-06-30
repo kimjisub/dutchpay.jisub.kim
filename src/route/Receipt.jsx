@@ -241,10 +241,10 @@ export default function Receipt(props) {
 					<p>
 						<EditableTextView
 							className="title"
-							onChange={(e) => {
+							onChange={(text) => {
 								setReceipt((_receipt) => {
 									const receipt = { ..._receipt }
-									receipt.name = e.target.value
+									receipt.name = text
 									return receipt
 								})
 							}}
@@ -282,10 +282,10 @@ export default function Receipt(props) {
 									<tr key={'item-' + i}>
 										<td>
 											<EditableTextView
-												onChange={(e) => {
+												onChange={(text) => {
 													setReceipt((_receipt) => {
 														const receipt = { ..._receipt }
-														receipt.items[i].name = e.target.value
+														receipt.items[i].name = text
 														return receipt
 													})
 												}}

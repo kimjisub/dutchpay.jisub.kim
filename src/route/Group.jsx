@@ -183,10 +183,10 @@ export default function Group(props) {
 								label="모임 이름"
 								text={groupName}
 								editMode={editMode}
-								onChange={(e) => {
-									setGroupName(e.target.value)
+								onChange={(text) => {
+									setGroupName(text)
 								}}
-								onBlur={(e) => {
+								onBlur={(text) => {
 									groupDispatch({ type: 'saveFirebase', data: { ...group, name: groupName } })
 								}}
 							/>
