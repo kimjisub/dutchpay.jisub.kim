@@ -9,6 +9,7 @@ import { firebaseAuth } from '../firebase'
 
 // Components
 import { Button, Popover, Snackbar, Alert } from '@mui/material'
+import LogoSVG from '../logo.svg'
 
 // Assets
 import GoogleLogo from '../assets/googleLogo.svg'
@@ -110,7 +111,8 @@ const App: FC<AppProps> = () => {
 					onClick={() => {
 						navigate('/')
 					}}>
-					dutchpay
+					<img src={LogoSVG} alt="dutchpay logo" height="30px" />
+					<span>dutchpay</span>
 				</p>
 
 				<div className="center"></div>

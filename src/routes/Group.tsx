@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, useReducer } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { useParams, Outlet, useNavigate } from 'react-router-dom'
 import './Group.scss'
 

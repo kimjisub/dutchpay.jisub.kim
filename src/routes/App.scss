@@ -9,13 +9,18 @@
 		box-sizing: border-box;
 
 		.brand {
-			color: #facd60;
+			color: #ffb14d;
 			display: block;
 			margin: 25px;
 			font-size: 1.3rem;
 			font-weight: bolder;
 			text-decoration: none;
 			cursor: pointer;
+
+			span {
+				vertical-align: super;
+				margin-left: 10px;
+			}
 		}
 
 		.center {

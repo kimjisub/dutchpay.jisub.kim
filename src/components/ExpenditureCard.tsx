@@ -1,4 +1,5 @@
 import React, { useState, FC } from 'react'
+import clsx from 'clsx'
 import './ExpenditureCard.scss'
 
 // Backend
@@ -12,7 +13,6 @@ import { Menu, MenuItem, IconButton } from '@mui/material'
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
 import EditableNumberView from '../elements/EditableNumberView'
-import clsx from 'clsx'
 
 export interface ExpenditureCardProps {
 	className?: string
