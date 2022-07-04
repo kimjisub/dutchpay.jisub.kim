@@ -1,3 +1,4 @@
+import { MembersType } from './../types/MembersType'
 // Backend
 import { firestore } from '../firebase'
 import { sortObject } from '../algorithm'
@@ -51,7 +52,12 @@ export const getGroup = (groupId: string) =>
 			.then((doc) => {
 				const data = doc.data()
 				if (doc.exists && data) {
-					resolve({ name: data.name, owner: data.owner, timestamp: data.timestamp?.toDate(), members: data.members })
+					const sortedMembers = sortObject(data.members, (a, b) => {
+						const Atarget = a
+						const Btarget = b
+						return Atarget > Btarget ? 1 : -1
+					}) as MembersType
+					resolve({ name: data.name, owner: data.owner, timestamp: data.timestamp?.toDate(), members: sortedMembers })
 				} else reject('Group not found')
 			})
 	})
@@ -94,7 +100,12 @@ export const subscribeGroups = (uid: string, onChange: (groups: { [key in string
 			snapshot.forEach((doc) => {
 				const data = doc.data()
 				if (data) {
-					groups[doc.id] = { name: data.name, owner: data.owner, timestamp: data.timestamp?.toDate(), members: data.members }
+					const sortedMembers = sortObject(data.members, (a, b) => {
+						const Atarget = a
+						const Btarget = b
+						return Atarget > Btarget ? 1 : -1
+					}) as MembersType
+					groups[doc.id] = { name: data.name, owner: data.owner, timestamp: data.timestamp?.toDate(), members: sortedMembers }
 				}
 			})
 			onChange(groups)
@@ -114,7 +125,12 @@ export const subscribeGroup = (groupId: string, onChange: (group: GroupType) => 
 		.onSnapshot((doc) => {
 			const data = doc.data()
 			if (doc.exists && data) {
-				onChange({ name: data.name, owner: data.owner, timestamp: data.timestamp.toDate(), members: data.members })
+				const sortedMembers = sortObject(data.members, (a, b) => {
+					const Atarget = a
+					const Btarget = b
+					return Atarget > Btarget ? 1 : -1
+				}) as MembersType
+				onChange({ name: data.name, owner: data.owner, timestamp: data.timestamp.toDate(), members: sortedMembers })
 			}
 		})
 	return () => {
@@ -148,7 +164,12 @@ export const getReceipt = (groupId: string, receiptId: string) =>
 			.then((doc) => {
 				const data = doc.data()
 				if (doc.exists && data) {
-					resolve({ name: data.name, items: data.items, payers: data.payers, timestamp: data.timestamp?.toDate() })
+					const sortedPayers = sortObject(data.payers, (a, b) => {
+						const Atarget = a
+						const Btarget = b
+						return Atarget > Btarget ? 1 : -1
+					}) as { [x: string]: number }
+					resolve({ name: data.name, items: data.items, payers: sortedPayers, timestamp: data.timestamp?.toDate() })
 				}
 			})
 	})
@@ -196,7 +217,12 @@ export const subscribeReceipts = (groupId: string, onChange: (receipts: { [key i
 			snapshot.forEach((doc) => {
 				const data = doc.data()
 				if (data) {
-					receipts[doc.id] = { name: data.name, items: data.items, payers: data.payers, timestamp: data.timestamp?.toDate() }
+					const sortedPayers = sortObject(data.payers, (a, b) => {
+						const Atarget = a
+						const Btarget = b
+						return Atarget > Btarget ? 1 : -1
+					}) as { [x: string]: number }
+					receipts[doc.id] = { name: data.name, items: data.items, payers: sortedPayers, timestamp: data.timestamp?.toDate() }
 				}
 			})
 			onChange(
