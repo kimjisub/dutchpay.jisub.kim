@@ -7,7 +7,7 @@ import * as db from '../db/firestore'
 import { calcExpenditure, calcSettlement } from '../algorithm'
 
 // Components
-import { Add, Edit, Delete, Save } from '@mui/icons-material'
+import { Add, Edit, Delete, Save, Link } from '@mui/icons-material'
 import { Snackbar, IconButton, Menu, MenuItem, Alert } from '@mui/material'
 
 // Custom Components
@@ -27,6 +27,7 @@ const Group: FC<GroupProps> = () => {
 
 	const [groupName, setGroupName] = useState<string>('')
 	const [errMsg, setErrMsg] = useState<string | null>(null)
+	const [alert, setAlert] = useState<string | null>(null)
 	const [expanded, setExpanded] = useState<string | null>(null)
 
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState<{ anchorEl: Element; deleteAction: () => void } | null>(null)
@@ -181,6 +182,17 @@ const Group: FC<GroupProps> = () => {
 					{errMsg?.replace('CLOSE', '')}
 				</Alert>
 			</Snackbar>
+			<Snackbar
+				open={alert != null && !alert.includes('CLOSE')}
+				autoHideDuration={5000}
+				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+				onClose={() => {
+					setAlert(alert + 'CLOSE')
+				}}>
+				<Alert elevation={6} variant="filled" severity="success">
+					{alert?.replace('CLOSE', '')}
+				</Alert>
+			</Snackbar>
 
 			<Menu
 				keepMounted
@@ -228,6 +240,14 @@ const Group: FC<GroupProps> = () => {
 									<Delete />
 								</IconButton>
 							) : null}
+
+							<IconButton
+								onClick={() => {
+									navigator.clipboard.writeText(window.location.href)
+									setAlert('클립보드에 복사되었습니다.')
+								}}>
+								<Link />
+							</IconButton>
 							{havePermmision ? (
 								<IconButton
 									onClick={() => {
