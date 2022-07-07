@@ -43,6 +43,8 @@ const MainPage: FC<MainPageProps> = () => {
 				onClick={() => {
 					if (auth?.currentUser) {
 						navigate(`/groups`)
+					} else {
+						setErrMsg('로그인이 필요합니다.')
 					}
 				}}>
 				목록 보기
