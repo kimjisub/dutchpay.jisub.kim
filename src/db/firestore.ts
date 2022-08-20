@@ -25,14 +25,14 @@ export const checkPermission = (groupId: string) =>
 			})
 	})
 
-export const addGroup = (ownerUid: string) =>
+export const addGroup = (adminUid: string) =>
 	new Promise<string>((resolve, reject) => {
 		fbLog('Add /DutchPay')
 		fs.collection('DutchPay')
 			.add({
 				name: '',
 				members: [],
-				owner: ownerUid,
+				admins: [adminUid],
 				timestamp: new Date(),
 			})
 			.then((docRef) => {
@@ -57,7 +57,7 @@ export const getGroup = (groupId: string) =>
 						const Btarget = b
 						return Atarget > Btarget ? 1 : -1
 					}) as MembersType
-					resolve({ name: data.name, owner: data.owner, timestamp: data.timestamp?.toDate(), members: sortedMembers })
+					resolve({ name: data.name, admins: data.admins, timestamp: data.timestamp?.toDate(), members: sortedMembers })
 				} else reject('Group not found')
 			})
 	})
@@ -94,7 +94,7 @@ export const subscribeGroups = (uid: string, onChange: (groups: { [key in string
 	fbLog(`Subscribe /DutchPay by uid: ${uid}`)
 	const unsubscribe = fs
 		.collection('DutchPay')
-		.where('owner', '==', uid)
+		.where('admins', 'array-contains', uid)
 		.onSnapshot((snapshot) => {
 			const groups: { [key in string]: GroupType } = {}
 			snapshot.forEach((doc) => {
@@ -105,7 +105,7 @@ export const subscribeGroups = (uid: string, onChange: (groups: { [key in string
 						const Btarget = b
 						return Atarget > Btarget ? 1 : -1
 					}) as MembersType
-					groups[doc.id] = { name: data.name, owner: data.owner, timestamp: data.timestamp?.toDate(), members: sortedMembers }
+					groups[doc.id] = { name: data.name, admins: data.admins, timestamp: data.timestamp?.toDate(), members: sortedMembers }
 				}
 			})
 			onChange(groups)
@@ -130,7 +130,7 @@ export const subscribeGroup = (groupId: string, onChange: (group: GroupType) => 
 					const Btarget = b
 					return Atarget > Btarget ? 1 : -1
 				}) as MembersType
-				onChange({ name: data.name, owner: data.owner, timestamp: data.timestamp.toDate(), members: sortedMembers })
+				onChange({ name: data.name, admins: data.admins, timestamp: data.timestamp.toDate(), members: sortedMembers })
 			}
 		})
 	return () => {

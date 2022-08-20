@@ -1,7 +1,7 @@
 import { MembersType } from './MembersType'
 export type GroupType = {
 	name: string
-	owner: string
+	admins: string[]
 	timestamp: Date
 	members: MembersType
 }
