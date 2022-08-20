@@ -215,22 +215,20 @@ const Receipt: FC<ReceiptProps> = () => {
 						let id = data[0]
 						let name = data[1]
 
-						return receipt.payers[id] === undefined ? (
-							<ListItem
+						return <ListItem
 								key={id}
 								button
 								onClick={() => {
 									setReceipt((receipt) => {
 										if (!receipt) return null
 										const _receipt = { ...receipt }
-										_receipt.payers[id] = unpaid
+										_receipt.payers[id] = (_receipt.payers[id] ?? 0) + unpaid
 										return _receipt
 									})
 									setPayerPopoverAction(null)
 								}}>
 								{name}
 							</ListItem>
-						) : null
 					})}
 				</List>
 			</Popover>
