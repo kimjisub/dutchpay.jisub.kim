@@ -1,16 +1,14 @@
 import React, { FC, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './MainPage.scss'
+// Components
+import { Alert, Button, Snackbar } from '@mui/material'
 
+import './MainPage.scss'
 // Backend
 import 'firebase/auth'
-import { firebaseAuth } from '../firebase'
+
 import * as db from '../db/firestore'
-
-// Components
-import { Button, Snackbar, Alert } from '@mui/material'
-
-const auth = firebaseAuth()
+import { auth } from '../firebase'
 
 export type MainPageProps = {}
 

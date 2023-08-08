@@ -1,7 +1,8 @@
 import React, { FC } from 'react'
 import clsx from 'clsx'
-import './EditableView.scss'
 import { format } from 'date-fns'
+
+import './EditableView.scss'
 
 export interface EditableDateViewProps {
 	className?: string

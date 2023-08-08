@@ -1,16 +1,17 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import * as serviceWorker from './serviceWorker'
-import './firebase'
 
+import './firebase'
 import './index.scss'
+
 import App from './routes/App'
-import MainPage from './routes/MainPage'
-import Groups from './routes/Groups'
 import Group from './routes/Group'
-import Receipt from './routes/Receipt'
+import Groups from './routes/Groups'
+import MainPage from './routes/MainPage'
 import Member from './routes/Member'
+import Receipt from './routes/Receipt'
+import * as serviceWorker from './serviceWorker'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 

@@ -1,33 +1,29 @@
-import React, { FC, useState, useEffect } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
-import './App.scss'
-
-// Backend
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import { firebaseAuth } from '../firebase'
-
 // Components
-import { Button, Popover, Snackbar, Alert } from '@mui/material'
-import LogoSVG from '../logo.svg'
+import { Alert, Button, Popover, Snackbar } from '@mui/material'
+import { GoogleAuthProvider, signInWithPopup, User } from 'firebase/auth'
+
+import './App.scss'
+// Backend
+import 'firebase/auth'
 
 // Assets
 import GoogleLogo from '../assets/googleLogo.svg'
+import { auth } from '../firebase'
+import LogoSVG from '../logo.svg'
 
-const auth = firebaseAuth()
-const fbAuthProvider = new firebase.auth.GoogleAuthProvider()
+const fbAuthProvider = new GoogleAuthProvider()
 
 export type AppProps = {}
 
 const App: FC<AppProps> = () => {
 	const navigate = useNavigate()
-	const [user, setUser] = useState<firebase.User | null>(null)
+	const [user, setUser] = useState<User | null>(null)
 	const [openProfile, setOpenProfile] = useState<Element | null>(null)
 	const [errMsg, setErrMsg] = useState<string | null>(null)
 	useEffect(() => {
-		auth.onAuthStateChanged((user) => {
-			setUser(user)
-		})
+		auth.onAuthStateChanged(setUser)
 	}, [])
 
 	return (
@@ -48,9 +44,7 @@ const App: FC<AppProps> = () => {
 					<div className="user-info">
 						<Button
 							onClick={() => {
-								firebase
-									.auth()
-									.signInWithPopup(fbAuthProvider)
+								signInWithPopup(auth, fbAuthProvider)
 									.then((result) => {
 										setOpenProfile(null)
 									})

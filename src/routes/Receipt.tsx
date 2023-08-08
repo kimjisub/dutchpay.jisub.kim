@@ -1,20 +1,19 @@
-import React, { FC, useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { useGetSetterState } from '../hooks/useGetSetterState'
+import React, { FC, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+// Components
+import { Add, Check, Close, Delete, Edit, Person, Save } from '@mui/icons-material'
+import { Alert, Badge, Checkbox, IconButton, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Popover, Snackbar } from '@mui/material'
+
 import './Receipt.scss'
 
 // Backend
 import { sortObject } from '../algorithm'
 import * as db from '../db/firestore'
-
-// Components
-import { Person, Delete, Add, Edit, Close, Check, Save } from '@mui/icons-material'
-import { Alert, Badge, Snackbar, Popover, ListItemIcon, ListItemText, Checkbox, List, ListItem, Menu, MenuItem, IconButton } from '@mui/material'
-
+import EditableDateView from '../elements/EditableDateView'
+import EditableNumberView from '../elements/EditableNumberView'
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
-import EditableNumberView from '../elements/EditableNumberView'
-import EditableDateView from '../elements/EditableDateView'
+import { useGetSetterState } from '../hooks/useGetSetterState'
 import { MembersType } from '../types/MembersType'
 import { ReceiptType } from '../types/ReceiptType'
 
@@ -26,7 +25,7 @@ const Receipt: FC<ReceiptProps> = () => {
 
 	// Status
 	const [editMode, setEditMode] = useState<boolean>(params.receiptId === 'new')
-	const [havePermmision, setHavePermmision] = useState<boolean>(false)
+	const [havePermmision, setHavePermission] = useState<boolean>(false)
 
 	// UI
 	const [errMsg, setErrMsg] = useState<string | null>(null)
@@ -50,15 +49,14 @@ const Receipt: FC<ReceiptProps> = () => {
 				})
 			}
 
-			const receipt = { ..._receipt, items: receiptItems }
-			return receipt
+			return { ..._receipt, items: receiptItems }
 		},
 		(_receipt) => {
 			if (!_receipt) return null
-			const receipt = { ..._receipt }
-			receipt.items = receipt.items.filter((item) => item.name !== '' || item.price !== 0 || item.buyers.length !== Object.keys(members).length)
+			const r = { ..._receipt }
+			r.items = r.items.filter((item) => item.name !== '' || item.price !== 0 || item.buyers.length !== Object.keys(members).length)
 
-			return receipt
+			return r
 		}
 	)
 
@@ -76,9 +74,7 @@ const Receipt: FC<ReceiptProps> = () => {
 		// 영수증 정보 가져오기
 		if (params.receiptId !== 'new') {
 			db.getReceipt(params.groupId, params.receiptId)
-				.then((receipt) => {
-					setReceipt(() => receipt)
-				})
+				.then((r) => setReceipt(() => r))
 				.catch((err) => {
 					setErrMsg(err)
 				})
@@ -93,19 +89,16 @@ const Receipt: FC<ReceiptProps> = () => {
 				}
 			})
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [params.groupId, params.receiptId])
 
 	useEffect(() => {
 		if (!params.groupId) return
-		db.checkPermission(params.groupId).then((havePermmision) => {
-			setHavePermmision(havePermmision)
-		})
+		db.checkPermission(params.groupId).then(setHavePermission)
 	}, [params.groupId])
 
-	function updateToFB(receipt: ReceiptType) {
+	function updateToFB(r: ReceiptType) {
 		if (!params.groupId || !params.receiptId) return
-		const action = params.receiptId !== 'new' ? db.setReceipt(params.groupId, params.receiptId, receipt) : db.addReceipt(params.groupId, receipt)
+		const action = params.receiptId !== 'new' ? db.setReceipt(params.groupId, params.receiptId, r) : db.addReceipt(params.groupId, r)
 		action
 			.then(() => {
 				close()
@@ -182,14 +175,14 @@ const Receipt: FC<ReceiptProps> = () => {
 								button
 								onClick={(e) => {
 									if (editMode) {
-										setReceipt((receipt) => {
-											if (!receipt) return null
-											const _receipt = { ...receipt }
-											let buyers = _receipt.items[memberPopoverAction?.index ?? 0]?.buyers || []
-											let checked = buyers.includes(id)
+										setReceipt((r) => {
+											if (!r) return null
+											const _receipt = { ...r }
+											let _buyers = _receipt.items[memberPopoverAction?.index ?? 0]?.buyers || []
+											let _checked = _buyers.includes(id)
 
-											if (!checked) buyers.push(id)
-											else buyers.splice(buyers.indexOf(id), 1)
+											if (!_checked) _buyers.push(id)
+											else _buyers.splice(_buyers.indexOf(id), 1)
 											return _receipt
 										})
 									}
@@ -215,13 +208,14 @@ const Receipt: FC<ReceiptProps> = () => {
 						let id = data[0]
 						let name = data[1]
 
-						return <ListItem
+						return (
+							<ListItem
 								key={id}
 								button
 								onClick={() => {
-									setReceipt((receipt) => {
-										if (!receipt) return null
-										const _receipt = { ...receipt }
+									setReceipt((r) => {
+										if (!r) return null
+										const _receipt = { ...r }
 										_receipt.payers[id] = (_receipt.payers[id] ?? 0) + unpaid
 										return _receipt
 									})
@@ -229,6 +223,7 @@ const Receipt: FC<ReceiptProps> = () => {
 								}}>
 								{name}
 							</ListItem>
+						)
 					})}
 				</List>
 			</Popover>
@@ -255,9 +250,9 @@ const Receipt: FC<ReceiptProps> = () => {
 							onChange={(text) => {
 								setReceipt((_receipt) => {
 									if (!_receipt) return null
-									const receipt = { ..._receipt }
-									receipt.name = text
-									return receipt
+									const r = { ..._receipt }
+									r.name = text
+									return r
 								})
 							}}
 							label="영수증 이름"
@@ -271,9 +266,9 @@ const Receipt: FC<ReceiptProps> = () => {
 						editMode={editMode}
 						formatPattern="yyyy-MM-dd HH:mm"
 						onValueChange={(date) => {
-							setReceipt((receipt) => {
-								if (!receipt) return null
-								return { ...receipt, timestamp: date }
+							setReceipt((r) => {
+								if (!r) return null
+								return { ...r, timestamp: date }
 							})
 						}}
 					/>
@@ -298,9 +293,9 @@ const Receipt: FC<ReceiptProps> = () => {
 												onChange={(text) => {
 													setReceipt((_receipt) => {
 														if (!_receipt) return null
-														const receipt = { ..._receipt }
-														receipt.items[i].name = text
-														return receipt
+														const r = { ..._receipt }
+														r.items[i].name = text
+														return r
 													})
 												}}
 												label="내용"
@@ -330,9 +325,9 @@ const Receipt: FC<ReceiptProps> = () => {
 												onValueChange={(value) => {
 													setReceipt((_receipt) => {
 														if (!_receipt) return null
-														const receipt = { ..._receipt }
-														receipt.items[i].price = value
-														return receipt
+														const r = { ..._receipt }
+														r.items[i].price = value
+														return r
 													})
 												}}
 												label="금액"
@@ -353,9 +348,9 @@ const Receipt: FC<ReceiptProps> = () => {
 																deleteAction: () => {
 																	setReceipt((_receipt) => {
 																		if (!_receipt) return null
-																		const receipt = { ..._receipt }
-																		receipt.items.splice(i, 1)
-																		return receipt
+																		const r = { ..._receipt }
+																		r.items.splice(i, 1)
+																		return r
 																	})
 																},
 															})
@@ -381,9 +376,9 @@ const Receipt: FC<ReceiptProps> = () => {
 												onValueChange={(value) => {
 													setReceipt((_receipt) => {
 														if (!_receipt) return null
-														const receipt = { ..._receipt }
-														receipt.payers[id] = value
-														return receipt
+														const r = { ..._receipt }
+														r.payers[id] = value
+														return r
 													})
 												}}
 												label="금액"
@@ -403,9 +398,9 @@ const Receipt: FC<ReceiptProps> = () => {
 															deleteAction: () => {
 																setReceipt((_receipt) => {
 																	if (!_receipt) return null
-																	const receipt = { ..._receipt }
-																	delete receipt.payers[id]
-																	return receipt
+																	const r = { ..._receipt }
+																	delete r.payers[id]
+																	return r
 																})
 															},
 														})

@@ -1,10 +1,11 @@
 import React, { FC } from 'react'
 import clsx from 'clsx'
+
 import './SettlementCard.scss'
 
+import { CalcSettlementResultType } from '../algorithm'
 // Components
 import EditableNumberView from '../elements/EditableNumberView'
-import { CalcSettlementResultType } from '../algorithm'
 import { MembersType } from '../types/MembersType'
 
 export interface SettlementCardProps {

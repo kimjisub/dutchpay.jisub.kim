@@ -1,43 +1,39 @@
-import React, { FC, useState, useEffect } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+// Components
+import { Alert, Button, Snackbar } from '@mui/material'
 import { format } from 'date-fns'
+// Backend
+import { User } from 'firebase/auth'
+
 import './Groups.scss'
 
-// Backend
-import firebase from 'firebase/app'
-import { firebaseAuth } from '../firebase'
-import * as db from '../db/firestore'
 import { sortObject } from '../algorithm'
-
-// Components
-import { Button, Snackbar, Alert } from '@mui/material'
+import * as db from '../db/firestore'
+import { auth } from '../firebase'
 import { GroupType } from '../types/GroupType'
-
-const auth = firebaseAuth()
 
 export type GroupsProps = {}
 
 const Groups: FC<GroupsProps> = () => {
 	const navigate = useNavigate()
-	const [user, setUser] = useState<firebase.User | null>(null)
+	const [user, setUser] = useState<User | null>(null)
 	const [errMsg, setErrMsg] = useState<string | null>(null)
 
 	const [groups, setGroups] = useState<{ [name in string]: GroupType }>({})
 
 	useEffect(() => {
-		auth.onAuthStateChanged((user) => {
-			setUser(user)
-		})
+		auth.onAuthStateChanged(setUser)
 	}, [])
 
 	useEffect(() => {
 		if (!user) return () => {}
 
-		const unsubscribeGroups = db.subscribeGroups(user.uid, (groups) => {
+		const unsubscribeGroups = db.subscribeGroups(user.uid, (g) => {
 			setGroups(
-				sortObject(groups, (a, b) => {
-					const Atarget = groups[a].timestamp
-					const Btarget = groups[b].timestamp
+				sortObject(g, (a, b) => {
+					const Atarget = g[a].timestamp
+					const Btarget = g[b].timestamp
 					return Atarget < Btarget ? 1 : -1
 				})
 			)

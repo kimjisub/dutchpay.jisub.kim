@@ -12,7 +12,7 @@
 		"@testing-library/user-event": "^7.1.2",
 		"clsx": "^1.1.1",
 		"date-fns": "^2.30.0",
-		"firebase": "^7.14.1",
+		"firebase": "10.1.0",
 		"magic-grid": "^3.2.4",
 		"node-sass": "7.0.1",
 		"react": "^18.2.0",
@@ -23,12 +23,15 @@
 		"styled-components": "^6.0.7"
 	},
 	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^6.3.0",
+		"@typescript-eslint/parser": "^6.3.0",
 		"acorn": "^7.1.1",
+		"eslint-plugin-simple-import-sort": "^10.0.0",
+		"eslint-plugin-unused-imports": "^3.0.0",
 		"kind-of": "^6.0.3",
 		"minimist": "^1.2.5",
-		"serialize-javascript": "^3.0.0",
-		"firebase-tools": "^7.11.0",
 		"react-scripts": "^5.0.1",
+		"serialize-javascript": "^3.0.0",
 		"typescript": "^4.7.4"
 	},
 	"scripts": {

@@ -1,10 +1,11 @@
-import React, { FC, useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import React, { FC, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+
 import './Member.scss'
 
+import { calcSingleExpenditure } from '../algorithm'
 // Backend
 import * as db from '../db/firestore'
-import { calcSingleExpenditure } from '../algorithm'
 import EditableNumberView from '../elements/EditableNumberView'
 import { GroupType } from '../types/GroupType'
 import { ReceiptType } from '../types/ReceiptType'
@@ -20,12 +21,10 @@ const Member: FC<MemberProps> = (props) => {
 
 	useEffect(() => {
 		if (params.groupId) {
-			const unsubscribeGroup = db.subscribeGroup(params.groupId, (group) => {
-				setGroup(group)
-			})
+			const unsubscribeGroup = db.subscribeGroup(params.groupId, setGroup)
 
-			const unsubscribeReceipts = db.subscribeReceipts(params.groupId, (receipts) => {
-				setReceipts(Object.values(receipts))
+			const unsubscribeReceipts = db.subscribeReceipts(params.groupId, (r) => {
+				setReceipts(Object.values(r))
 			})
 
 			return () => {

@@ -1,7 +1,10 @@
-import firebase from 'firebase/app'
+import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
+
 import 'firebase/auth'
 import 'firebase/firestore'
-let config = {
+let firebaseConfig = {
 	apiKey: 'AIzaSyD3hlx9Awv5tfpt1PfANj6VIfcZDkbKw1o',
 	authDomain: 'dutchpay-f08a8.firebaseapp.com',
 	databaseURL: 'https://dutchpay-f08a8.firebaseio.com',
@@ -13,7 +16,7 @@ let config = {
 }
 
 // Test Project
-// config = {
+// firebaseConfig = {
 // 	apiKey: "AIzaSyDnwtmJRjv9whKJFnYR9bg7IDlghrmGmOY",
 // 	authDomain: "dutchpay-test-21f61.firebaseapp.com",
 // 	databaseURL: "https://dutchpay-test-21f61.firebaseio.com",
@@ -24,12 +27,7 @@ let config = {
 // 	measurementId: "G-B4TD3C97CH"
 // }
 
-export const firestore = () => {
-	if (!firebase.apps.length) firebase.initializeApp(config)
-	return firebase.firestore()
-}
+export const app = initializeApp(firebaseConfig)
 
-export const firebaseAuth = () => {
-	if (!firebase.apps.length) firebase.initializeApp(config)
-	return firebase.auth()
-}
+export const fs = getFirestore(app)
+export const auth = getAuth(app)
