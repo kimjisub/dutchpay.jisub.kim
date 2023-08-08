@@ -1,7 +1,5 @@
 import React, { FC } from 'react'
-import clsx from 'clsx'
-
-import './EditableView.scss'
+import styled from 'styled-components'
 
 function format(value: number) {
 	return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -17,6 +15,35 @@ export interface EditableNumberViewProps {
 	onBlur?: (value: number) => void
 }
 
+const EditableView = styled.span`
+	margin: 0px;
+	padding: 0px;
+`
+
+const Input = styled.input`
+	font-size: inherit;
+	width: inherit;
+	font-weight: inherit;
+	font-family: inherit;
+
+	outline: none;
+	border: none;
+	background: rgb(215, 215, 215);
+	border-radius: 10px;
+	padding: 3px 3px 3px 10px;
+	transition: 0.3s;
+	width: 100%;
+	box-sizing: border-box;
+
+	&:focus {
+		background: rgb(179, 179, 179);
+	}
+`
+
+const Paragraph = styled.p`
+	font-size: inherit;
+`
+
 const EditableNumberView: FC<EditableNumberViewProps> = ({
 	className,
 
@@ -27,9 +54,9 @@ const EditableNumberView: FC<EditableNumberViewProps> = ({
 	onBlur,
 }) => {
 	return (
-		<span className={clsx('EditableView', className)}>
+		<EditableView className={className}>
 			{editMode ? (
-				<input
+				<Input
 					placeholder={label}
 					value={format(value)}
 					pattern="\d*"
@@ -41,9 +68,10 @@ const EditableNumberView: FC<EditableNumberViewProps> = ({
 					}}
 				/>
 			) : (
-				format(value)
+				<Paragraph>{format(value)}</Paragraph>
 			)}
-		</span>
+		</EditableView>
 	)
 }
+
 export default EditableNumberView
