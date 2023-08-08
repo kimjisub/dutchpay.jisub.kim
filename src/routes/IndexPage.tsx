@@ -16,12 +16,16 @@ export type AppProps = {}
 
 const IndexPage: FC<AppProps> = () => {
 	const navigate = useNavigate()
-	const [user, setUser] = useState<User | null>(null)
+	const [user, setUser] = useState<User | null | undefined>(undefined)
 	const [openProfile, setOpenProfile] = useState<Element | null>(null)
 	const [errMsg, setErrMsg] = useState<string | null>(null)
 	useEffect(() => {
 		auth.onAuthStateChanged(setUser)
 	}, [])
+
+	if (user === undefined) {
+		return <div className="App"></div>
+	}
 
 	return (
 		<div className="App">

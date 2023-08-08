@@ -3,14 +3,11 @@ import React, { FC, useState } from 'react'
 import { Add, Delete } from '@mui/icons-material'
 import { IconButton, Menu, MenuItem } from '@mui/material'
 import clsx from 'clsx'
-
-import './ReceiptSummaryCard.scss'
+import styled from 'styled-components'
 
 import EditableNumberView from '../elements/EditableNumberView'
-// Custom Components
 import EditableTextView from '../elements/EditableTextView'
 import { MembersType } from '../models/Group'
-// Backend
 import { bigNumberToCode } from '../utils'
 import { CalcReceiptSummaryResult } from '../utils/algorithm/calcReceiptSummary'
 
@@ -28,9 +25,9 @@ const ReceiptSummaryCard: FC<ReceiptSummaryCardProps> = ({ className, editMode, 
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState<null | { anchorEl: EventTarget & HTMLButtonElement; deleteAction: () => void }>(null)
 
 	return (
-		<div className={clsx('ReceiptSummaryCard', className)}>
-			<h2 className="title">지출 내역</h2>
-			<table>
+		<ReceiptSummaryCardContainer className={clsx('ReceiptSummaryCard', className)}>
+			<Title>지출 내역</Title>
+			<StyledTable>
 				<thead>
 					<tr>
 						<td>이름</td>
@@ -119,7 +116,7 @@ const ReceiptSummaryCard: FC<ReceiptSummaryCardProps> = ({ className, editMode, 
 						</td>
 					</tr>
 				</tfoot>
-			</table>
+			</StyledTable>
 			<Menu
 				keepMounted
 				anchorEl={deleteConfirmAction?.anchorEl}
@@ -135,8 +132,38 @@ const ReceiptSummaryCard: FC<ReceiptSummaryCardProps> = ({ className, editMode, 
 					삭제
 				</MenuItem>
 			</Menu>
-		</div>
+		</ReceiptSummaryCardContainer>
 	)
 }
 
 export default ReceiptSummaryCard
+
+const ReceiptSummaryCardContainer = styled.div`
+	padding: 20px;
+	margin: 10px;
+	box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+	border-radius: 30px;
+`
+
+const Title = styled.h2`
+	color: #ffb14d;
+	font-size: 1.2rem;
+	font-weight: bold;
+	padding: 10px;
+	margin: 0;
+`
+
+const StyledTable = styled.table`
+	tbody {
+		tr {
+			cursor: pointer;
+			transition-duration: 0.1s;
+			&:hover {
+				background: #bdbdbd;
+			}
+			&:active {
+				background: #ababab;
+			}
+		}
+	}
+`

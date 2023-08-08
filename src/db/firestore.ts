@@ -146,6 +146,11 @@ export const subscribeReceipts = (groupId: string, onChange: (receipts: { [key i
 	}
 }
 
+export const addTransfer = async (groupId: string, transfer: Transfer): Promise<string> => {
+	const docRef = await addDoc(collection(fs, 'DutchPay', groupId, 'Transfers'), transfer)
+	return docRef.id
+}
+
 export const subscribeTransfers = (groupId: string, onChange: (transfers: { [key in string]: Transfer }) => void) => {
 	fbLog(`Subscribe /DutchPay/{${groupId}}/Transfer`)
 	const unsubscribe = onSnapshot(collection(fs, 'DutchPay', groupId, 'Transfers'), (snapshot) => {

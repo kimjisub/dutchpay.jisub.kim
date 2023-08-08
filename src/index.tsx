@@ -25,7 +25,6 @@ root.render(
 					<Route path=":groupId" element={<GroupPage />}>
 						<Route path="receipts/:receiptId" element={<ReceiptPage />} />
 						<Route path="members/:memberId" element={<MemberPage />} />
-						<Route path="add" element={<MemberPage />} />
 					</Route>
 				</Route>
 			</Route>

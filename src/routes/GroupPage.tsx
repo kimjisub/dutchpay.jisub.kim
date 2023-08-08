@@ -1,10 +1,10 @@
-import React, { FC, useEffect, useMemo, useState } from 'react'
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 // Components
 import { Add, Delete, Edit, Link, Save } from '@mui/icons-material'
 import { Alert, IconButton, Menu, MenuItem, Snackbar } from '@mui/material'
 
-import './Group.scss'
+import './GroupPage.scss'
 
 import ReceiptCard from '../components/ReceiptCard'
 // Custom Components
@@ -20,9 +20,12 @@ import { Transfer } from '../models/Transfer'
 import { calcDutchpay } from '../utils/algorithm/calcDutchpay'
 
 export type GroupProps = {}
+export type GroupPageParams = {
+	groupId: string
+}
 
 const GroupPage: FC<GroupProps> = () => {
-	const params = useParams()
+	const { groupId } = useParams<GroupPageParams>()
 	const navigate = useNavigate()
 
 	const [groupName, setGroupName] = useState<string>('')
@@ -41,24 +44,24 @@ const GroupPage: FC<GroupProps> = () => {
 
 	// Subscribe Firestore
 	useEffect(() => {
-		if (!params.groupId) return
-		const unsubscribeGroup = db.subscribeGroup(params.groupId, (g) => {
+		if (!groupId) return
+		const unsubscribeGroup = db.subscribeGroup(groupId, (g) => {
 			setGroup(g)
 			setGroupName(g.name)
 		})
 
-		const unsubscribeReceipts = db.subscribeReceipts(params.groupId, setReceipts)
+		const unsubscribeReceipts = db.subscribeReceipts(groupId, setReceipts)
 
-		const unsubscribeTransfer = db.subscribeTransfers(params.groupId, setTransfers)
+		const unsubscribeTransfer = db.subscribeTransfers(groupId, setTransfers)
 
-		db.checkPermission(params.groupId).then(setHavePermission)
+		db.checkPermission(groupId).then(setHavePermission)
 
 		return () => {
 			unsubscribeGroup()
 			unsubscribeReceipts()
 			unsubscribeTransfer()
 		}
-	}, [params.groupId])
+	}, [groupId])
 
 	const dutchpay = useMemo(
 		() =>
@@ -68,32 +71,36 @@ const GroupPage: FC<GroupProps> = () => {
 				receipts: receipts,
 				transfers: transfers,
 			}),
-		[group?.members, receipts, transfers]
+		[group, receipts, transfers]
 	)
 
-	if (!params.groupId || !group || !dutchpay) return <div className="popup"></div>
-	const groupId = params.groupId
-
-	function requestEditMode() {
+	const requestEditMode = useCallback(() => {
+		if (!groupId) return setErrMsg('권한이 없습니다.')
 		db.checkPermission(groupId).then((hp) => {
 			if (hp) setEditMode(true)
 			else setErrMsg('권한이 없습니다.')
 		})
-	}
-	function saveToFB(g: Group) {
-		db.setGroup(groupId, g)
-			.then(() => {})
-			.catch((err) => setErrMsg(err))
-	}
+	}, [groupId])
+	const saveToFB = useCallback(
+		(g: Group) => {
+			if (!groupId) return setErrMsg('권한이 없습니다.')
+			db.setGroup(groupId, g)
+				.then(() => {})
+				.catch((err) => setErrMsg(err))
+		},
+		[groupId]
+	)
 
 	function deleteFromFB() {
-		if (!params.groupId) return
-		db.deleteGroup(params.groupId)
+		if (!groupId) return
+		db.deleteGroup(groupId)
 			.then(() => {
 				navigate('../')
 			})
 			.catch((err) => setErrMsg(err))
 	}
+
+	if (!groupId || !group || !dutchpay) return <div> 로딩중</div>
 
 	let receiptCards = []
 
@@ -231,7 +238,13 @@ const GroupPage: FC<GroupProps> = () => {
 									}}
 									editMode={editMode}
 								/>
-								<TransferCard members={group.members} transfers={transfers} transfersNeeded={dutchpay.transfersNeeded} />
+								<TransferCard
+									groupId={groupId}
+									members={group.members}
+									transfers={transfers}
+									transfersNeeded={dutchpay.transfersNeeded}
+									havePermission={havePermission}
+								/>
 							</div>
 						</div>
 						<div id="receipts">

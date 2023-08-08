@@ -40,7 +40,7 @@ const Input = styled.input`
 	}
 `
 
-const Paragraph = styled.p`
+const Paragraph = styled.span`
 	font-size: inherit;
 `
 

@@ -4,8 +4,7 @@ import { ExpandMore } from '@mui/icons-material'
 import { Accordion, AccordionSummary, CardActionArea } from '@mui/material'
 import clsx from 'clsx'
 import { format } from 'date-fns'
-
-import './ReceiptCard.scss'
+import styled from 'styled-components'
 
 import EditableNumberView from '../elements/EditableNumberView'
 import { MembersType } from '../models/Group'
@@ -77,21 +76,23 @@ const ReceiptCard: FC<ReceiptCardProps> = ({ className, receipt, members, expand
 			</tr>
 		)
 	return (
-		<Accordion variant="outlined" className={clsx('ReceiptCard', className)} expanded={expanded} onChange={onExpanded}>
+		<StyledReceiptCard variant="outlined" className={clsx('ReceiptCard', className)} expanded={expanded} onChange={onExpanded}>
 			<AccordionSummary expandIcon={<ExpandMore />}>
-				<div className="summary">
-					<div className="left">
+				<Summary>
+					<Left>
 						<p className="title">{receipt.name}</p>
 						<p className="date">{format(receipt.timestamp, 'MM/dd HH:mm')}</p>
-					</div>
-					<EditableNumberView className={clsx('price', diff !== 0 ? 'red' : '')} value={parseFloat(totalPrice.toFixed(2))} editMode={false} />
-				</div>
+					</Left>
+					<Price className={clsx('price', diff !== 0 ? 'red' : '')}>
+						<EditableNumberView value={parseFloat(totalPrice.toFixed(2))} editMode={false} />
+					</Price>
+				</Summary>
 			</AccordionSummary>
-			<CardActionArea
+			<StyledCardActionArea
 				onClick={() => {
 					if (onClick) onClick()
 				}}>
-				<div className="table-wrapper">
+				<TableWrapper>
 					<table>
 						<thead>
 							<tr>
@@ -116,10 +117,59 @@ const ReceiptCard: FC<ReceiptCardProps> = ({ className, receipt, members, expand
 							</tr>
 						</tfoot>
 					</table>
-				</div>
-			</CardActionArea>
-		</Accordion>
+				</TableWrapper>
+			</StyledCardActionArea>
+		</StyledReceiptCard>
 	)
 }
 
 export default ReceiptCard
+
+const StyledReceiptCard = styled(Accordion)`
+	border: none !important;
+	background-color: #fff;
+	transition: 0.3s !important;
+	border-radius: 30px !important;
+
+	&.Mui-expanded {
+		box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+	}
+	&:before {
+		background-color: transparent !important;
+	}
+`
+
+const StyledCardActionArea = styled(CardActionArea)`
+	border-radius: 0 0 30px 30px;
+`
+
+const Summary = styled.div`
+	width: 100%;
+	display: flex;
+`
+
+const Left = styled.div`
+	flex-grow: 1;
+
+	.title {
+		font-size: 1rem;
+		font-weight: bold;
+		margin: 0;
+	}
+	.date {
+		font-size: 0.5rem;
+		font-weight: bold;
+		margin: 0;
+	}
+`
+
+const Price = styled.div`
+	align-self: center;
+	margin: 0;
+	font-weight: bold;
+	flex-grow: 0;
+`
+
+const TableWrapper = styled.div`
+	margin: 0px 20px 10px 20px;
+`
