@@ -1,5 +1,6 @@
 import React, { FC } from 'react'
 import clsx from 'clsx'
+
 import './EditableView.scss'
 
 export interface EditableTextViewProps {

@@ -1,18 +1,17 @@
-import React, { useState, FC } from 'react'
+import React, { FC, useState } from 'react'
+// Components
+import { Add, Delete } from '@mui/icons-material'
+import { IconButton, Menu, MenuItem } from '@mui/material'
 import clsx from 'clsx'
+
 import './ExpenditureCard.scss'
 
 // Backend
 import { bigNumberToCode, CalcExpenditureResultType } from '../algorithm'
-import { MembersType } from '../types/MembersType'
-
-// Components
-import { Add, Delete } from '@mui/icons-material'
-import { Menu, MenuItem, IconButton } from '@mui/material'
-
+import EditableNumberView from '../elements/EditableNumberView'
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
-import EditableNumberView from '../elements/EditableNumberView'
+import { MembersType } from '../types/MembersType'
 
 export interface ExpenditureCardProps {
 	className?: string

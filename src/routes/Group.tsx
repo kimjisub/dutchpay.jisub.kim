@@ -1,23 +1,22 @@
-import React, { FC, useState, useEffect } from 'react'
-import { useParams, Outlet, useNavigate } from 'react-router-dom'
+import React, { FC, useEffect, useState } from 'react'
+import { Outlet, useNavigate, useParams } from 'react-router-dom'
+// Components
+import { Add, Delete, Edit, Link, Save } from '@mui/icons-material'
+import { Alert, IconButton, Menu, MenuItem, Snackbar } from '@mui/material'
+
 import './Group.scss'
 
-// Backend
-import * as db from '../db/firestore'
 import { calcExpenditure, calcSettlement } from '../algorithm'
-
-// Components
-import { Add, Edit, Delete, Save, Link } from '@mui/icons-material'
-import { Snackbar, IconButton, Menu, MenuItem, Alert } from '@mui/material'
-
 // Custom Components
 import ExpenditureCard from '../components/ExpenditureCard'
-import SettlementCard from '../components/SettlementCard'
 import ReceiptCard from '../components/ReceiptCard'
-import EditableTextView from '../elements/EditableTextView'
+import SettlementCard from '../components/SettlementCard'
+// Backend
+import * as db from '../db/firestore'
 import EditableDateView from '../elements/EditableDateView'
-import { ReceiptType } from '../types/ReceiptType'
+import EditableTextView from '../elements/EditableTextView'
 import { GroupType } from '../types/GroupType'
+import { ReceiptType } from '../types/ReceiptType'
 
 export type GroupProps = {}
 
@@ -33,7 +32,7 @@ const Group: FC<GroupProps> = () => {
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState<{ anchorEl: Element; deleteAction: () => void } | null>(null)
 
 	const [editMode, setEditMode] = useState<boolean>(false)
-	const [havePermmision, setHavePermmision] = useState(false)
+	const [havePermission, setHavePermission] = useState(false)
 
 	// const [group, groupDispatch] = useReducer((_state, action: {type:string; data:GroupType}) => {
 	// 	if (!params.groupId) return null
@@ -102,17 +101,17 @@ const Group: FC<GroupProps> = () => {
 	// Subscribe Firestore
 	useEffect(() => {
 		if (!params.groupId) return
-		const unsubscribeGroup = db.subscribeGroup(params.groupId, (group) => {
-			setGroup(group)
-			setGroupName(group.name)
+		const unsubscribeGroup = db.subscribeGroup(params.groupId, (g) => {
+			setGroup(g)
+			setGroupName(g.name)
 		})
 
-		const unsubscribeReceipts = db.subscribeReceipts(params.groupId, (receipts) => {
-			setReceipts(receipts)
+		const unsubscribeReceipts = db.subscribeReceipts(params.groupId, (r) => {
+			setReceipts(r)
 		})
 
-		db.checkPermission(params.groupId).then((havePermmision) => {
-			setHavePermmision(havePermmision)
+		db.checkPermission(params.groupId).then((hp) => {
+			setHavePermission(hp)
 		})
 
 		return () => {
@@ -125,13 +124,13 @@ const Group: FC<GroupProps> = () => {
 	const groupId = params.groupId
 
 	function requestEditMode() {
-		db.checkPermission(groupId).then((havePermmision) => {
-			if (havePermmision) setEditMode(true)
+		db.checkPermission(groupId).then((hp) => {
+			if (hp) setEditMode(true)
 			else setErrMsg('권한이 없습니다.')
 		})
 	}
-	function saveToFB(group: GroupType) {
-		db.setGroup(groupId, group)
+	function saveToFB(g: GroupType) {
+		db.setGroup(groupId, g)
 			.then(() => {})
 			.catch((err) => setErrMsg(err))
 	}
@@ -248,7 +247,7 @@ const Group: FC<GroupProps> = () => {
 								}}>
 								<Link />
 							</IconButton>
-							{havePermmision ? (
+							{havePermission ? (
 								<IconButton
 									onClick={() => {
 										if (editMode) setEditMode(false)
@@ -289,7 +288,7 @@ const Group: FC<GroupProps> = () => {
 							</div>
 						</div>
 						<div id="receipts">
-							{havePermmision ? (
+							{havePermission ? (
 								<div className="addButton">
 									<IconButton
 										onClick={() => {

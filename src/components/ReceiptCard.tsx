@@ -1,15 +1,15 @@
 import React, { FC } from 'react'
-import clsx from 'clsx'
-import './ReceiptCard.scss'
-
 // Components
 import { ExpandMore } from '@mui/icons-material'
 import { Accordion, AccordionSummary, CardActionArea } from '@mui/material'
-import EditableNumberView from '../elements/EditableNumberView'
-
+import clsx from 'clsx'
 import { format } from 'date-fns'
-import { ReceiptType } from '../types/ReceiptType'
+
+import './ReceiptCard.scss'
+
+import EditableNumberView from '../elements/EditableNumberView'
 import { MembersType } from '../types/MembersType'
+import { ReceiptType } from '../types/ReceiptType'
 
 export interface ReceiptCardProps {
 	className?: string
