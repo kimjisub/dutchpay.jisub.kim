@@ -1,12 +1,10 @@
 import React, { FC, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-// Components
 import { Alert, Button, Snackbar } from '@mui/material'
 import { format } from 'date-fns'
-// Backend
 import { User } from 'firebase/auth'
 
-import './Groups.scss'
+import './GroupsPage.scss'
 
 import * as db from '../db/firestore'
 import { auth } from '../firebase'
@@ -15,7 +13,7 @@ import { sortObject } from '../utils'
 
 export type GroupsProps = {}
 
-const Groups: FC<GroupsProps> = () => {
+const GroupsPage: FC<GroupsProps> = () => {
 	const navigate = useNavigate()
 	const [user, setUser] = useState<User | null>(null)
 	const [errMsg, setErrMsg] = useState<string | null>(null)
@@ -99,4 +97,4 @@ const Groups: FC<GroupsProps> = () => {
 	)
 }
 
-export default Groups
+export default GroupsPage

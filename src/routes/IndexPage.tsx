@@ -1,14 +1,11 @@
 import React, { FC, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
-// Components
 import { Alert, Button, Popover, Snackbar } from '@mui/material'
 import { GoogleAuthProvider, signInWithPopup, User } from 'firebase/auth'
 
-import './App.scss'
-// Backend
+import './IndexPage.scss'
 import 'firebase/auth'
 
-// Assets
 import GoogleLogo from '../assets/googleLogo.svg'
 import { auth } from '../firebase'
 import LogoSVG from '../logo.svg'
@@ -17,7 +14,7 @@ const fbAuthProvider = new GoogleAuthProvider()
 
 export type AppProps = {}
 
-const App: FC<AppProps> = () => {
+const IndexPage: FC<AppProps> = () => {
 	const navigate = useNavigate()
 	const [user, setUser] = useState<User | null>(null)
 	const [openProfile, setOpenProfile] = useState<Element | null>(null)
@@ -127,4 +124,4 @@ const App: FC<AppProps> = () => {
 	)
 }
 
-export default App
+export default IndexPage

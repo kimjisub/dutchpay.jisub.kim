@@ -1,10 +1,8 @@
 import React, { FC, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-// Components
 import { Alert, Button, Snackbar } from '@mui/material'
 
 import './MainPage.scss'
-// Backend
 import 'firebase/auth'
 
 import * as db from '../db/firestore'

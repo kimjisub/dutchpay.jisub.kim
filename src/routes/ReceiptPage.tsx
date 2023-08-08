@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-// Components
 import { Add, Check, Close, Delete, Edit, Person, Save } from '@mui/icons-material'
 import { Alert, Badge, Checkbox, IconButton, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Popover, Snackbar } from '@mui/material'
 
@@ -9,13 +8,11 @@ import './ReceiptPage.scss'
 import * as db from '../db/firestore'
 import EditableDateView from '../elements/EditableDateView'
 import EditableNumberView from '../elements/EditableNumberView'
-// Custom Components
 import EditableTextView from '../elements/EditableTextView'
 import { useGetSetterState } from '../hooks/useGetSetterState'
 import { MembersType } from '../models/Group'
 import { Receipt } from '../models/Receipt'
 import { sortObject } from '../utils'
-// Backend
 
 export type ReceiptProps = {}
 

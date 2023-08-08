@@ -1,9 +1,8 @@
 import React, { FC, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import './Member.scss'
+import './MemberPage.scss'
 
-// Backend
 import * as db from '../db/firestore'
 import EditableNumberView from '../elements/EditableNumberView'
 import { Group } from '../models/Group'
@@ -12,7 +11,7 @@ import { calcSingleReceiptSummary } from '../utils/algorithm/calcSingleReceiptSu
 
 export type MemberProps = {}
 
-const Member: FC<MemberProps> = (props) => {
+const MemberPage: FC<MemberProps> = (props) => {
 	const params = useParams()
 	const navigate = useNavigate()
 
@@ -102,4 +101,4 @@ const Member: FC<MemberProps> = (props) => {
 	)
 }
 
-export default Member
+export default MemberPage
