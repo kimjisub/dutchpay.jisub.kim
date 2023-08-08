@@ -1,12 +1,12 @@
-export type ReceiptItemType = {
+export interface ReceiptItem {
 	buyers: string[]
 	name: string
 	price: number
 }
 
-export type ReceiptType = {
+export interface Receipt {
 	name: string
-	items: ReceiptItemType[]
+	items: ReceiptItem[]
 	payers: { [key in string]: number }
 	timestamp: Date
 }

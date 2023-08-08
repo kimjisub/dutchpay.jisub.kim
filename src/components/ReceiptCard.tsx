@@ -8,13 +8,13 @@ import { format } from 'date-fns'
 import './ReceiptCard.scss'
 
 import EditableNumberView from '../elements/EditableNumberView'
-import { MembersType } from '../types/MembersType'
-import { ReceiptType } from '../types/ReceiptType'
+import { MembersType } from '../models/Group'
+import { Receipt } from '../models/Receipt'
 
 export interface ReceiptCardProps {
 	className?: string
 
-	receipt: ReceiptType
+	receipt: Receipt
 	members: MembersType
 	expanded: boolean
 	onExpanded?: () => void

@@ -4,28 +4,28 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Add, Check, Close, Delete, Edit, Person, Save } from '@mui/icons-material'
 import { Alert, Badge, Checkbox, IconButton, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Popover, Snackbar } from '@mui/material'
 
-import './Receipt.scss'
+import './ReceiptPage.scss'
 
-// Backend
-import { sortObject } from '../algorithm'
 import * as db from '../db/firestore'
 import EditableDateView from '../elements/EditableDateView'
 import EditableNumberView from '../elements/EditableNumberView'
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
 import { useGetSetterState } from '../hooks/useGetSetterState'
-import { MembersType } from '../types/MembersType'
-import { ReceiptType } from '../types/ReceiptType'
+import { MembersType } from '../models/Group'
+import { Receipt } from '../models/Receipt'
+import { sortObject } from '../utils'
+// Backend
 
 export type ReceiptProps = {}
 
-const Receipt: FC<ReceiptProps> = () => {
+const ReceiptPage: FC<ReceiptProps> = () => {
 	const params = useParams()
 	const navigate = useNavigate()
 
 	// Status
 	const [editMode, setEditMode] = useState<boolean>(params.receiptId === 'new')
-	const [havePermmision, setHavePermission] = useState<boolean>(false)
+	const [havePermission, setHavePermission] = useState<boolean>(false)
 
 	// UI
 	const [errMsg, setErrMsg] = useState<string | null>(null)
@@ -35,7 +35,7 @@ const Receipt: FC<ReceiptProps> = () => {
 
 	// Data
 	const [members, setMembers] = useState<MembersType>({})
-	const [receiptRaw, receipt, setReceipt] = useGetSetterState<ReceiptType | null>(
+	const [receiptRaw, receipt, setReceipt] = useGetSetterState<Receipt | null>(
 		null,
 		(_receipt) => {
 			if (_receipt == null) return null
@@ -96,7 +96,7 @@ const Receipt: FC<ReceiptProps> = () => {
 		db.checkPermission(params.groupId).then(setHavePermission)
 	}, [params.groupId])
 
-	function updateToFB(r: ReceiptType) {
+	function updateToFB(r: Receipt) {
 		if (!params.groupId || !params.receiptId) return
 		const action = params.receiptId !== 'new' ? db.setReceipt(params.groupId, params.receiptId, r) : db.addReceipt(params.groupId, r)
 		action
@@ -473,11 +473,11 @@ const Receipt: FC<ReceiptProps> = () => {
 						</IconButton>
 					) : null}
 
-					{havePermmision && !editMode ? (
+					{havePermission && !editMode ? (
 						<IconButton
 							className="addButton"
 							onClick={() => {
-								if (havePermmision) setEditMode(true)
+								if (havePermission) setEditMode(true)
 								else setErrMsg('수정 권한이 없습니다.')
 							}}>
 							<Edit fontSize="inherit" />
@@ -504,4 +504,4 @@ const Receipt: FC<ReceiptProps> = () => {
 		</div>
 	)
 }
-export default Receipt
+export default ReceiptPage

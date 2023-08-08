@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 // Components
 import { Add, Delete, Edit, Link, Save } from '@mui/icons-material'
@@ -6,21 +6,22 @@ import { Alert, IconButton, Menu, MenuItem, Snackbar } from '@mui/material'
 
 import './Group.scss'
 
-import { calcExpenditure, calcSettlement } from '../algorithm'
-// Custom Components
-import ExpenditureCard from '../components/ExpenditureCard'
 import ReceiptCard from '../components/ReceiptCard'
-import SettlementCard from '../components/SettlementCard'
+// Custom Components
+import ReceiptSummaryCard from '../components/ReceiptSummaryCard'
+import TransferCard from '../components/TransferCard'
 // Backend
 import * as db from '../db/firestore'
 import EditableDateView from '../elements/EditableDateView'
 import EditableTextView from '../elements/EditableTextView'
-import { GroupType } from '../types/GroupType'
-import { ReceiptType } from '../types/ReceiptType'
+import { Group } from '../models/Group'
+import { Receipt } from '../models/Receipt'
+import { Transfer } from '../models/Transfer'
+import { calcDutchpay } from '../utils/algorithm/calcDutchpay'
 
 export type GroupProps = {}
 
-const Group: FC<GroupProps> = () => {
+const GroupPage: FC<GroupProps> = () => {
 	const params = useParams()
 	const navigate = useNavigate()
 
@@ -34,69 +35,9 @@ const Group: FC<GroupProps> = () => {
 	const [editMode, setEditMode] = useState<boolean>(false)
 	const [havePermission, setHavePermission] = useState(false)
 
-	// const [group, groupDispatch] = useReducer((_state, action: {type:string; data:GroupType}) => {
-	// 	if (!params.groupId) return null
-	// 	const { type, data } = action
-	// 	switch (type) {
-	// 		case 'fromFirebase':
-	// 			setGroupName(data.name)
-	// 			break
-	// 		case 'saveFirebase':
-	// 			if (data) {
-	// 				db.setGroup(params.groupId, data)
-	// 					.then(() => {})
-	// 					.catch((err) => setErrMsg(err))
-	// 			} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
-	// 			break
-	// 		case 'saveFirebaseAndDone':
-	// 			if (data) {
-	// 				db.setGroup(params.groupId, data)
-	// 					.then(() => {
-	// 						editModeDispatch({ type: 'doneEditMode' })
-	// 					})
-	// 					.catch((err) => {
-	// 						setErrMsg(err)
-	// 						editModeDispatch({ type: 'editModeDenied' })
-	// 					})
-	// 			} else setErrMsg('데이터를 불러온 후에 시도해주세요.')
-	// 			break
-	// 		default:
-	// 	}
-	// 	return data
-	// }, null)
-
-	const [group, setGroup] = useState<GroupType | null>()
-	const [receipts, setReceipts] = useState<{ [name in string]: ReceiptType }>({})
-
-	// const [editMode, editModeDispatch] = useReducer((state, action) => {
-	// 	if (!params.groupId) return null
-
-	// 	let { type } = action
-	// 	let editMode = state
-	// 	switch (type) {
-	// 		// 수정모드로 진입하려고 함.
-	// 		case 'requestEditMode':
-	// 			db.checkPermission(params.groupId).then((havePermmision) => {
-	// 				if (havePermmision) editModeDispatch({ type: 'editModeApproved' })
-	// 				else editModeDispatch({ type: 'editModeDenied' })
-	// 			})
-	// 			break
-	// 		case 'doneEditMode':
-	// 			editMode = false
-	// 			break
-	// 		// 수정모드 승인
-	// 		case 'editModeApproved':
-	// 			editMode = true
-	// 			break
-	// 		// 수정모드 거부
-	// 		case 'editModeDenied':
-	// 			editMode = false
-	// 			setErrMsg('권한이 없습니다.')
-	// 			break
-	// 		default:
-	// 	}
-	// 	return editMode
-	// }, false)
+	const [group, setGroup] = useState<Group | null>()
+	const [receipts, setReceipts] = useState<{ [name in string]: Receipt }>({})
+	const [transfers, setTransfers] = useState<{ [name in string]: Transfer }>({})
 
 	// Subscribe Firestore
 	useEffect(() => {
@@ -106,21 +47,31 @@ const Group: FC<GroupProps> = () => {
 			setGroupName(g.name)
 		})
 
-		const unsubscribeReceipts = db.subscribeReceipts(params.groupId, (r) => {
-			setReceipts(r)
-		})
+		const unsubscribeReceipts = db.subscribeReceipts(params.groupId, setReceipts)
 
-		db.checkPermission(params.groupId).then((hp) => {
-			setHavePermission(hp)
-		})
+		const unsubscribeTransfer = db.subscribeTransfers(params.groupId, setTransfers)
+
+		db.checkPermission(params.groupId).then(setHavePermission)
 
 		return () => {
 			unsubscribeGroup()
 			unsubscribeReceipts()
+			unsubscribeTransfer()
 		}
 	}, [params.groupId])
 
-	if (!params.groupId || !group) return <div className="popup"></div>
+	const dutchpay = useMemo(
+		() =>
+			group &&
+			calcDutchpay({
+				members: group.members,
+				receipts: receipts,
+				transfers: transfers,
+			}),
+		[group?.members, receipts, transfers]
+	)
+
+	if (!params.groupId || !group || !dutchpay) return <div className="popup"></div>
 	const groupId = params.groupId
 
 	function requestEditMode() {
@@ -129,7 +80,7 @@ const Group: FC<GroupProps> = () => {
 			else setErrMsg('권한이 없습니다.')
 		})
 	}
-	function saveToFB(g: GroupType) {
+	function saveToFB(g: Group) {
 		db.setGroup(groupId, g)
 			.then(() => {})
 			.catch((err) => setErrMsg(err))
@@ -163,10 +114,6 @@ const Group: FC<GroupProps> = () => {
 			/>
 		)
 	}
-
-	let expenditure = calcExpenditure(group.members, receipts)
-
-	let settlement = calcSettlement(expenditure)
 
 	return (
 		<div className="Group">
@@ -271,8 +218,8 @@ const Group: FC<GroupProps> = () => {
 					<div className="content">
 						<div className="dashboard-wrapper">
 							<div className="dashboard">
-								<ExpenditureCard
-									expenditure={expenditure}
+								<ReceiptSummaryCard
+									receiptSummary={dutchpay.receiptSummary}
 									members={group.members}
 									onMembersChange={(members) => {
 										let _group = { ...group }
@@ -284,7 +231,7 @@ const Group: FC<GroupProps> = () => {
 									}}
 									editMode={editMode}
 								/>
-								<SettlementCard members={group.members} settlement={settlement} />
+								<TransferCard members={group.members} transfers={transfers} transfersNeeded={dutchpay.transfersNeeded} />
 							</div>
 						</div>
 						<div id="receipts">
@@ -308,4 +255,4 @@ const Group: FC<GroupProps> = () => {
 	)
 }
 
-export default Group
+export default GroupPage

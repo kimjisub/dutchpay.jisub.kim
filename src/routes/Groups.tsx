@@ -8,10 +8,10 @@ import { User } from 'firebase/auth'
 
 import './Groups.scss'
 
-import { sortObject } from '../algorithm'
 import * as db from '../db/firestore'
 import { auth } from '../firebase'
-import { GroupType } from '../types/GroupType'
+import { Group } from '../models/Group'
+import { sortObject } from '../utils'
 
 export type GroupsProps = {}
 
@@ -20,7 +20,7 @@ const Groups: FC<GroupsProps> = () => {
 	const [user, setUser] = useState<User | null>(null)
 	const [errMsg, setErrMsg] = useState<string | null>(null)
 
-	const [groups, setGroups] = useState<{ [name in string]: GroupType }>({})
+	const [groups, setGroups] = useState<{ [name in string]: Group }>({})
 
 	useEffect(() => {
 		auth.onAuthStateChanged(setUser)

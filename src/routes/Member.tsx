@@ -3,12 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import './Member.scss'
 
-import { calcSingleExpenditure } from '../algorithm'
 // Backend
 import * as db from '../db/firestore'
 import EditableNumberView from '../elements/EditableNumberView'
-import { GroupType } from '../types/GroupType'
-import { ReceiptType } from '../types/ReceiptType'
+import { Group } from '../models/Group'
+import { Receipt } from '../models/Receipt'
+import { calcSingleReceiptSummary } from '../utils/algorithm/calcSingleReceiptSummary'
 
 export type MemberProps = {}
 
@@ -16,8 +16,8 @@ const Member: FC<MemberProps> = (props) => {
 	const params = useParams()
 	const navigate = useNavigate()
 
-	const [group, setGroup] = useState<GroupType | null>(null)
-	const [receipts, setReceipts] = useState<ReceiptType[]>([])
+	const [group, setGroup] = useState<Group | null>(null)
+	const [receipts, setReceipts] = useState<Receipt[]>([])
 
 	useEffect(() => {
 		if (params.groupId) {
@@ -40,8 +40,8 @@ const Member: FC<MemberProps> = (props) => {
 
 	if (!group || !params.groupId || !params.memberId) return <div className="Member popup"></div>
 
-	const singleExpenditure = calcSingleExpenditure(params.memberId, receipts)
-	const totalExpenditure = Object.values(singleExpenditure).reduce((acc, cur) => acc + cur.totalPrice, 0)
+	const singleReceiptSummary = calcSingleReceiptSummary(params.memberId, receipts)
+	const totalReceiptSummary = Object.values(singleReceiptSummary).reduce((acc, cur) => acc + cur.totalPrice, 0)
 
 	return (
 		<div
@@ -61,7 +61,7 @@ const Member: FC<MemberProps> = (props) => {
 							</tr>
 						</thead>
 						<tbody>
-							{singleExpenditure.map((receipt, i) => {
+							{singleReceiptSummary.map((receipt, i) => {
 								return (
 									<tr key={i}>
 										<td>{receipt.name}</td>
@@ -91,7 +91,7 @@ const Member: FC<MemberProps> = (props) => {
 							<tr>
 								<td>합계</td>
 								<td>
-									<EditableNumberView value={totalExpenditure} editMode={false} />
+									<EditableNumberView value={totalReceiptSummary} editMode={false} />
 								</td>
 							</tr>
 						</tfoot>

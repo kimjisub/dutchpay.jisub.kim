@@ -4,30 +4,31 @@ import { Add, Delete } from '@mui/icons-material'
 import { IconButton, Menu, MenuItem } from '@mui/material'
 import clsx from 'clsx'
 
-import './ExpenditureCard.scss'
+import './ReceiptSummaryCard.scss'
 
-// Backend
-import { bigNumberToCode, CalcExpenditureResultType } from '../algorithm'
 import EditableNumberView from '../elements/EditableNumberView'
 // Custom Components
 import EditableTextView from '../elements/EditableTextView'
-import { MembersType } from '../types/MembersType'
+import { MembersType } from '../models/Group'
+// Backend
+import { bigNumberToCode } from '../utils'
+import { CalcReceiptSummaryResult } from '../utils/algorithm/calcReceiptSummary'
 
-export interface ExpenditureCardProps {
+export interface ReceiptSummaryCardProps {
 	className?: string
 
 	editMode: boolean
 	members: MembersType
-	expenditure: CalcExpenditureResultType
+	receiptSummary: CalcReceiptSummaryResult
 	onMembersChange: (members: MembersType) => void
 	onMemberClick: (id: string) => void
 }
-const ExpenditureCard: FC<ExpenditureCardProps> = ({ className, editMode, members, expenditure, onMembersChange, onMemberClick }) => {
+const ReceiptSummaryCard: FC<ReceiptSummaryCardProps> = ({ className, editMode, members, receiptSummary, onMembersChange, onMemberClick }) => {
 	const [addName, setAddName] = useState('')
 	const [deleteConfirmAction, setDeleteConfirmAction] = useState<null | { anchorEl: EventTarget & HTMLButtonElement; deleteAction: () => void }>(null)
 
 	return (
-		<div className={clsx('ExpenditureCard', className)}>
+		<div className={clsx('ReceiptSummaryCard', className)}>
 			<h2 className="title">지출 내역</h2>
 			<table>
 				<thead>
@@ -42,7 +43,7 @@ const ExpenditureCard: FC<ExpenditureCardProps> = ({ className, editMode, member
 					{Object.entries(members).map((data) => {
 						const [id, name] = data
 
-						const { spend, paid } = expenditure.eachMembers[id]
+						const { spend, paid } = receiptSummary.eachMembers[id]
 						return (
 							<tr
 								key={id}
@@ -111,10 +112,10 @@ const ExpenditureCard: FC<ExpenditureCardProps> = ({ className, editMode, member
 					<tr>
 						<td>합계</td>
 						<td align="right">
-							<EditableNumberView value={parseFloat(expenditure.totalSpend.toFixed(2))} editMode={false} />
+							<EditableNumberView value={parseFloat(receiptSummary.spendAmount.toFixed(2))} editMode={false} />
 						</td>
 						<td align="right">
-							<EditableNumberView value={parseFloat(expenditure.totalPaid.toFixed(2))} editMode={false} />
+							<EditableNumberView value={parseFloat(receiptSummary.paidAmount.toFixed(2))} editMode={false} />
 						</td>
 					</tr>
 				</tfoot>
@@ -138,4 +139,4 @@ const ExpenditureCard: FC<ExpenditureCardProps> = ({ className, editMode, member
 	)
 }
 
-export default ExpenditureCard
+export default ReceiptSummaryCard
